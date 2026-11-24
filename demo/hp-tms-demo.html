@@ -412,7 +412,7 @@ function buildTenant(key){
   D.carriers.forEach((_,ci)=>{for(let i=0;i<D.carrierTrucks;i++) addVeh("K"+(ci+1),i)});
   cfgSeed(T,key,r);
   // order mix
-  const n=D.nOrders, mix=[["Invoiced",.27],["POD received",.2],["Delivered",.06],["In transit",.09],["Dispatched",.05],["Confirmed",.16],["Draft",.04],["On hold",.03],["Cancelled",.05]];
+  const n=D.nOrders, mix=[["Invoiced",.27],["POD received",.2],["Delivered",.06],["In transit",.06],["Dispatched",.02],["Confirmed",.22],["Draft",.04],["On hold",.03],["Cancelled",.05]];
   const statuses=[]; mix.forEach(([s,f])=>{for(let i=0;i<Math.round(f*n);i++)statuses.push(s)}); while(statuses.length<n)statuses.push("Confirmed"); statuses.length=n;
   const custs=T.parties.filter(p=>p.type==="customer");
   statuses.forEach((s,i)=>{
@@ -428,7 +428,7 @@ function buildTenant(key){
     const q=quote(T,o.code,d.code,eq);
     const cust=pick(r,custs);
     const ord={id:nextOrderId(T,pickupTs),customerId:cust.id,ref:"PO-"+(40000+Math.floor(r()*59999)),origin:o.code,dest:d.code,equip:eq,weight:wt,pallets:pal,
-      pickupTs,deliverBy:0,svc:"D2",status:s,km:q.km,tripId:null,pod:null,createdTs:pickupTs-(1+r()*3)*DAY,
+      pickupTs,deliverBy:0,svc:"D2",status:s,km:q.km,tripId:null,pod:null,createdTs:Math.min(pickupTs-(1+r()*3)*DAY,NOW0-(0.3+r()*2)*DAY),
       ms:["Invoiced","POD received"].includes(s)?6:s==="Delivered"?5:0,carrierId:r()<.35?pick(r,T.parties.filter(p=>p.type==="carrier")).id:null,acc:[]};
     ord.svc=pick(r,["STD","D2","D2","NBD","NBD","NBD","SBD","SBD","EXP","TD"].filter(c=>svcAllowed(T,c,o.code,d.code,q.km)));
     ord.deliverBy=slaDeadline(T,ord.svc,pickupTs,q.km,d.cc);
@@ -1248,7 +1248,7 @@ function bindOrderClicks(){document.querySelectorAll("[data-order]").forEach(el=
 
 /* ---------------- ORDERS ---------------- */
 const ui={q:"",status:"",sort:"pickupTs",dir:-1,page:0,size:25,sel:new Set(),cols:new Set(["id","svc","customer","lane","pickup","promise","weight","status","code","sell","margin"]),svc:""};
-const COLS={id:"order",svc:"Service",customer:"customer",promise:"Promised by",lane:"Lane",pickup:"pickup",weight:"weight",equip:"Equipment",status:"status",ft:"File type",con:"Con note",code:"Status code",sell:"sell",cost:"cost",margin:"marginCol",ref:"Customer ref"};
+const COLS={id:"order",svc:"Service",customer:"customer",lane:"Lane",pickup:"pickup",promise:"Promised by",weight:"weight",equip:"Equipment",status:"status",ft:"File type",con:"Con note",code:"Status code",sell:"sell",cost:"cost",margin:"marginCol",ref:"Customer ref"};
 VIEWS.orders=function(){
   const X=T(); let rows=X.orders.filter(o=>{
     if(ui.status && o.status!==ui.status) return false;
@@ -1261,7 +1261,8 @@ VIEWS.orders=function(){
   const total=rows.length, pages=Math.max(1,Math.ceil(total/ui.size)); ui.page=Math.min(ui.page,pages-1);
   const pageRows=rows.slice(ui.page*ui.size,(ui.page+1)*ui.size);
   const th=(k)=>ui.cols.has(k)?`<th class="sort ${["weight","sell","cost","margin"].includes(k)?"r":""}" data-sort="${k}">${esc(t(COLS[k]))}${ui.sort===k?(ui.dir>0?" ▲":" ▼"):""}</th>`:"";
-  const td=(k,html,cls="")=>ui.cols.has(k)?`<td class="${cls}">${html}</td>`:"";
+  let rowCells={};
+  const td=(k,html,cls="")=>{if(ui.cols.has(k))rowCells[k]=`<td class="${cls}">${html}</td>`;return ""}; // cells are emitted in COLS order, same as the headers
   $("#view").innerHTML=`
   <section class="panel">
    <div class="panel-h">
@@ -1284,10 +1285,10 @@ VIEWS.orders=function(){
    <div class="tbl-wrap"><table>
     <thead><tr><th><input type="checkbox" id="selAll" aria-label="Select page"></th>${Object.keys(COLS).map(th).join("")}</tr></thead>
     <tbody>${pageRows.map(o=>{const c=cust(o.customerId),m=(o.sell-o.buy)/o.sell;return `<tr class="click" data-order="${o.id}">
-      <td><input type="checkbox" data-sel="${o.id}" ${ui.sel.has(o.id)?"checked":""} aria-label="Select ${o.id}"></td>
+      <td><input type="checkbox" data-sel="${o.id}" ${ui.sel.has(o.id)?"checked":""} aria-label="Select ${o.id}"></td>${(rowCells={},"")}
       ${td("id",`<span class="mono">${o.id}</span>${isMaster(o)?` ${pill("Master · "+o.children.length,"p-info")}`:o.masterId?`<div class="muted" style="font-size:11.5px">↳ in <span class="mono">${o.masterId}</span></div>`:""}`)}${td("svc",svcTag(o))}${td("customer",esc(c.name))}${td("lane",`<span class="mono">${o.origin} → ${o.dest}</span>${city(o.origin).cc!==city(o.dest).cc?' <span class="pill p-info">Cross-border</span>':""}`)}
       ${td("pickup",dt(o.pickupTs,X.tz),"num")}${td("promise",dt(o.deliverBy,X.tz),"num")}${td("weight",nfmt(o.weight)+" kg","r num")}${td("equip",esc(o.equip))}${td("status",`<span class="mono muted" style="font-size:11.5px">${fsCode(o)}</span> `+(isMaster(o)?pill(masterProgress(X,o).label,"p-info"):pill(o.status)))}${td("ft",`<span class="mono">${fileTypeOf(X,o)}</span>`)}${td("con",o.conNote?`<span class="mono">${o.conNote}</span>`:"–")}${td("code",codeChip(X,curCode(X,o)))}
-      ${td("sell",isMaster(o)?"–":money(o.sell,X.ccy),"r num")}${td("cost",isMaster(o)?"–":money(o.buy,X.ccy),"r num")}${td("margin",isMaster(o)?"–":`<span style="color:${m<X.guard?"var(--bad)":"inherit"}">${Math.round(m*100)}%</span>`,"r num")}${td("ref",`<span class="mono">${o.ref}</span>`)}
+      ${td("sell",isMaster(o)?"–":money(o.sell,X.ccy),"r num")}${td("cost",isMaster(o)?"–":money(o.buy,X.ccy),"r num")}${td("margin",isMaster(o)?"–":`<span style="color:${m<X.guard?"var(--bad)":"inherit"}">${Math.round(m*100)}%</span>`,"r num")}${td("ref",`<span class="mono">${o.ref}</span>`)}${Object.keys(COLS).map(k=>rowCells[k]||"").join("")}
     </tr>`}).join("")}</tbody></table></div>
    <div class="pager"><span>${t("showing")} ${total?ui.page*ui.size+1:0}–${Math.min(total,(ui.page+1)*ui.size)} ${t("of")} ${nfmt(total)}</span>
     <select id="pgSize" aria-label="Rows per page">${[25,50,100].map(n=>`<option ${ui.size===n?"selected":""}>${n}</option>`).join("")}</select>
