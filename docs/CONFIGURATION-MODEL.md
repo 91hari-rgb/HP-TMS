@@ -133,6 +133,20 @@ UN/LOCODE locations, delivery terms (Incoterms 2020), UN/ECE package codes, comm
 ## 8a. MDM: master data uploads via Excel (Phase 0)
 
 - **Entities:** customers, locations, carriers, vehicles (with drivers), drivers, commodities, equipment types, exchange rates. More are added by defining columns, rules and a match key.
+- **Sample file per master (download):** each master downloads its own .xlsx built for it:
+  - **Sheet 1:** that master's columns plus valid example rows. This is the sheet the uploader reads.
+  - **Instructions:** required / optional, format rule and an example for every column, plus the match key.
+  - **Allowed values:** valid codes for that master: locations, equipment types, carriers, plates, enumerations, currencies, countries.
+
+  *Download current data* exports the existing records in the same format. In the published page, downloads go through the `downloads` capability and the viewer confirms the save.
+- **Dry run and final run:**
+  - A **dry run** validates every row and simulates the upload (create / update / skip counts) without changing any data. It's recorded in the run history.
+  - The **final run** applies the valid rows (or submits them for approval). It stays locked until a dry run has passed on exactly the current data, file, mapping and mode; any edit needs a new dry run.
+- **Error capture and correction:**
+  - Every run stores its error rows with the original values and messages.
+  - Rows with errors open as editable forms with the failing cells highlighted. Changes re-validate immediately, and unwanted rows can be removed.
+  - *View & fix errors* in the run history reloads a run's error rows for correction and a new dry run.
+  - Error reports download as .xlsx (or copy to the clipboard).
 - **Template:** every entity has a column template with required fields, format rules and examples. *Copy template* pastes into Excel. *Copy current data* exports the existing records for an edit-and-reupload round trip.
 - **Input:** .xlsx / .xls (first sheet, first row = headers; Excel date cells understood), .csv / .tsv, or cells pasted straight from Excel.
 - **Column mapping:** columns are matched automatically by header name and synonyms (e.g. TRN / GSTIN / VAT ID → Tax ID), and can be overridden.
@@ -147,7 +161,7 @@ UN/LOCODE locations, delivery terms (Incoterms 2020), UN/ECE package codes, comm
   Rejected rows are skipped and listed in an error report you can paste into Excel.
 - **Four-eyes approval** (tenant setting): uploads wait as *Pending approval* until a second person approves them.
 - **Upload history:** batch ID, source file, counts created / updated / rejected, who uploaded and who approved. Every record change is audited, and each applied batch emits `mdm.batch_applied`.
-- **Sample files:** `demo/samples/*.xlsx` for the UAE tenant. They include deliberate errors to show validation.
+- **Sample files:** `demo/samples/HP-TMS_*_sample_GH.xlsx` are the downloaded templates for the UAE tenant. `*_with_errors.xlsx` contain deliberate mistakes to show validation and correction.
 
 ## 9. Coverage
 
