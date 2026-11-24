@@ -167,6 +167,12 @@ td.r,th.r{text-align:end}
 .lb-piece{font-size:15px}
 .lb-qr svg{width:84px;height:84px;display:block}
 .lnk:disabled{color:var(--muted);text-decoration:none;cursor:default}
+.code{font-family:var(--f-mono);font-size:11.5px;font-weight:600;border-radius:4px;padding:1px 6px;background:var(--sunk);color:var(--fg);white-space:nowrap}
+.code.c-info{background:var(--info-soft);color:var(--info)}.code.c-acc{background:var(--accent-soft);color:var(--warn)}.code.c-ok{background:var(--ok-soft);color:var(--ok)}.code.c-bad{background:var(--bad-soft);color:var(--bad)}
+.tchain{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.tchain i{font-style:normal;color:var(--muted)}
+.tnode{border:1px solid var(--line);border-radius:6px;padding:4px 8px;display:flex;flex-direction:column;font-size:12.5px;min-width:0}
+.tnode small{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
 .q-item{font-size:12px;font-family:var(--f-mono);padding:4px 0;border-bottom:1px dashed var(--line)}
 /* public tracking */
 .trk-head{border-radius:var(--r);padding:18px;color:#fff;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
@@ -209,7 +215,7 @@ td.r,th.r{text-align:end}
 <script>
 /* ---------------- i18n ---------------- */
 const I18N = {
- en:{dashboard:"Dashboard",orders:"Orders",planning:"Planning",tracking:"Control tower",driver:"Driver app",track:"Customer tracking",admin:"Admin & audit",finance:"Finance & billing",receivables:"Receivables (AR)",payables:"Payables (AP)",master:"Master data",reports:"Reports",unbilled:"Unbilled",invoices:"Customer invoices",aging:"Receivables aging",freightAudit:"Freight audit",profitability:"Profitability",rateCards:"Rate cards & charges",
+ en:{dashboard:"Dashboard",orders:"Orders",planning:"Planning",tracking:"Control tower",driver:"Driver app",track:"Customer tracking",admin:"Admin & audit",finance:"Finance & billing",trace:"Track & trace",receivables:"Receivables (AR)",payables:"Payables (AP)",master:"Master data",reports:"Reports",unbilled:"Unbilled",invoices:"Customer invoices",aging:"Receivables aging",freightAudit:"Freight audit",profitability:"Profitability",rateCards:"Rate cards & charges",
   office:"Office",field:"Field & customer",tenant:"Tenant",language:"Language",
   shipmentsActive:"Active shipments",inTransit:"In transit",onTime:"On-time delivery",podPending:"POD pending",exceptions:"Open exceptions",revenue:"Revenue (month)",margin:"Gross margin",unplanned:"Unplanned orders",
   byStatus:"Orders by status",topLanes:"Top lanes by revenue",atRisk:"At-risk shipments",liveMap:"Live map",
@@ -220,7 +226,7 @@ const I18N = {
   offline:"Offline",online:"Online",airplane:"Airplane mode",queued:"queued",synced:"Synced",
   users:"Users",roles:"Roles & permissions",audit:"Audit log",events:"Domain events",isolation:"Tenant isolation",
   save:"Save",cancel:"Cancel",confirmOrder:"Confirm order",close:"Close"},
- ar:{dashboard:"لوحة المعلومات",orders:"الطلبات",planning:"التخطيط",tracking:"برج المراقبة",driver:"تطبيق السائق",track:"تتبع العميل",admin:"الإدارة والتدقيق",finance:"المالية والفوترة",receivables:"الذمم المدينة",payables:"الذمم الدائنة",master:"البيانات الرئيسية",reports:"التقارير",unbilled:"غير مفوتر",invoices:"فواتير العملاء",aging:"أعمار الذمم",freightAudit:"تدقيق الشحن",profitability:"الربحية",rateCards:"جداول الأسعار والرسوم",
+ ar:{dashboard:"لوحة المعلومات",orders:"الطلبات",planning:"التخطيط",tracking:"برج المراقبة",driver:"تطبيق السائق",track:"تتبع العميل",admin:"الإدارة والتدقيق",finance:"المالية والفوترة",trace:"التتبع والتعقب",receivables:"الذمم المدينة",payables:"الذمم الدائنة",master:"البيانات الرئيسية",reports:"التقارير",unbilled:"غير مفوتر",invoices:"فواتير العملاء",aging:"أعمار الذمم",freightAudit:"تدقيق الشحن",profitability:"الربحية",rateCards:"جداول الأسعار والرسوم",
   office:"المكتب",field:"الميدان والعملاء",tenant:"المستأجر",language:"اللغة",
   shipmentsActive:"الشحنات النشطة",inTransit:"قيد النقل",onTime:"التسليم في الموعد",podPending:"إثبات التسليم معلق",exceptions:"استثناءات مفتوحة",revenue:"الإيرادات (الشهر)",margin:"الهامش الإجمالي",unplanned:"طلبات غير مخططة",
   byStatus:"الطلبات حسب الحالة",topLanes:"أعلى المسارات إيراداً",atRisk:"شحنات معرضة للتأخير",liveMap:"الخريطة المباشرة",
@@ -231,7 +237,7 @@ const I18N = {
   offline:"غير متصل",online:"متصل",airplane:"وضع الطيران",queued:"في الانتظار",synced:"تمت المزامنة",
   users:"المستخدمون",roles:"الأدوار والصلاحيات",audit:"سجل التدقيق",events:"أحداث النظام",isolation:"عزل المستأجرين",
   save:"حفظ",cancel:"إلغاء",confirmOrder:"تأكيد الطلب",close:"إغلاق"},
- hi:{dashboard:"डैशबोर्ड",orders:"ऑर्डर",planning:"योजना",tracking:"कंट्रोल टावर",driver:"ड्राइवर ऐप",track:"ग्राहक ट्रैकिंग",admin:"एडमिन और ऑडिट",finance:"वित्त और बिलिंग",receivables:"प्राप्य (AR)",payables:"देय (AP)",master:"मास्टर डेटा",reports:"रिपोर्ट",unbilled:"बिना बिल",invoices:"ग्राहक चालान",aging:"प्राप्य एजिंग",freightAudit:"फ्रेट ऑडिट",profitability:"लाभप्रदता",rateCards:"रेट कार्ड और शुल्क",
+ hi:{dashboard:"डैशबोर्ड",orders:"ऑर्डर",planning:"योजना",tracking:"कंट्रोल टावर",driver:"ड्राइवर ऐप",track:"ग्राहक ट्रैकिंग",admin:"एडमिन और ऑडिट",finance:"वित्त और बिलिंग",trace:"ट्रैक और ट्रेस",receivables:"प्राप्य (AR)",payables:"देय (AP)",master:"मास्टर डेटा",reports:"रिपोर्ट",unbilled:"बिना बिल",invoices:"ग्राहक चालान",aging:"प्राप्य एजिंग",freightAudit:"फ्रेट ऑडिट",profitability:"लाभप्रदता",rateCards:"रेट कार्ड और शुल्क",
   office:"कार्यालय",field:"फील्ड और ग्राहक",tenant:"टेनेंट",language:"भाषा",
   shipmentsActive:"सक्रिय शिपमेंट",inTransit:"रास्ते में",onTime:"समय पर डिलीवरी",podPending:"POD लंबित",exceptions:"खुले अपवाद",revenue:"राजस्व (माह)",margin:"सकल मार्जिन",unplanned:"अनियोजित ऑर्डर",
   byStatus:"स्थिति के अनुसार ऑर्डर",topLanes:"राजस्व के अनुसार शीर्ष लेन",atRisk:"जोखिम वाले शिपमेंट",liveMap:"लाइव मैप",
@@ -388,7 +394,7 @@ function buildTenant(key){
     const eq=pick(r,eqWeights), cap=EQUIP[eq];
     const wt=Math.round((cap.kg*(.25+r()*.6))/10)*10, pal=cap.pal?Math.max(1,Math.round(cap.pal*(.2+r()*.7))):0;
     const past = ["Invoiced","POD received","Delivered","Cancelled"].includes(s);
-    const pickupTs = s==="Invoiced" ? NOW0-(14+r()*85)*DAY : past ? NOW0-(2+r()*12)*DAY : ["In transit","Dispatched"].includes(s) ? NOW0-(r()*10)*HOUR : NOW0+(r()*5+.5)*DAY;
+    const pickupTs = s==="Invoiced" ? NOW0-(14+r()*85)*DAY : past ? NOW0-(2+r()*12)*DAY : s==="In transit" ? NOW0-(1.5+r()*8)*HOUR : s==="Dispatched" ? NOW0+(r()*6)*HOUR : NOW0+(r()*5+.5)*DAY;
     const q=quote(T,o.code,d.code,eq);
     const cust=pick(r,custs);
     const ord={id:nextOrderId(T,pickupTs),customerId:cust.id,ref:"PO-"+(40000+Math.floor(r()*59999)),origin:o.code,dest:d.code,equip:eq,weight:wt,pallets:pal,
@@ -418,13 +424,13 @@ function buildTenant(key){
     let vi=free.findIndex(v=>v.equip===o.equip&&v.kg>=o.weight); if(vi<0) vi=free.findIndex(v=>v.kg>=o.weight); if(vi<0){o.status="Confirmed";return}
     const v=free.splice(vi,1)[0];
     const trip={id:`${D.prefix}-TRP-${String(++T.tripSeq).padStart(4,"0")}`,vehicleId:v.id,driverId:v.driverId,orderIds:[o.id],from:o.origin,to:o.dest,
-      ms:o.status==="In transit"?3:0,progress:o.status==="In transit"?.08+r()*.8:0,startTs:o.pickupTs};
+      ms:o.status==="In transit"?4:0,progress:o.status==="In transit"?.08+r()*.8:0,startTs:o.pickupTs};
     // make a few late: deadline already tight
-    if(o.status==="In transit" && r()<.3) o.deliverBy=NOW0+(1-trip.progress)*o.km/80*HOUR-1.5*HOUR;
-    o.tripId=trip.id; o.carrierId=v.owner; recalc(T,o); T.trips.push(trip);
+    if(o.status==="In transit"){const eta=NOW0+(1-trip.progress)*o.km/70*HOUR; o.deliverBy=r()<.3?eta-1.5*HOUR:Math.max(o.deliverBy,eta+(1+r()*4)*HOUR)}
+    o.tripId=trip.id; o.ms=trip.ms; o.carrierId=v.owner; recalc(T,o); T.trips.push(trip);
   });
   // exceptions
-  T.trips.filter(tr=>tr.ms===3).slice(0,3).forEach((tr,i)=>T.exceptions.push({id:"EX-"+(101+i),tripId:tr.id,type:["Delay: traffic","Breakdown: tyre","Delay: border queue"][i],severity:["Medium","High","Medium"][i],owner:D.users[2]?.[0]||D.users[0][0],openedTs:NOW0-(i+1)*55*60e3,slaMin:[60,30,120][i]}));
+  T.trips.filter(tr=>tr.ms===4).slice(0,3).forEach((tr,i)=>T.exceptions.push({id:"EX-"+(101+i),tripId:tr.id,type:["Delay: traffic","Breakdown: tyre","Delay: border queue"][i],severity:["Medium","High","Medium"][i],owner:D.users[2]?.[0]||D.users[0][0],openedTs:NOW0-(i+1)*55*60e3,slaMin:[60,30,120][i]}));
   // customer invoices: consolidate "Invoiced" orders per customer by billing cycle
   const groups={};
   T.orders.filter(o=>o.status==="Invoiced").forEach(o=>{const c=T.parties.find(p=>p.id===o.customerId);const d=new Date(o.pod.ts);
@@ -466,6 +472,8 @@ function buildTenant(key){
   // roles
   T.roles=ROLE_NAMES.map((n,i)=>({id:"R"+(i+1),name:n,system:true,perms:defaultPerms(n)}));
   T.users=D.users.map(([n,role],i)=>({id:"U"+(i+1),name:n,email:n.toLowerCase().replace(/[^a-z]+/g,".")+"@"+(key==="gulf"?"gulfhaul.ae":"indusfreight.in"),role,scope:i===1?(key==="gulf"?"Branch: Jebel Ali":"Branch: Bhiwandi"):"Tenant",mfa:i<3||role==="Tenant admin",status:"Active"}));
+  T.tt=JSON.parse(JSON.stringify(TT_BASE));
+  T.orders.forEach(o=>seedTrace(T,o,r));
   // seed a few historical events
   T.events.push({ts:NOW0-2*HOUR,type:"tenant.seeded",agg:T.short,info:`${n} orders, ${T.vehicles.length} vehicles, ${custs.length} customers`});
   return T;
@@ -565,12 +573,14 @@ function createTrip(X,orders,v){
   const tripKm=prev.tripKm, totW=prev.totW, stops=prev.stops, longest=orders.find(o=>o.km===tripKm);
   const trip={id:`${X.prefix}-TRP-${pad4(++X.tripSeq)}`,vehicleId:v.id,driverId:v.driverId,orderIds:orders.map(o=>o.id),from:orders[0].origin,to:longest.dest,ms:0,progress:0,startTs:Date.now(),consolidated:orders.length>1,stops,sep:prev.sep,con:prev.con};
   X.trips.push(trip);
+  orders.forEach(o=>{o.tripId=trip.id;trace(X,o,"PLN-ASG","Planner",{note:orders.length>1?`Consolidated: ${trip.id}, ${orders.length} orders`:trip.id})});
   orders.forEach(o=>{audit(o.id,"status",o.status,"Dispatched");o.status="Dispatched";o.tripId=trip.id;o.ms=0;o.carrierId=v.owner||null;
     if(orders.length>1){o.share=o.weight/totW;o.tripKm=tripKm;o.stops=stops}recalc(X,o)});
   emit("trip.created",trip.id,`${orders.length} order(s), ${v.plate}`);
   if(orders.length>1) emit("shipment.consolidated",trip.id,`${orders.map(o=>o.id).join(", ")} · ${stops} stops · saves ${money2(prev.sep-prev.con,X.ccy)}`);
   emit("cost.accrued",trip.id,`${v.owner?X.parties.find(p=>p.id===v.owner).name:"Own fleet"} · ${money2(orders.reduce((s,o)=>s+o.buy,0),X.ccy)}`);
   emit("trip.dispatched",trip.id,`Pushed to driver app: ${X.drivers.find(d=>d.id===v.driverId).name}`);
+  traceTrip(X,trip,"TRP-DSP","Planner",{note:`${v.plate} · ${X.drivers.find(d=>d.id===v.driverId).name}`});
   return trip;}
 
 /* ---------------- billing (AR) ---------------- */
@@ -582,7 +592,7 @@ function makeInvoice(X,custId,orders,issueTs){
   const net=round2(lines.reduce((s,l)=>s+l.net,0)), tax=round2(Object.values(g).reduce((s,x)=>s+x.tax,0)), d=new Date(issueTs);
   const inv={id:`${X.prefix}-INV-${String(d.getUTCFullYear()).slice(2)}${String(d.getUTCMonth()+1).padStart(2,"0")}-${pad4(++X.invSeq)}`,customerId:custId,lines,taxGroups:Object.values(g),net,tax,total:round2(net+tax),
     issueTs,dueTs:issueTs+c.terms*DAY,paid:0,payments:[],credits:[],disputes:[]};
-  orders.forEach(o=>{o.invoiceId=inv.id;o.status="Invoiced"});
+  orders.forEach(o=>{o.invoiceId=inv.id;o.status="Invoiced";if(!SEEDING)trace(X,o,"INV-ISS","Billing",{note:inv.id})});
   X.invoices.unshift(inv); return inv;
 }
 const invBalance = inv => {const b=round2(inv.total-inv.paid-inv.credits.reduce((s,c)=>s+c.total,0));return Math.abs(b)<0.005?0:b};
@@ -644,7 +654,75 @@ function carrierStats(X,k){const os=X.orders.filter(o=>o.carrierId===k.id), del=
     spend:os.filter(o=>!["Cancelled","Draft"].includes(o.status)).reduce((s,o)=>s+o.buy,0),
     open:X.carrierInvoices.filter(c=>c.carrierId===k.id&&!c.paidTs).reduce((s,c)=>s+ciState(X,c).inv,0),fleet:X.vehicles.filter(v=>v.owner===k.id).length}}
 
+
+/* ---------------- TRACK & TRACE: status code master + event log ---------------- */
+let SEEDING=true;
+const TT_CATS={"Order":"c-info","Planning":"c-info","Trip":"c-acc","Pickup":"c-acc","In transit":"c-acc","Exception":"c-bad","Delivery":"c-ok","Billing":"c-ok","Warehouse":"","Notification":""};
+const TT_BASE=[
+ {code:"ORD-CRT",name:"Order created",cat:"Order",x12:"",cust:false,notify:false,status:true,src:"Portal, API, EDI 204, email, manual"},
+ {code:"ORD-CNF",name:"Order confirmed",cat:"Order",x12:"",cust:true,notify:true,status:true,custLabel:"Booking confirmed",src:"System, manual"},
+ {code:"ORD-HLD",name:"Order on hold",cat:"Order",x12:"",cust:false,notify:false,status:true,src:"Manual, credit check, margin guardrail"},
+ {code:"ORD-CAN",name:"Order cancelled",cat:"Order",x12:"",cust:true,notify:true,status:true,custLabel:"Booking cancelled",src:"Manual, portal"},
+ {code:"PLN-ASG",name:"Planned on a trip",cat:"Planning",x12:"",cust:false,notify:false,status:true,src:"Planner, optimiser"},
+ {code:"LBL-PRT",name:"Labels printed",cat:"Warehouse",x12:"",cust:false,notify:false,status:false,src:"Label service"},
+ {code:"TRP-DSP",name:"Trip dispatched to driver",cat:"Trip",x12:"",cust:false,notify:false,status:true,src:"Planner, dispatcher"},
+ {code:"TRP-ACC",name:"Driver accepted trip",cat:"Trip",x12:"",cust:false,notify:false,status:true,src:"Driver app, carrier portal"},
+ {code:"PU-ARR",name:"Arrived at pickup",cat:"Pickup",x12:"X3",cust:true,notify:false,status:true,custLabel:"Truck arrived for collection",src:"Driver app, geofence, telematics"},
+ {code:"PU-LDD",name:"Loaded",cat:"Pickup",x12:"CP",cust:false,notify:false,status:true,src:"Driver app, WMS"},
+ {code:"PU-DEP",name:"Departed pickup",cat:"Pickup",x12:"AF",cust:true,notify:true,status:true,custLabel:"Collected and on the way",src:"Driver app, geofence, telematics"},
+ {code:"INT-POS",name:"Position update",cat:"In transit",x12:"X6",cust:false,notify:false,status:false,src:"Telematics, driver app GPS"},
+ {code:"BRD-OUT",name:"Cleared exit border",cat:"In transit",x12:"",cust:true,notify:false,status:true,custLabel:"Cleared export border",src:"Telematics, customs feed, manual"},
+ {code:"BRD-IN",name:"Cleared entry border",cat:"In transit",x12:"",cust:true,notify:true,status:true,custLabel:"Cleared import border",src:"Telematics, customs feed, manual"},
+ {code:"EXC-DLY",name:"Delayed",cat:"Exception",x12:"SD",cust:true,notify:true,status:true,custLabel:"Delayed: new ETA to follow",src:"Driver app, control tower, ETA engine"},
+ {code:"EXC-BRK",name:"Vehicle breakdown",cat:"Exception",x12:"SD",cust:false,notify:false,status:true,src:"Driver app, telematics"},
+ {code:"EXC-CLR",name:"Exception resolved",cat:"Exception",x12:"",cust:false,notify:false,status:true,src:"Control tower"},
+ {code:"NTF-ETA",name:"ETA sent to customer",cat:"Notification",x12:"AG",cust:false,notify:false,status:false,src:"Control tower, rules engine"},
+ {code:"DL-ARR",name:"Arrived at delivery",cat:"Delivery",x12:"X1",cust:true,notify:true,status:true,custLabel:"Truck arrived at delivery address",src:"Driver app, geofence, telematics"},
+ {code:"DL-POD",name:"Delivered, POD captured",cat:"Delivery",x12:"D1",cust:true,notify:true,status:true,custLabel:"Delivered",src:"Driver app, carrier portal, EDI 214"},
+ {code:"INV-ISS",name:"Customer invoiced",cat:"Billing",x12:"",cust:false,notify:false,status:true,src:"Billing"}
+];
+const TRIP_CODE=["TRP-DSP","TRP-ACC","PU-ARR","PU-LDD","PU-DEP","DL-ARR","DL-POD"];
+const ttDef=(X,code)=>X.tt.find(d=>d.code===code)||{code,name:code,cat:"Order",x12:"",cust:false,status:true};
+function codeChip(X,code,title){if(!code)return "–";const d=ttDef(X,code);return `<span class="code ${TT_CATS[d.cat]||""}" title="${esc(title||d.name)}">${esc(code)}</span>`}
+function trace(X,o,code,src,extra={}){
+  o.trace=o.trace||[];if(code==="INT-POS")o.trace=o.trace.filter(e=>e.code!=="INT-POS");const ev={ts:extra.ts||Date.now(),code,src,by:extra.by||(SEEDING?"System":ME().name),loc:extra.loc||null,note:extra.note||"",tripId:o.tripId||null};
+  o.trace.push(ev);o.trace.sort((a,b)=>a.ts-b.ts);
+  const d=ttDef(X,code);
+  if(!SEEDING&&d.notify&&d.cust){X.events.unshift({ts:Date.now(),type:"notification.queued",agg:o.id,info:`“${d.custLabel||d.name}” to customer by email and WhatsApp`})}
+  return ev;}
+function traceTrip(X,tr,code,src,extra={}){tr.orderIds.forEach(id=>{const o=X.orders.find(x=>x.id===id);if(o)trace(X,o,code,src,extra)})}
+function curCode(X,o){const ev=(o.trace||[]).filter(e=>ttDef(X,e.code).status!==false);return ev.length?ev[ev.length-1].code:null}
+function tripCode(X,tr){const ex=X.exceptions.find(e=>e.tripId===tr.id&&!e.closed);return {code:TRIP_CODE[Math.min(tr.ms,6)],ex:ex?(/Breakdown/.test(ex.type)?"EXC-BRK":"EXC-DLY"):null}}
+const gpsOf=c=>`${c.lat.toFixed(4)},${c.lon.toFixed(4)}`;
+function seedTrace(T,o,r){
+  const tr=T.trips.find(t=>t.id===o.tripId), a=T.cityByCode[o.origin], b=T.cityByCode[o.dest], P=o.pickupTs, ev=[];
+  const planner=T.users[1]?.name||"Planner", drvName=tr?T.drivers.find(d=>d.id===tr.driverId).name:"Driver";
+  const add=(code,ts,src,extra={})=>{if(ts<=NOW0)ev.push({ts,code,src,by:extra.by||({"Planner":planner,"Driver app":drvName,"Manual entry":T.users[3]?.name||planner}[src]||src),loc:extra.loc||null,note:extra.note||"",tripId:o.tripId||null})};
+  add("ORD-CRT",o.createdTs,pick(r,["Customer portal","API","Manual entry","EDI 204","Email + AI capture"]),{note:`PO ${o.ref}`});
+  if(o.status!=="Draft"){
+    add("ORD-CNF",o.createdTs+.5*HOUR,"System");
+    if(o.status==="Cancelled") add("ORD-CAN",o.createdTs+12*HOUR,"Manual entry",{note:"Customer cancelled the booking"});
+    else if(o.status==="On hold") add("ORD-HLD",o.createdTs+HOUR,"Manual entry",{note:"Credit check: limit reached"});
+    else if(o.status!=="Confirmed"){
+      const ms=tr?tr.ms:o.ms;
+      add("PLN-ASG",P-14*HOUR,"Planner",{note:tr?tr.id:""});add("LBL-PRT",P-13.5*HOUR,"Label service",{note:`${Math.max(1,o.pallets)} labels`});add("TRP-DSP",P-13*HOUR,"Planner");
+      if(ms>=1) add("TRP-ACC",P-12*HOUR,"Driver app");
+      if(ms>=2) add("PU-ARR",P-.4*HOUR,"Geofence",{loc:gpsOf(a)});
+      if(ms>=3) add("PU-LDD",P+.3*HOUR,"Driver app",{loc:gpsOf(a),note:`${Math.max(1,o.pallets)} pieces scanned`});
+      if(ms>=4) add("PU-DEP",P+.5*HOUR,"Driver app",{loc:gpsOf(a)});
+      if(ms>=4&&a.cc!==b.cc&&(ms>=5||(tr&&tr.progress>.5))){const t0=P+.5*HOUR+(o.km*.45/60)*HOUR;add("BRD-OUT",t0,"Customs feed",{loc:"Al Ghuwaifat (UAE exit)"});add("BRD-IN",t0+2.5*HOUR,"Customs feed",{loc:"Al Batha (KSA entry)"})}
+      if(tr&&tr.ms===4){const la=a.lat+(b.lat-a.lat)*tr.progress,lo=a.lon+(b.lon-a.lon)*tr.progress;add("INT-POS",NOW0-8*60e3,"Telematics",{loc:`${la.toFixed(4)},${lo.toFixed(4)}`})}
+      T.exceptions.filter(e=>e.tripId===o.tripId).forEach(e=>add(/Breakdown/.test(e.type)?"EXC-BRK":"EXC-DLY",e.openedTs,"Driver app",{note:e.type}));
+      if(ms>=5) add("DL-ARR",o.pod?o.pod.ts-.5*HOUR:P+(o.km/60+.5)*HOUR,"Geofence",{loc:gpsOf(b)});
+      if(o.pod) add("DL-POD",o.pod.ts,"Driver app",{loc:gpsOf(b),note:`Received by ${o.pod.name} · ${Math.max(1,o.pallets)} pieces scanned`});
+      if(o.invoiceId){const inv=T.invoices.find(i=>i.id===o.invoiceId);if(inv) add("INV-ISS",inv.issueTs,"Billing",{note:inv.id})}
+    }
+  }
+  o.trace=ev.sort((x,y)=>x.ts-y.ts);
+}
+
 const TENANTS = {gulf:buildTenant("gulf"), indus:buildTenant("indus")};
+SEEDING=false;
 CUR_EQ=TENANTS.gulf.equip;
 let tenantKey="gulf";
 const T = () => TENANTS[tenantKey];
@@ -661,17 +739,18 @@ const ICONS = {
  tracking:'<circle cx="12" cy="10" r="3"/><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/>',
  driver:'<rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/>',
  track:'<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+ trace:'<circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.5 6H15a3 3 0 0 1 0 6H9a3 3 0 0 0 0 6h6.5"/>',
  receivables:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M12 12.5v5M9.5 15l2.5 2.5 2.5-2.5"/>',
  payables:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M12 17.5v-5M9.5 15l2.5-2.5 2.5 2.5"/>',
  master:'<ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/>',
  reports:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
  admin:'<path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/><path d="M9 12l2 2 4-4"/>'
 };
-const ROUTES=["dashboard","orders","planning","tracking","receivables","payables","master","reports","driver","track","admin"];
+const ROUTES=["dashboard","orders","planning","tracking","trace","receivables","payables","master","reports","driver","track","admin"];
 function route(){const h=location.hash.slice(1);return ROUTES.includes(h)?h:"dashboard"}
 function renderNav(){
   const cur=route(); const link=k=>`<a href="#${k}" ${cur===k?'aria-current="page"':""}><svg viewBox="0 0 24 24">${ICONS[k]}</svg><span>${t(k)}</span></a>`;
-  $("#nav").innerHTML=`<div class="nav-sep">${t("office")}</div>${["dashboard","orders","planning","tracking","receivables","payables","master","reports","admin"].map(link).join("")}<div class="nav-sep">${t("field")}</div>${["driver","track"].map(link).join("")}`;
+  $("#nav").innerHTML=`<div class="nav-sep">${t("office")}</div>${["dashboard","orders","planning","tracking","trace","receivables","payables","master","reports","admin"].map(link).join("")}<div class="nav-sep">${t("field")}</div>${["driver","track"].map(link).join("")}`;
   $("#tenantName").textContent=T().short;
   $("#sideFoot").innerHTML=`${esc(ME().name)} · ${esc(ME().role)}<br>Region: ${esc(T().region)}<br>Demo build · sample data`;
   $("#lblTenant").textContent=t("tenant"); $("#lblLang").textContent=t("language");
@@ -692,7 +771,7 @@ const cust=id=>T().parties.find(p=>p.id===id);
 const veh=id=>T().vehicles.find(v=>v.id===id);
 const drvr=id=>T().drivers.find(d=>d.id===id);
 const tripOf=o=>T().trips.find(tr=>tr.id===o.tripId);
-function etaOf(trip){const o=T().orders.find(x=>x.id===trip.orderIds[0]);const remKm=o.km*(1-trip.progress);const base=trip.ms<3?Math.max(Date.now(),o.pickupTs)+2*HOUR:Date.now();return base+remKm/70*HOUR}
+function etaOf(trip){const o=T().orders.find(x=>x.id===trip.orderIds[0]);const remKm=o.km*(1-trip.progress);const base=trip.ms<4?Math.max(Date.now(),o.pickupTs)+2*HOUR:Date.now();return base+remKm/70*HOUR}
 function riskOf(trip){const o=T().orders.find(x=>x.id===trip.orderIds[0]);const eta=etaOf(trip);const slack=(o.deliverBy-eta)/HOUR;
   const ex=T().exceptions.find(e=>e.tripId===trip.id&&!e.closed);let score=slack<0?80+Math.min(19,-slack*5):slack<2?55:15; if(ex) score=Math.max(score,ex.severity==="High"?90:65);
   return {score:Math.round(score),late:slack<0,slack,ex}}
@@ -712,7 +791,7 @@ function mapSVG(opts={}){
   trips.forEach(tr=>{const a=city(tr.from),b=city(tr.to);const [x1,y1]=P(a.lat,a.lon),[x2,y2]=P(b.lat,b.lon);g+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--map-lane)" stroke-width="1.2" stroke-dasharray="4 4"/>`});
   cs.forEach(c=>{const [x,y]=P(c.lat,c.lon);g+=`<circle cx="${x}" cy="${y}" r="4" fill="var(--panel)" stroke="var(--fg)" stroke-width="1.5"/><text x="${x+7}" y="${y-6}"><title>${esc(c.name)}</title>${esc(c.code)}</text>`});
   trips.forEach(tr=>{const a=city(tr.from),b=city(tr.to);const lat=a.lat+(b.lat-a.lat)*tr.progress, lon=a.lon+(b.lon-a.lon)*tr.progress;const [x,y]=P(lat,lon);
-    const r=riskOf(tr);const col=tr.ms<3?"var(--info)":r.score>=75?"var(--bad)":r.score>=50?"var(--warn)":"var(--ok)";const hl=opts.highlight===tr.id;
+    const r=riskOf(tr);const col=tr.ms<4?"var(--info)":r.score>=75?"var(--bad)":r.score>=50?"var(--warn)":"var(--ok)";const hl=opts.highlight===tr.id;
     g+=`<g><circle cx="${x}" cy="${y}" r="${hl?11:7}" fill="${col}" stroke="var(--panel)" stroke-width="2"/>${hl?`<text x="${x+13}" y="${y+4}" style="fill:var(--fg);font-weight:600">${esc(veh(tr.vehicleId).plate)}</text>`:""}<title>${esc(tr.id)} · ${esc(veh(tr.vehicleId).plate)}</title></g>`});
   return g+"</svg>";
 }
@@ -766,15 +845,15 @@ const kpi=(l,v,s)=>`<div class="panel kpi"><span class="l">${l}</span><span clas
 function bindOrderClicks(){document.querySelectorAll("[data-order]").forEach(el=>el.addEventListener("click",()=>openOrder(el.dataset.order)))}
 
 /* ---------------- ORDERS ---------------- */
-const ui={q:"",status:"",sort:"pickupTs",dir:-1,page:0,size:25,sel:new Set(),cols:new Set(["id","svc","customer","lane","pickup","promise","weight","status","sell","margin"]),svc:""};
-const COLS={id:"order",svc:"Service",customer:"customer",promise:"Promised by",lane:"Lane",pickup:"pickup",weight:"weight",equip:"Equipment",status:"status",sell:"sell",cost:"cost",margin:"marginCol",ref:"Customer ref"};
+const ui={q:"",status:"",sort:"pickupTs",dir:-1,page:0,size:25,sel:new Set(),cols:new Set(["id","svc","customer","lane","pickup","promise","weight","status","code","sell","margin"]),svc:""};
+const COLS={id:"order",svc:"Service",customer:"customer",promise:"Promised by",lane:"Lane",pickup:"pickup",weight:"weight",equip:"Equipment",status:"status",code:"Status code",sell:"sell",cost:"cost",margin:"marginCol",ref:"Customer ref"};
 VIEWS.orders=function(){
   const X=T(); let rows=X.orders.filter(o=>{
     if(ui.status && o.status!==ui.status) return false;
     if(ui.svc && o.svc!==ui.svc) return false;
     if(!ui.q) return true; const q=ui.q.toLowerCase();
     return [o.id,o.ref,cust(o.customerId).name,city(o.origin).name,city(o.dest).name,o.origin,o.dest].some(s=>s.toLowerCase().includes(q))});
-  const key={id:o=>o.id,customer:o=>cust(o.customerId).name,lane:o=>o.origin+o.dest,pickup:o=>o.pickupTs,weight:o=>o.weight,equip:o=>o.equip,status:o=>STATUS_ORDER.indexOf(o.status),sell:o=>o.sell,cost:o=>o.buy,margin:o=>(o.sell-o.buy)/o.sell,ref:o=>o.ref,pickupTs:o=>o.pickupTs,svc:o=>Object.keys(SERVICE).indexOf(o.svc),promise:o=>o.deliverBy}[ui.sort];
+  const key={id:o=>o.id,customer:o=>cust(o.customerId).name,lane:o=>o.origin+o.dest,pickup:o=>o.pickupTs,weight:o=>o.weight,equip:o=>o.equip,status:o=>STATUS_ORDER.indexOf(o.status),code:o=>curCode(T(),o)||"",sell:o=>o.sell,cost:o=>o.buy,margin:o=>(o.sell-o.buy)/o.sell,ref:o=>o.ref,pickupTs:o=>o.pickupTs,svc:o=>Object.keys(SERVICE).indexOf(o.svc),promise:o=>o.deliverBy}[ui.sort];
   rows.sort((a,b)=>{const x=key(a),y=key(b);return (x>y?1:x<y?-1:0)*ui.dir});
   const total=rows.length, pages=Math.max(1,Math.ceil(total/ui.size)); ui.page=Math.min(ui.page,pages-1);
   const pageRows=rows.slice(ui.page*ui.size,(ui.page+1)*ui.size);
@@ -802,7 +881,7 @@ VIEWS.orders=function(){
     <tbody>${pageRows.map(o=>{const c=cust(o.customerId),m=(o.sell-o.buy)/o.sell;return `<tr class="click" data-order="${o.id}">
       <td><input type="checkbox" data-sel="${o.id}" ${ui.sel.has(o.id)?"checked":""} aria-label="Select ${o.id}"></td>
       ${td("id",`<span class="mono">${o.id}</span>`)}${td("svc",svcTag(o))}${td("customer",esc(c.name))}${td("lane",`<span class="mono">${o.origin} → ${o.dest}</span>${city(o.origin).cc!==city(o.dest).cc?' <span class="pill p-info">Cross-border</span>':""}`)}
-      ${td("pickup",dt(o.pickupTs,X.tz),"num")}${td("promise",dt(o.deliverBy,X.tz),"num")}${td("weight",nfmt(o.weight)+" kg","r num")}${td("equip",esc(o.equip))}${td("status",pill(o.status))}
+      ${td("pickup",dt(o.pickupTs,X.tz),"num")}${td("promise",dt(o.deliverBy,X.tz),"num")}${td("weight",nfmt(o.weight)+" kg","r num")}${td("equip",esc(o.equip))}${td("status",pill(o.status))}${td("code",codeChip(X,curCode(X,o)))}
       ${td("sell",money(o.sell,X.ccy),"r num")}${td("cost",money(o.buy,X.ccy),"r num")}${td("margin",`<span style="color:${m<X.guard?"var(--bad)":"inherit"}">${Math.round(m*100)}%</span>`,"r num")}${td("ref",`<span class="mono">${o.ref}</span>`)}
     </tr>`}).join("")}</tbody></table></div>
    <div class="pager"><span>${t("showing")} ${total?ui.page*ui.size+1:0}–${Math.min(total,(ui.page+1)*ui.size)} ${t("of")} ${nfmt(total)}</span>
@@ -820,7 +899,7 @@ VIEWS.orders=function(){
   $("#pgSize").onchange=e=>{ui.size=+e.target.value;ui.page=0;VIEWS.orders()};
   $("#pgPrev").onclick=()=>{ui.page--;VIEWS.orders()}; $("#pgNext").onclick=()=>{ui.page++;VIEWS.orders()};
   $("#newOrder").onclick=openNewOrder;
-  $("#bulkHold").onclick=()=>{let n=0;ui.sel.forEach(id=>{const o=X.orders.find(x=>x.id===id);if(o&&["Draft","Confirmed"].includes(o.status)){audit(o.id,"status",o.status,"On hold");emit("order.on_hold",o.id,"Bulk action");o.status="On hold";n++}});ui.sel.clear();toast(`${n} order(s) put on hold. Only Draft or Confirmed orders can be held.`);VIEWS.orders()};
+  $("#bulkHold").onclick=()=>{let n=0;ui.sel.forEach(id=>{const o=X.orders.find(x=>x.id===id);if(o&&["Draft","Confirmed"].includes(o.status)){audit(o.id,"status",o.status,"On hold");emit("order.on_hold",o.id,"Bulk action");trace(X,o,"ORD-HLD","Manual entry",{note:"Bulk action"});o.status="On hold";n++}});ui.sel.clear();toast(`${n} order(s) put on hold. Only Draft or Confirmed orders can be held.`);VIEWS.orders()};
   bindOrderClicks();
 };
 
@@ -879,7 +958,7 @@ function openNewOrder(){
     const low=r.m<X.guard;
     const o={...r.tmp,id:nextOrderId(X,pickupTs),ref:$("#no-ref").value,weight:r.w,pallets:r.pal,pickupTs,deliverBy:slaDeadline(X,r.tmp.svc,pickupTs,r.tmp.km),
       status:low?"On hold":"Confirmed",holdReason:low?`Margin ${Math.round(r.m*100)}% is below the ${Math.round(X.guard*100)}% guardrail. Finance must approve before planning.`:null,tripId:null,pod:null,createdTs:Date.now(),ms:0};
-    recalc(X,o); X.orders.unshift(o);
+    recalc(X,o); X.orders.unshift(o); trace(X,o,"ORD-CRT","Manual entry",{note:`PO ${o.ref}`}); trace(X,o,low?"ORD-HLD":"ORD-CNF",low?"Margin guardrail":"System",{note:low?o.holdReason:""});
     audit(o.id,"(created)","",`${o.status} · ${money2(o.sell,X.ccy)} excl. tax`); emit("order.created",o.id,`${o.origin}→${o.dest}, ${nfmt(o.weight)} kg`);
     emit(low?"order.margin_approval_requested":"order.confirmed",o.id,`Margin ${Math.round(r.m*100)}%`);
     closeOverlay(); ui.q="";ui.status="";ui.sort="pickupTs";ui.dir=-1;ui.page=0;
@@ -896,7 +975,7 @@ function openOrder(id){
   const ms=MILESTONES.map((mm,i)=>`<li class="${i<o.ms?"done":i===o.ms&&tr?"now":""}"><div>${esc(mm)}${i<o.ms&&o.msTs?.[i]?` <span class="muted num">· ${dt(o.msTs[i],X.tz)}</span>`:""}</div></li>`).join("");
   const row=(l,neg)=>`<tr><td style="white-space:normal">${esc(l.label)}</td><td class="r num">${money2(l.amount,X.ccy)}</td></tr>`;
   $("#overlay").innerHTML=`<div class="drawer-bg" id="dbg"><aside class="drawer">
-   <div class="row"><h2 class="mono" style="margin-inline-end:auto">${o.id}</h2>${pill(o.status)}<button class="btn sm" id="dx">${t("close")}</button></div>
+   <div class="row"><h2 class="mono" style="margin-inline-end:auto">${o.id}</h2>${pill(o.status)}${codeChip(X,curCode(X,o))}<button class="btn sm" id="dtr">Track & trace</button><button class="btn sm" id="dx">${t("close")}</button></div>
    ${o.status==="On hold"&&o.holdReason?`<div class="note warn">${esc(o.holdReason)}</div>`:""}
    <dl class="kv"><dt>${t("customer")}</dt><dd>${esc(c.name)}<div class="muted">${X.taxScheme} ${esc(c.taxId)} · ${esc(c.cycle)} billing · ${c.terms} days</div></dd>
     <dt>Customer ref</dt><dd class="mono">${esc(o.ref)}</dd>
@@ -938,6 +1017,7 @@ function openOrder(id){
    <section><h3 style="font-size:14px;margin:0 0 8px">History (audit)</h3>${hist.length?`<div class="tbl-wrap"><table><thead><tr><th>When</th><th>Field</th><th>Old</th><th>New</th><th>By</th></tr></thead><tbody>${hist.map(a=>`<tr><td class="num">${dt(a.ts,X.tz)}</td><td>${esc(a.field)}</td><td>${esc(a.old)}</td><td>${esc(a.new)}</td><td>${esc(a.by)}</td></tr>`).join("")}</tbody></table></div>`:`<p class="muted" style="margin:0">No changes in this session. Seeded history is not shown.</p>`}</section>
   </aside></div>`;
   $("#dx").onclick=closeOverlay; $("#dbg").onclick=e=>{if(e.target.id==="dbg")closeOverlay()};
+  $("#dtr").onclick=()=>{trc.id=o.id;trc.q="";closeOverlay();if(route()==="trace")VIEWS.trace();else location.hash="trace"};
   document.querySelectorAll("[data-trackset]").forEach(a=>a.addEventListener("click",()=>{trk.id=a.dataset.trackset}));
   $("#accForm")&&($("#accForm").onsubmit=e=>{e.preventDefault();const code=$("#accCode").value,qty=Math.max(1,Math.round(+$("#accQty").value||1)),d=accDef(X,code);
     if(d.unit==="%"&&o.acc.some(a=>a.code===code)){toast(`${d.label} is already on this order.`);return}
@@ -946,8 +1026,8 @@ function openOrder(id){
     emit("charge.added",o.id,`${d.label} × ${qty}`);openOrder(o.id);refreshBehind()});
   document.querySelectorAll("[data-act]").forEach(b=>b.onclick=()=>{const a=b.dataset.act;
     const set=(s,ev,info="")=>{audit(o.id,"status",o.status,s);o.status=s;emit(ev,o.id,info)};
-    if(a==="confirm") set("Confirmed","order.confirmed");
-    if(a==="release"){if(o.holdReason){audit(o.id,"margin approval","pending",`approved by ${ME().name}`);o.holdReason=null;set("Confirmed","order.margin_approved",`${Math.round(m*100)}%`)}else set("Confirmed","order.released")}
+    if(a==="confirm"){set("Confirmed","order.confirmed");trace(X,o,"ORD-CNF","Manual entry")}
+    if(a==="release"){trace(X,o,"ORD-CNF","Manual entry",{note:o.holdReason?"Margin approved by Finance":"Hold released"});if(o.holdReason){audit(o.id,"margin approval","pending",`approved by ${ME().name}`);o.holdReason=null;set("Confirmed","order.margin_approved",`${Math.round(m*100)}%`)}else set("Confirmed","order.released")}
     if(a==="invoice"){const inv=makeInvoice(X,o.customerId,[o],Date.now());audit(o.id,"status","POD received","Invoiced");audit(inv.id,"(created)","",money2(inv.total,X.ccy));emit("invoice.issued",inv.id,`${c.name} · ${money2(inv.total,X.ccy)}`);refreshBehind();openInvoice(inv.id);return}
     if(a==="viewinv"){openInvoice(o.invoiceId);return}
     if(a==="labels"){openLabels([o.id]);return}
@@ -1105,7 +1185,7 @@ VIEWS.tracking=function(){
    <section class="panel"><div class="panel-h"><h2>Open exceptions</h2></div><div class="panel-b stack" id="ctEx"></div></section>
   </div>
   <section class="panel"><div class="panel-h"><h2>${t("atRisk")}</h2><span class="muted" style="font-size:12px">Ranked by risk score: ETA vs delivery window, plus open exceptions</span></div>
-   <div class="tbl-wrap"><table><thead><tr><th>Trip</th><th>${t("order")}</th><th>${t("vehicle")}</th><th>${t("driverL")}</th><th>Milestone</th><th>${t("progress")}</th><th>${t("eta")}</th><th>Deliver by</th><th>${t("risk")}</th><th></th></tr></thead><tbody id="ctRows"></tbody></table></div></section>`;
+   <div class="tbl-wrap"><table><thead><tr><th>Trip</th><th>${t("order")}</th><th>${t("vehicle")}</th><th>${t("driverL")}</th><th>Status code</th><th>Milestone</th><th>${t("progress")}</th><th>${t("eta")}</th><th>Deliver by</th><th>${t("risk")}</th><th></th></tr></thead><tbody id="ctRows"></tbody></table></div></section>`;
   updateTracking();
 };
 function updateTracking(){
@@ -1114,7 +1194,7 @@ function updateTracking(){
   $("#ctMap").innerHTML=mapSVG({highlight:ctSel});
   $("#ctRows").innerHTML=active.map(({tr,r})=>{const o=X.orders.find(x=>x.id===tr.orderIds[0]);return `<tr class="click" data-trip="${tr.id}" style="${ctSel===tr.id?"background:var(--accent-soft)":""}">
     <td class="mono">${tr.id}</td><td class="mono">${tr.orderIds.join(", ")}</td><td class="mono">${esc(veh(tr.vehicleId).plate)}</td><td>${esc(drvr(tr.driverId).name)}</td>
-    <td>${tr.ms===0?'Dispatched <span class="muted">(awaiting accept)</span>':esc(MILESTONES[tr.ms-1])}</td>
+    <td>${(()=>{const c=tripCode(X,tr);return codeChip(X,c.code)+(c.ex?" "+codeChip(X,c.ex):"")})()}</td><td>${tr.ms===0?'Dispatched <span class="muted">(awaiting accept)</span>':esc(MILESTONES[tr.ms-1])}</td>
     <td style="min-width:110px"><div class="bar"><i style="width:${Math.round(tr.progress*100)}%"></i></div></td>
     <td class="num">${dt(etaOf(tr),X.tz)}</td><td class="num">${dt(o.deliverBy,X.tz)}</td><td>${riskPill(r)}</td>
     <td><button class="btn sm" data-notify="${tr.id}">Notify customer</button></td></tr>`}).join("");
@@ -1125,8 +1205,8 @@ function updateTracking(){
     <div style="font-size:12.5px">${breach?`<span style="color:var(--bad)">SLA breached: open ${age} min, SLA ${e.slaMin} min</span>`:`Open ${age} min of ${e.slaMin} min SLA`}</div>
     <div class="row"><button class="btn sm" data-resolve="${e.id}">Resolve</button></div></div>`}).join(""):`<p class="muted" style="margin:0">No open exceptions.</p>`;
   document.querySelectorAll("[data-trip]").forEach(el=>el.onclick=()=>{ctSel=ctSel===el.dataset.trip?null:el.dataset.trip;updateTracking()});
-  document.querySelectorAll("[data-notify]").forEach(b=>b.onclick=e=>{e.stopPropagation();const tr=X.trips.find(x=>x.id===b.dataset.notify);emit("notification.sent",tr.orderIds[0],"Customer ETA update (email + WhatsApp)");toast(`ETA update queued to the customer for ${tr.orderIds[0]}. Delivery runs through the notification service, not this demo.`)});
-  document.querySelectorAll("[data-resolve]").forEach(b=>b.onclick=()=>{const e=X.exceptions.find(x=>x.id===b.dataset.resolve);e.closed=Date.now();audit(e.id,"status","Open","Resolved");emit("exception.resolved",e.tripId,e.type);updateTracking()});
+  document.querySelectorAll("[data-notify]").forEach(b=>b.onclick=e=>{e.stopPropagation();const tr=X.trips.find(x=>x.id===b.dataset.notify);emit("notification.sent",tr.orderIds[0],"Customer ETA update (email + WhatsApp)");traceTrip(X,tr,"NTF-ETA","Control tower",{note:`ETA ${dt(etaOf(tr),X.tz)}`});toast(`ETA update queued to the customer for ${tr.orderIds[0]}. Delivery runs through the notification service, not this demo.`)});
+  document.querySelectorAll("[data-resolve]").forEach(b=>b.onclick=()=>{const e=X.exceptions.find(x=>x.id===b.dataset.resolve);e.closed=Date.now();audit(e.id,"status","Open","Resolved");{const tr0=X.trips.find(t=>t.id===e.tripId);if(tr0)traceTrip(X,tr0,"EXC-CLR","Control tower",{note:e.type})}emit("exception.resolved",e.tripId,e.type);updateTracking()});
 }
 
 /* ---------------- DRIVER APP ---------------- */
@@ -1227,7 +1307,7 @@ function applyAction(act){
   const lag=Math.round((serverTs-act.deviceTs)/1000);
   drv.log.unshift(`${act.tripId} · ${ACTION_LABEL[act.type]} · device ${new Date(act.deviceTs).toISOString().slice(11,19)}Z · server +${lag}s`);
   if(act.type==="exception"){X.exceptions.push({id:"EX-"+(200+X.exceptions.length),tripId:tr.id,type:act.data.type+" (driver)",severity:"Medium",owner:X.users[2]?.[0]||X.users[0][0],openedTs:act.deviceTs,slaMin:60});
-    X.events.unshift({ts:serverTs,type:"exception.raised",agg:tr.id,info:act.data.type});return}
+    X.events.unshift({ts:serverTs,type:"exception.raised",agg:tr.id,info:act.data.type});traceTrip(X,tr,"EXC-DLY","Driver app",{ts:act.deviceTs,loc:act.gps,by:drvr(tr.driverId).name,note:act.data.type});return}
   if(idx<0||idx+1<=tr.ms) return; // idempotent: already applied
   tr.ms=idx+1; if(act.type==="accept"&&!tr.acceptedTs) tr.acceptedTs=act.deviceTs;
   if(act.type==="arrived_delivery") tr.progress=1;
@@ -1238,6 +1318,7 @@ function applyAction(act){
   });
   const evt={accept:"trip.accepted",arrived_pickup:"stop.arrived",loaded:"stop.loaded",departed:"shipment.in_transit",arrived_delivery:"stop.arrived",pod:"shipment.pod_captured"}[act.type];
   X.events.unshift({ts:serverTs,type:evt,agg:tr.id,info:`device ${new Date(act.deviceTs).toISOString().slice(11,19)}Z · ${act.gps}`});
+  traceTrip(X,tr,TRIP_CODE[idx+1],"Driver app",{ts:act.deviceTs,loc:act.gps,by:drvr(tr.driverId).name,note:`${act.type==="pod"?`Received by ${act.data.name} · `:""}server +${lag}s${drv.offline||lag>5?" (synced from offline queue)":""}`});
 }
 function syncQueue(){const n=drv.queue.length;if(!n)return;const q=drv.queue.splice(0);q.sort((a,b)=>a.deviceTs-b.deviceTs).forEach(applyAction);toast(`Back online. ${n} queued action(s) synced in order with no data loss.`)}
 
@@ -1257,6 +1338,8 @@ VIEWS.track=function(){
     <section class="panel"><div class="panel-h"><h2>${esc(tst(o.status))}</h2></div><div class="panel-b stack">
       <div class="muted">${esc(city(o.origin).name)} → ${esc(city(o.dest).name)}</div>
       <ul class="timeline">${MILESTONES.map((m,i)=>`<li class="${i<o.ms?"done":i===o.ms?"now":""}"><div>${esc(m)}${o.msTs?.[i]?` <span class="muted num">· ${dt(o.msTs[i],X.tz)}</span>`:""}</div></li>`).join("")}</ul>
+      <h3 style="font-size:13px;margin:4px 0 0">Updates</h3>
+      <div class="stack" style="gap:4px">${(o.trace||[]).filter(e=>ttDef(X,e.code).cust).reverse().map(e=>`<div class="row" style="gap:8px;font-size:13px;flex-wrap:nowrap"><span class="num muted" style="white-space:nowrap">${dt(e.ts,X.tz)}</span><span>${esc(ttDef(X,e.code).custLabel||ttDef(X,e.code).name)}${e.code.startsWith("BRD")&&e.loc?` · ${esc(e.loc)}`:""}</span></div>`).join("")||'<span class="muted">No updates yet.</span>'}</div>
       ${o.pod?`<div class="note ok">Received by ${esc(o.pod.name)}. POD document available to download.</div>${o.pod.sig?`<img src="${o.pod.sig}" alt="Signature" style="background:#fff;border:1px solid var(--line);border-radius:6px;max-height:100px">`:""}`:""}
     </div></section>
    </div>`:`<p class="muted">No trackable shipments.</p>`}`;
@@ -1581,7 +1664,7 @@ AP.batches=X=>{
 /* ---------------- MASTER DATA ---------------- */
 const mst={tab:"carriers",q:""};
 VIEWS.master=function(){
-  const X=T(); const tabs=[["carriers","Carriers"],["equipment","Equipment types"],["fleet","Fleet"],["customers","Customers"],["locations","Locations"]];
+  const X=T(); const tabs=[["carriers","Carriers"],["equipment","Equipment types"],["ttcodes","Track & trace codes"],["fleet","Fleet"],["customers","Customers"],["locations","Locations"]];
   $("#view").innerHTML=`<section class="panel"><div class="tabs" role="tablist" style="padding:0 10px">${tabs.map(([k,l])=>`<button role="tab" aria-selected="${mst.tab===k}" data-mtab="${k}">${l}</button>`).join("")}</div><div class="panel-b" id="mBody"></div></section>`;
   document.querySelectorAll("[data-mtab]").forEach(b=>b.onclick=()=>{mst.tab=b.dataset.mtab;mst.q="";VIEWS.master()});
   MST[mst.tab](X);
@@ -1757,7 +1840,7 @@ function openLabels(ids){
   $("#lP").onchange=e=>lbl.printer=+e.target.value; $("#lC").onchange=e=>lbl.copies=Math.max(1,Math.min(5,+e.target.value||1));
   $("#lZ").onclick=()=>{const done=()=>toast("ZPL copied.");navigator.clipboard?.writeText(z).then(done).catch(()=>{const ta=$("#lZt");ta.closest("details").open=true;ta.select();toast("Select-all is ready. Press Ctrl+C or ⌘C to copy.")})||(()=>{const ta=$("#lZt");ta.closest("details").open=true;ta.select()})()};
   $("#lGo").onclick=()=>{const p=printers[lbl.printer],cnt=labs.length*lbl.copies;[...new Set(labs.map(l=>l.o.id))].forEach(id=>audit(id,"labels printed","",`${labs.filter(l=>l.o.id===id).length*lbl.copies} on ${p}`));
-    emit("label.printed",ids.length===1?ids[0]:`${orders} orders`,`${cnt} labels → ${p}`);toast(`${cnt} label${cnt===1?"":"s"} sent to ${p} through the print agent.`)};
+    emit("label.printed",ids.length===1?ids[0]:`${orders} orders`,`${cnt} labels → ${p}`);[...new Set(labs.map(l=>l.o.id))].forEach(id=>trace(X,X.orders.find(o=>o.id===id),"LBL-PRT","Label service",{note:`${labs.filter(l=>l.o.id===id).length*lbl.copies} labels · ${p}`}));toast(`${cnt} label${cnt===1?"":"s"} sent to ${p} through the print agent.`)};
 }
 
 /* ---------------- REPORTS ---------------- */
@@ -1846,16 +1929,127 @@ VIEWS.reports=function(){
   document.querySelectorAll("[data-unsched]").forEach(b=>b.onclick=()=>{X.schedules=X.schedules.filter(s=>s.id!==b.dataset.unsched);emit("report.unscheduled",b.dataset.unsched,"");VIEWS.reports()});
 };
 
+/* ---------------- TRACEABILITY (track & trace) ---------------- */
+const trc={q:"",id:null,show214:false};
+function traceFind(X,q){q=q.trim().toUpperCase();if(!q)return null;
+  const piece=q.match(/^(.*)-(\d{3})$/);
+  let o=X.orders.find(x=>x.id.toUpperCase()===q||x.ref.toUpperCase()===q||(piece&&x.id.toUpperCase()===piece[1]));
+  if(o) return {o,piece:piece&&o.id.toUpperCase()===piece[1]?+piece[2]:null};
+  const tr=X.trips.find(t=>t.id.toUpperCase()===q)||X.trips.find(t=>t.ms<6&&veh(t.vehicleId).plate.toUpperCase().replace(/\s/g,"")===q.replace(/\s/g,""));
+  if(tr) return {o:X.orders.find(x=>x.id===tr.orderIds[0]),trip:tr};
+  o=X.orders.find(x=>x.id.toUpperCase().includes(q)||x.ref.toUpperCase().includes(q));return o?{o}:null}
+function edi214(X,o){const d=s=>new Date(s+X.tzOff*HOUR).toISOString();const evs=(o.trace||[]).filter(e=>ttDef(X,e.code).x12);const scac=X.key==="gulf"?"GHLX":"IFPL";
+  const segs=["ST*214*0001",`B10*${o.id}*${o.ref}*${scac}`,`N1*CN*${cust(o.customerId).name}`];
+  evs.forEach((e,i)=>{segs.push(`LX*${i+1}`,`AT7*${ttDef(X,e.code).x12}*NS***${d(e.ts).slice(0,10).replace(/-/g,"")}*${d(e.ts).slice(11,16).replace(":","")}*LT`);if(e.loc)segs.push(`MS1*${e.loc.replace(/[*~]/g," ")}`)});
+  segs.push(`SE*${segs.length+1}*0001`);return segs.join("~\n")+"~"}
+VIEWS.trace=function(){
+  const X=T();
+  if(!trc.id||!X.orders.find(o=>o.id===trc.id)) trc.id=(X.orders.find(o=>o.status==="In transit"&&X.trips.find(t=>t.id===o.tripId&&t.ms===4&&X.cityByCode[o.origin].cc!==X.cityByCode[o.dest].cc))||X.orders.find(o=>o.status==="In transit")||X.orders[0]).id;
+  const o=X.orders.find(x=>x.id===trc.id), tr=tripOf(o), v=tr&&veh(tr.vehicleId), d=tr&&drvr(tr.driverId), k=o.carrierId&&X.parties.find(p=>p.id===o.carrierId);
+  const inv=o.invoiceId&&X.invoices.find(i=>i.id===o.invoiceId), pinv=X.carrierInvoices.find(c=>c.lines.some(l=>l.orderId===o.id&&!l.rejected));
+  const cc=curCode(X,o), sl=slaStatus(X,o), evs=[...(o.trace||[])].reverse();
+  const feed=X.orders.flatMap(x=>(x.trace||[]).map(e=>({...e,oid:x.id}))).filter(e=>e.ts>Date.now()-3*DAY&&ttDef(X,e.code).status!==false).sort((a,b)=>b.ts-a.ts).slice(0,14);
+  const n=Math.max(1,o.pallets), pk=o.trace?.some(e=>e.code==="PU-LDD"), dl=o.trace?.some(e=>e.code==="DL-POD"), lb=o.trace?.some(e=>e.code==="LBL-PRT");
+  const node=(label,val,attr)=>`<div class="tnode"><small>${label}</small>${val?attr?`<button class="lnk mono" ${attr}>${esc(val)}</button>`:`<b>${esc(val)}</b>`:`<span class="muted">–</span>`}</div>`;
+  $("#view").innerHTML=`
+  <section class="panel"><div class="panel-b row">
+   <form class="row" id="trF" style="flex:1;min-width:0"><input type="search" id="trQ" placeholder="Order, trip, customer ref, truck plate or piece barcode (e.g. ${esc(o.id)}-001)" value="${esc(trc.q)}" style="flex:1;min-width:0" aria-label="Trace search"><button class="btn primary">Trace</button></form>
+   <span id="trMsg" class="muted" style="font-size:12.5px"></span></div></section>
+  <div class="grid g-2">
+   <div class="stack">
+    <section class="panel"><div class="panel-h"><h2 class="mono">${o.id}</h2>${pill(o.status)} ${codeChip(X,cc)}${sl?pill(sl.t,sl.c):""}<button class="btn sm" data-open="${o.id}">Order details</button></div>
+     <div class="panel-b stack">
+      <div class="muted">${esc(cust(o.customerId).name)} · PO ${esc(o.ref)} · ${svcTag(o)} ${esc(SERVICE[o.svc].name)} · ${esc(city(o.origin).name)} → ${esc(city(o.dest).name)} · promised ${dt(o.deliverBy,X.tz)}</div>
+      <div class="tchain">${node("Customer",cust(o.customerId).name)}<i>→</i>${node("Order",o.id)}<i>→</i>${node("Trip",tr?.id)}<i>→</i>${node("Vehicle",v?.plate)}<i>→</i>${node("Driver",d?.name)}<i>→</i>${node("Haulier",k?k.name:(tr||o.pod?"Own fleet":null))}<i>→</i>${node("Customer invoice",inv?.id,inv?`data-inv="${inv.id}"`:"")}<i>→</i>${node("Carrier invoice",pinv?.no)}</div>
+     </div></section>
+    <section class="panel"><div class="panel-h"><h2>Event history (${evs.length})</h2><button class="btn sm" id="trAdd">+ Log event</button><button class="btn sm" id="tr214">${trc.show214?"Hide":"Show"} EDI 214</button></div>
+     <div id="trForm"></div>
+     ${trc.show214?`<div class="panel-b"><textarea class="mono" readonly style="width:100%;height:170px">${esc(edi214(X,o))}</textarea><p class="muted" style="font-size:12px;margin:6px 0 0">The X12 214 status message sent to customers on EDI. Only codes that have an X12 mapping in the Track & trace code master are included.</p></div>`:""}
+     <div class="tbl-wrap"><table><thead><tr><th>When (${esc(X.tz)})</th><th>Code</th><th>Event</th><th>X12</th><th>Location</th><th>Source</th><th>By</th><th>Customer sees</th></tr></thead><tbody>
+     ${evs.map(e=>{const df=ttDef(X,e.code);return `<tr><td class="num">${dt(e.ts,X.tz)}</td><td>${codeChip(X,e.code)}</td><td style="white-space:normal;min-width:180px">${esc(df.name)}${e.note?`<div class="muted" style="font-size:12px">${esc(e.note)}</div>`:""}</td><td class="mono">${esc(df.x12||"–")}</td><td class="mono" style="font-size:12px">${esc(e.loc||"–")}</td><td>${esc(e.src)}</td><td>${esc(e.by)}</td><td>${df.cust?`<span title="${esc(df.custLabel||df.name)}">✓ ${esc(df.custLabel||df.name)}</span>`:`<span class="muted">Internal</span>`}</td></tr>`}).join("")}
+     </tbody></table></div></section>
+   </div>
+   <div class="stack">
+    ${tr&&tr.ms<6?`<section class="panel"><div class="panel-h"><h2>Live position</h2>${codeChip(X,tripCode(X,tr).code)}${tripCode(X,tr).ex?codeChip(X,tripCode(X,tr).ex):""}</div><div class="panel-b" id="trMap">${mapSVG({trips:[tr],highlight:tr.id})}</div></section>`:""}
+    <section class="panel"><div class="panel-h"><h2>Piece traceability · ${n} piece${n===1?"":"s"}</h2></div><div class="tbl-wrap" style="max-height:260px;overflow:auto"><table><thead><tr><th>Barcode</th><th>Labelled</th><th>Pickup scan</th><th>Delivery scan</th></tr></thead><tbody>
+     ${Array.from({length:Math.min(n,30)},(_,i)=>`<tr ${trc.piece===i+1?'style="background:var(--accent-soft)"':""}><td class="mono">${o.id}-${pad3(i+1)}</td><td>${lb?"✓":"–"}</td><td>${pk?"✓":"–"}</td><td>${dl?(o.pod?.qty!=null&&i>=o.pod.qty?pill("Short","p-bad"):"✓"):"–"}</td></tr>`).join("")}
+    </tbody></table></div></section>
+    <section class="panel"><div class="panel-h"><h2>Latest events (3 days)</h2></div><div class="tbl-wrap"><table><tbody>
+     ${feed.map(e=>`<tr class="click" data-tro="${e.oid}"><td class="num" style="font-size:12px">${dt(e.ts,X.tz)}</td><td>${codeChip(X,e.code)}</td><td class="mono" style="font-size:12px">${e.oid}</td><td class="muted" style="font-size:12px">${esc(e.src)}</td></tr>`).join("")}
+    </tbody></table></div></section>
+   </div></div>`;
+  $("#trF").onsubmit=e=>{e.preventDefault();trc.q=$("#trQ").value;const f=traceFind(X,trc.q);if(!f){$("#trMsg").textContent=`Nothing found for “${trc.q}”.`;return}trc.id=f.o.id;trc.piece=f.piece||null;VIEWS.trace()};
+  document.querySelectorAll("[data-tro]").forEach(r=>r.onclick=()=>{trc.id=r.dataset.tro;trc.q="";trc.piece=null;VIEWS.trace()});
+  document.querySelectorAll("#view [data-open]").forEach(b=>b.onclick=()=>openOrder(b.dataset.open));
+  document.querySelectorAll("#view [data-inv]").forEach(b=>b.onclick=()=>openInvoice(b.dataset.inv));
+  $("#tr214").onclick=()=>{trc.show214=!trc.show214;VIEWS.trace()};
+  $("#trAdd").onclick=()=>{const now=new Date(Date.now()+X.tzOff*HOUR).toISOString().slice(0,16);
+    $("#trForm").innerHTML=`<form class="panel-b stack" id="trEF" style="border-bottom:1px solid var(--line)"><div class="form">
+      <label>Status code<select id="teC">${X.tt.filter(d=>d.active!==false).map(d=>`<option value="${d.code}">${esc(d.code)} · ${esc(d.name)}</option>`).join("")}</select></label>
+      <label>When (${esc(X.tz)})<input type="datetime-local" id="teT" value="${now}"></label>
+      <label>Location<input type="text" id="teL" placeholder="e.g. Al Ghuwaifat border"></label>
+      <label>Source<select id="teS"><option>Manual entry</option><option>Phone call with driver</option><option>Carrier portal</option><option>Customs feed</option></select></label>
+      <label class="full">Note<input type="text" id="teN" placeholder="What happened"></label></div><div id="teErr"></div>
+      <div class="row"><button class="btn primary">Add event</button><button type="button" class="btn" id="teX">${t("cancel")}</button></div></form>`;
+    $("#teX").onclick=()=>$("#trForm").innerHTML="";
+    $("#trEF").onsubmit=e=>{e.preventDefault();const ts=new Date($("#teT").value+":00Z").getTime()-X.tzOff*HOUR;
+      if(!ts||ts>Date.now()+5*60e3){$("#teErr").innerHTML=`<div class="note bad">Enter a time that isn't in the future.</div>`;return}
+      const code=$("#teC").value;trace(X,o,code,$("#teS").value,{ts,loc:$("#teL").value.trim()||null,note:$("#teN").value.trim()});
+      audit(o.id,"trace event","",`${code} (${$("#teS").value})`);emit("tracking.event_recorded",o.id,`${code} · manual`);toast(`${code} added to ${o.id}.`);VIEWS.trace()}};
+};
+MST.ttcodes=X=>{
+  const counts={};X.orders.forEach(o=>(o.trace||[]).forEach(e=>counts[e.code]=(counts[e.code]||0)+1));
+  $("#mBody").innerHTML=`<div class="stack"><div class="row"><span class="muted" style="font-size:12.5px;margin-inline-end:auto;max-width:760px">Every tracking event uses a code from this list, whether it comes from the driver app, a geofence, telematics, EDI or a person. The code sets the order's status code, what the customer sees on the tracking page and in EDI 214, and whether the customer is notified.</span><button class="btn primary" id="ttNew">+ Add status code</button></div>
+   <div class="tbl-wrap"><table><thead><tr><th>Code</th><th>Event</th><th>Category</th><th>X12 214</th><th>Sets status code</th><th>Customer sees</th><th>Customer label</th><th>Notify customer</th><th>Sources</th><th class="r">Events logged</th><th></th></tr></thead><tbody>
+   ${X.tt.map((d,i)=>`<tr><td>${codeChip(X,d.code)}</td><td>${esc(d.name)}</td><td>${esc(d.cat)}</td><td class="mono">${esc(d.x12||"–")}</td><td>${d.status?"Yes":"No (info only)"}</td>
+     <td><input type="checkbox" data-ttc="${i}" ${d.cust?"checked":""} aria-label="Customer sees ${esc(d.code)}"></td><td style="white-space:normal;min-width:150px">${d.cust?esc(d.custLabel||d.name):'<span class="muted">–</span>'}</td>
+     <td><input type="checkbox" data-ttn="${i}" ${d.notify?"checked":""} ${d.cust?"":"disabled"} aria-label="Notify customer on ${esc(d.code)}"></td><td class="muted" style="white-space:normal;min-width:180px;font-size:12px">${esc(d.src||"")}</td><td class="r num">${nfmt(counts[d.code]||0)}</td><td><button class="btn sm" data-tte="${i}">Edit</button></td></tr>`).join("")}
+   </tbody></table></div></div>`;
+  document.querySelectorAll("[data-ttc]").forEach(c=>c.onchange=()=>{const d=X.tt[+c.dataset.ttc];d.cust=c.checked;if(!d.cust)d.notify=false;audit("tt-code:"+d.code,"customer visible",!c.checked,c.checked);emit("tracking.code_updated",d.code,`customer visible: ${c.checked}`);rerender()});
+  document.querySelectorAll("[data-ttn]").forEach(c=>c.onchange=()=>{const d=X.tt[+c.dataset.ttn];d.notify=c.checked;audit("tt-code:"+d.code,"notify customer",!c.checked,c.checked);emit("tracking.code_updated",d.code,`notify: ${c.checked}`)});
+  $("#ttNew").onclick=()=>openTTForm(null);
+  document.querySelectorAll("[data-tte]").forEach(b=>b.onclick=()=>openTTForm(+b.dataset.tte));
+};
+function openTTForm(i){
+  const X=T(), d=i!=null?X.tt[i]:{code:"",name:"",cat:"In transit",x12:"",cust:false,notify:false,status:true,custLabel:"",src:"Manual"};
+  $("#overlay").innerHTML=`<div class="modal-bg" id="tbg"><form class="modal" id="ttf" novalidate>
+   <h2 style="margin:0;font-size:18px">${i!=null?"Edit "+esc(d.code):"Add status code"}</h2>
+   <div class="form">
+    <label>Code (e.g. WH-XDK)<input type="text" id="tC" value="${esc(d.code)}" ${i!=null?"disabled":""}></label>
+    <label>Category<select id="tCat">${Object.keys(TT_CATS).map(c=>`<option ${c===d.cat?"selected":""}>${c}</option>`).join("")}</select></label>
+    <label class="full">Event name<input type="text" id="tN" value="${esc(d.name)}" placeholder="e.g. Cross-docked at hub"></label>
+    <label>X12 214 status code<input type="text" id="tX" value="${esc(d.x12)}" maxlength="2" placeholder="e.g. X6"></label>
+    <label>Sources<input type="text" id="tS" value="${esc(d.src||"")}"></label>
+    <label class="full">Customer label (tracking page)<input type="text" id="tL" value="${esc(d.custLabel||"")}" placeholder="Leave blank to use the event name"></label>
+    <label style="flex-direction:row;align-items:center;gap:8px;color:var(--fg)"><input type="checkbox" id="tSt" ${d.status?"checked":""}> Sets the status code</label>
+    <label style="flex-direction:row;align-items:center;gap:8px;color:var(--fg)"><input type="checkbox" id="tCu" ${d.cust?"checked":""}> Customer sees it</label>
+    <label style="flex-direction:row;align-items:center;gap:8px;color:var(--fg)"><input type="checkbox" id="tNo" ${d.notify?"checked":""}> Notify customer</label>
+   </div><div id="tErr"></div>
+   <div class="row" style="justify-content:flex-end"><button type="button" class="btn" id="tX2">${t("cancel")}</button><button class="btn primary">${t("save")}</button></div></form></div>`;
+  $("#tX2").onclick=closeOverlay; $("#tbg").onclick=e=>{if(e.target.id==="tbg")closeOverlay()};
+  $("#ttf").onsubmit=e=>{e.preventDefault();const code=(i!=null?d.code:$("#tC").value.trim().toUpperCase()),err=[];
+    if(!/^[A-Z]{2,4}-[A-Z]{2,4}$/.test(code))err.push("Use a code like WH-XDK: 2–4 letters, a hyphen, 2–4 letters.");
+    if(i==null&&X.tt.some(x=>x.code===code))err.push(`${code} already exists.`);
+    if(!$("#tN").value.trim())err.push("Enter an event name.");
+    if($("#tX").value&&!/^[A-Z0-9]{2}$/i.test($("#tX").value))err.push("An X12 214 status code is 2 characters.");
+    if(err.length){$("#tErr").innerHTML=err.map(x=>`<div class="note bad">${esc(x)}</div>`).join("");return}
+    const v={code,name:$("#tN").value.trim(),cat:$("#tCat").value,x12:$("#tX").value.toUpperCase(),src:$("#tS").value,custLabel:$("#tL").value.trim(),status:$("#tSt").checked,cust:$("#tCu").checked,notify:$("#tCu").checked&&$("#tNo").checked};
+    if(i!=null)Object.assign(X.tt[i],v);else X.tt.push(v);
+    audit("tt-code:"+code,i!=null?"updated":"(created)","",v.name);emit(i!=null?"tracking.code_updated":"tracking.code_created",code,v.name);closeOverlay();toast(`${code} saved.`);rerender()};
+}
+
 /* ---------------- live tick ---------------- */
 setInterval(()=>{
   Object.values(TENANTS).forEach(X=>X.trips.forEach(tr=>{
-    if(tr.ms===4||tr.ms===5||tr.ms>=6) return;
-    if(tr.ms===3){tr.progress=Math.min(1,tr.progress+0.0015+(tr.orderIds.length%3)*0.0004);
-      if(tr.progress>=1&&!tr.geofenced){tr.geofenced=true;tr.ms=4;tr.orderIds.forEach(id=>{const o=X.orders.find(x=>x.id===id);o.ms=4;o.msTs=o.msTs||{};o.msTs[4]=Date.now()});X.events.unshift({ts:Date.now(),type:"stop.arrived",agg:tr.id,info:"Auto by geofence (driver confirmation pending)"})}}
+    if(tr.ms!==4) return;
+    {tr.progress=Math.min(1,tr.progress+0.0015+(tr.orderIds.length%3)*0.0004);
+      if(!tr.lastPos||Date.now()-tr.lastPos>60e3){tr.lastPos=Date.now();const a=X.cityByCode[tr.from],b=X.cityByCode[tr.to];traceTrip(X,tr,"INT-POS","Telematics",{by:"Telematics",loc:`${(a.lat+(b.lat-a.lat)*tr.progress).toFixed(4)},${(a.lon+(b.lon-a.lon)*tr.progress).toFixed(4)}`})}
+      if(tr.progress>=1&&!tr.geofenced){tr.geofenced=true;tr.ms=5;traceTrip(X,tr,"DL-ARR","Geofence",{by:"Geofence",loc:gpsOf(X.cityByCode[tr.to]),note:"Auto by geofence; driver confirmation pending"});tr.orderIds.forEach(id=>{const o=X.orders.find(x=>x.id===id);o.ms=5;o.msTs=o.msTs||{};o.msTs[4]=Date.now()});X.events.unshift({ts:Date.now(),type:"stop.arrived",agg:tr.id,info:"Auto by geofence (driver confirmation pending)"})}}
   }));
   const v=route();
   if(document.hidden) return;
   if(v==="tracking") updateTracking();
+  else if(v==="trace"&&$("#trMap")){const o=T().orders.find(x=>x.id===trc.id),tr=o&&tripOf(o);if(tr&&tr.ms<6)$("#trMap").innerHTML=mapSVG({trips:[tr],highlight:tr.id})}
   else if(v==="dashboard"&&$("#dashMap")) $("#dashMap").innerHTML=mapSVG();
   else if(v==="track"&&$("#trkMap")){const o=T().orders.find(x=>x.id===trk.id),tr=o&&tripOf(o);if(tr&&tr.ms<6)$("#trkMap").innerHTML=mapSVG({trips:[tr],highlight:tr.id})}
 },1000);
