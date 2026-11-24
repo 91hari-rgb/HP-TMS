@@ -360,8 +360,8 @@ const TENANT_DEF = {
   users:[["Katrin Weber","Tenant admin"],["Jan de Vries","Transport planner"],["Tomasz Nowak","Dispatcher / control tower"],["Lena Fischer","Finance / billing"]]
  }
 };
-const STATUS_ORDER = ["Draft","Confirmed","Dispatched","In transit","Delivered","POD received","Invoiced","Reopened","Closed","On hold","Cancelled"];
-const STATUS_CLASS = {"Draft":"","Confirmed":"p-info","Dispatched":"p-acc","In transit":"p-acc","Delivered":"p-ok","POD received":"p-ok","Invoiced":"p-ok","On hold":"p-warn","Cancelled":"p-bad","Reopened":"p-warn","Closed":""};
+const STATUS_ORDER = ["Draft","Confirmed","Dispatched","In transit","Delivered","POD received","Invoiced","Reopened","Closed","On hold","Cancelled","Master"];
+const STATUS_CLASS = {"Draft":"","Confirmed":"p-info","Dispatched":"p-acc","In transit":"p-acc","Delivered":"p-ok","POD received":"p-ok","Invoiced":"p-ok","On hold":"p-warn","Cancelled":"p-bad","Master":"p-info","Reopened":"p-warn","Closed":""};
 const MILESTONES = ["Trip accepted","Arrived at pickup","Loaded","Departed","Arrived at delivery","POD captured"];
 const MODULES = ["Master data","Orders","Planning","Execution","Control tower","Carriers & tendering","Rating","Finance","Documents","Admin"];
 const ACTIONS = ["view","create","edit","approve","delete","export"];
@@ -508,6 +508,7 @@ function buildTenant(key){
   T.orders.forEach(o=>{if(o.tripId||o.pod){assignConNote(T,o);assignSSCC(T,o)}});
   T.orders.forEach(o=>seedTrace(T,o,r));
   seedMessages(T);
+  {const g=consolSuggestions(T);if(g.length>1)makeMaster(T,g[g.length-1].orders,null)}
   // seed a few historical events
   T.events.push({ts:NOW0-2*HOUR,type:"tenant.seeded",agg:T.short,info:`${n} orders, ${T.vehicles.length} vehicles, ${custs.length} customers`});
   return T;
@@ -610,7 +611,7 @@ function tripCostPreview(X,orders,carrierId){
   const con=orders.length>1?orders.reduce((s,o)=>s+cost(o,{share:o.weight/totW,tripKm,stops}),0):sep;
   return {sep:round2(sep),con:round2(con),tripKm,stops,totW};}
 function consolSuggestions(X){
-  const g={}; X.orders.filter(o=>o.status==="Confirmed").forEach(o=>{const k=`${zoneOf(X,o.origin)} → ${zoneOf(X,o.dest)}|${o.equip}|${localDay(X,o.pickupTs)}`;(g[k]=g[k]||[]).push(o)});
+  const g={}; X.orders.filter(o=>o.status==="Confirmed"&&!o.masterId).forEach(o=>{const k=`${zoneOf(X,o.origin)} → ${zoneOf(X,o.dest)}|${o.equip}|${localDay(X,o.pickupTs)}`;(g[k]=g[k]||[]).push(o)});
   const out=[];
   Object.entries(g).forEach(([k,os])=>{if(os.length<2)return;const cap=EQUIP[os[0].equip];
     const bins=[];[...os].sort((a,b)=>b.weight-a.weight).forEach(o=>{const b=bins.find(b=>b.kg+o.weight<=cap.kg&&(!cap.pal||b.pal+o.pallets<=cap.pal));if(b){b.os.push(o);b.kg+=o.weight;b.pal+=o.pallets}else bins.push({os:[o],kg:o.weight,pal:o.pallets})});
@@ -711,6 +712,7 @@ const TT_CATS={"Order":"c-info","Planning":"c-info","Trip":"c-acc","Pickup":"c-a
 const TT_BASE=[
  {code:"ORD-CRT",name:"Order created",cat:"Order",x12:"",cust:false,notify:false,status:true,src:"Portal, API, EDI 204, email, manual"},
  {code:"ORD-CNF",name:"Order confirmed",cat:"Order",x12:"",cust:true,notify:true,status:true,custLabel:"Booking confirmed",src:"System, manual"},
+ {code:"ORD-CON",name:"Consolidated into master order",cat:"Order",x12:"",cust:false,notify:false,status:true,src:"Order desk, planner"},
  {code:"ORD-HLD",name:"Order on hold",cat:"Order",x12:"",cust:false,notify:false,status:true,src:"Manual, credit check, margin guardrail"},
  {code:"ORD-CAN",name:"Order cancelled",cat:"Order",x12:"",cust:true,notify:true,status:true,custLabel:"Booking cancelled",src:"Manual, portal"},
  {code:"PLN-ASG",name:"Planned on a trip",cat:"Planning",x12:"",cust:false,notify:false,status:true,src:"Planner, optimiser"},
@@ -774,7 +776,7 @@ function seedTrace(T,o,r){
 }
 
 /* ---------------- CONFIGURATION MODEL (organisation, finance, relations, process flow) ---------------- */
-const FILE_STATUS={"Draft":100,"On hold":150,"Confirmed":200,"Dispatched":400,"In transit":500,"Delivered":600,"POD received":700,"Invoiced":800,"Cancelled":900,"Reopened":998,"Closed":999};
+const FILE_STATUS={"Master":250,"Draft":100,"On hold":150,"Confirmed":200,"Dispatched":400,"In transit":500,"Delivered":600,"POD received":700,"Invoiced":800,"Cancelled":900,"Reopened":998,"Closed":999};
 const fsCode=o=>FILE_STATUS[o.status]??"";
 const TRIP_STATUS=[[100,"Created"],[200,"Dispatched"],[300,"Accepted"],[400,"At pickup"],[450,"Loaded"],[500,"Departed"],[600,"At delivery"],[700,"Completed"]];
 const tripStatus=tr=>tr.debriefed?[800,"Debriefed"]:TRIP_STATUS[Math.min(tr.ms+1,7)];
@@ -1039,6 +1041,86 @@ function viewCurrencies(X,body){
     $("#gmEX").onclick=()=>$("#gmEdit").innerHTML="";$("#gmEF").onsubmit=e=>{e.preventDefault();const v=+$("#gmER").value;if(!(v>0)){toast("Enter a rate above 0.");return}const old=perUSD(X,c);X.cur[c]={rate:v,date:new Date().toISOString().slice(0,10)};audit("currency:"+c,"rate per USD",old,v);emit("config.exchange_rate",c,`${old} → ${v}`);VIEWS.setup()}});
 }
 
+/* ---------------- MASTER ORDERS (order consolidation) & RELATED ORDERS ---------------- */
+const isMaster=o=>o.kind==="Master";
+const kidsOf=(X,m)=>(m.children||[]).map(id=>X.orders.find(o=>o.id===id)).filter(Boolean);
+const STAGES=["Confirmed","Dispatched","In transit","Delivered","POD received","Invoiced","Closed"];
+function masterProgress(X,m){const k=kidsOf(X,m);if(!k.length)return {label:"No orders",cls:""};const idx=k.map(o=>Math.max(0,STAGES.indexOf(o.status)));const lo=Math.min(...idx);
+  const n=idx.filter(i=>i>lo).length;return {label:`${k.length} orders · ${STAGES[lo]}${n?` (${n} further)`:""}`,cls:STATUS_CLASS[STAGES[lo]]||"",stage:STAGES[lo]}}
+function masterCheck(X,os){const err=[],warn=[],info=[];
+  if(os.length<2) err.push("Select at least two orders.");
+  os.forEach(o=>{if(isMaster(o))err.push(`${o.id} is already a master order. Add orders to it from its details instead.`);else if(o.masterId)err.push(`${o.id} is already in master ${o.masterId}.`);else if(!["Confirmed","Draft"].includes(o.status))err.push(`${o.id} is ${o.status}. Only confirmed or draft orders can be consolidated.`)});
+  const eq=[...new Set(os.map(o=>o.equip))];if(eq.length>1)err.push(`Different equipment (${eq.join(", ")}). A master order runs on one vehicle type.`);
+  const cap=EQUIP[os[0]?.equip]||{kg:0,pal:0},kg=os.reduce((s,o)=>s+o.weight,0),pal=os.reduce((s,o)=>s+(o.pallets||0),0);
+  if(cap.kg&&kg>cap.kg)err.push(`Total weight ${nfmt(kg)} kg is over the ${os[0].equip} limit of ${nfmt(cap.kg)} kg.`);
+  if(cap.pal&&pal>cap.pal)err.push(`Total ${pal} pallets is over the ${os[0].equip} limit of ${cap.pal}.`);
+  const lanes=new Set(os.map(o=>`${zoneOf(X,o.origin)}>${zoneOf(X,o.dest)}`));if(lanes.size>1)warn.push(`Orders cover ${lanes.size} zone pairs. The master will run as a multi-pick / multi-drop trip.`);
+  const days=new Set(os.map(o=>localDay(X,o.pickupTs)));if(days.size>1)warn.push(`Pickups fall on ${days.size} different days. The master picks up on the earliest one.`);
+  const tight=os.filter(o=>["EXP","SBD"].includes(o.svc));if(tight.length&&os.length>tight.length)warn.push(`${tight.map(o=>o.id).join(", ")} ha${tight.length>1?"ve":"s"} a same-day or express service. Sequence ${tight.length>1?"them":"it"} first.`);
+  const cus=new Set(os.map(o=>o.customerId));if(cus.size>1)info.push(`Groupage master for ${cus.size} customers. Each order stays billed to its own customer; the trip cost is shared by weight.`);
+  return {err,warn,info,kg,pal,cap}}
+function makeMaster(X,os,by){
+  const first=[...os].sort((a,b)=>a.pickupTs-b.pickupTs)[0], longest=[...os].sort((a,b)=>b.km-a.km)[0], cus=new Set(os.map(o=>o.customerId));
+  const rank=k=>Object.keys(SERVICE).indexOf(k), svc=[...os].sort((a,b)=>rank(a.svc)-rank(b.svc))[0].svc;
+  X.mstSeq=(X.mstSeq||0)+1;
+  const m={id:`${X.prefix}-MST-${pad4(X.mstSeq)}`,kind:"Master",status:"Master",customerId:cus.size===1?first.customerId:first.customerId,multiCustomer:cus.size>1,ref:cus.size===1?`MST ${first.ref}`:"GROUPAGE",
+    origin:first.origin,dest:longest.dest,equip:first.equip,weight:os.reduce((s,o)=>s+o.weight,0),pallets:os.reduce((s,o)=>s+(o.pallets||0),0),pickupTs:first.pickupTs,deliverBy:Math.min(...os.map(o=>o.deliverBy)),
+    svc,km:longest.km,tripId:null,pod:null,createdTs:Date.now(),ms:0,carrierId:null,acc:[],children:os.map(o=>o.id),sell:0,buy:0,lines:{sell:[],buy:[]},trace:[]};
+  const prev=tripCostPreview(X,os,null);m.sep=prev.sep;m.con=prev.con;m.stops=prev.stops;
+  X.orders.unshift(m);
+  os.forEach(o=>{o.masterId=m.id;if(o.status==="Draft")o.status="Confirmed";trace(X,o,"ORD-CON",by?"Manual entry":"System",{note:`Consolidated into ${m.id}`})});
+  trace(X,m,"ORD-CRT",by?"Manual entry":"System",{note:`Master order for ${os.length} orders: ${os.map(o=>o.id).join(", ")}`});
+  if(!SEEDING){audit(m.id,"(created)","",`master of ${os.map(o=>o.id).join(", ")}`);emit("order.master_created",m.id,`${os.length} orders · saves ${money2(prev.sep-prev.con,X.ccy)}`)}
+  return m}
+function addToMaster(X,m,o){m.children.push(o.id);o.masterId=m.id;m.weight+=o.weight;m.pallets+=(o.pallets||0);m.pickupTs=Math.min(m.pickupTs,o.pickupTs);m.deliverBy=Math.min(m.deliverBy,o.deliverBy);
+  if(o.km>m.km){m.km=o.km;m.dest=o.dest}if(o.customerId!==m.customerId)m.multiCustomer=true;const prev=tripCostPreview(X,kidsOf(X,m),null);m.sep=prev.sep;m.con=prev.con;m.stops=prev.stops;
+  trace(X,o,"ORD-CON","Manual entry",{note:`Added to ${m.id}`});audit(m.id,"child added","",o.id);emit("order.master_updated",m.id,`+ ${o.id}`)}
+function removeFromMaster(X,m,o){m.children=m.children.filter(id=>id!==o.id);delete o.masterId;trace(X,o,"ORD-CNF","Manual entry",{note:`Removed from ${m.id}`});audit(m.id,"child removed",o.id,"");
+  const k=kidsOf(X,m);if(k.length<2){k.forEach(c=>{delete c.masterId;trace(X,c,"ORD-CNF","System",{note:`${m.id} dissolved`})});m.children=[];m.status="Cancelled";m.dissolved=true;audit(m.id,"status","Master","Cancelled (dissolved)");emit("order.master_dissolved",m.id,"fewer than 2 orders left");return}
+  m.weight=k.reduce((s,c)=>s+c.weight,0);m.pallets=k.reduce((s,c)=>s+(c.pallets||0),0);const prev=tripCostPreview(X,k,null);m.sep=prev.sep;m.con=prev.con;m.stops=prev.stops;emit("order.master_updated",m.id,`− ${o.id}`)}
+function similarOrders(X,m){const k=kidsOf(X,m),cap=EQUIP[m.equip]||{kg:0,pal:0};
+  return X.orders.filter(o=>!isMaster(o)&&!o.masterId&&o.status==="Confirmed"&&o.equip===m.equip&&!m.children.includes(o.id)).map(o=>{let s=0;const why=[];
+    if(zoneOf(X,o.origin)===zoneOf(X,m.origin)){s+=35;why.push("pickup zone")}if(k.some(c=>zoneOf(X,c.dest)===zoneOf(X,o.dest))){s+=35;why.push("delivery zone")}
+    if(localDay(X,o.pickupTs)===localDay(X,m.pickupTs)){s+=20;why.push("same day")}if(k.some(c=>c.customerId===o.customerId)){s+=10;why.push("same customer")}
+    const fits=m.weight+o.weight<=cap.kg&&(!cap.pal||m.pallets+(o.pallets||0)<=cap.pal);return {o,s,why,fits}}).filter(x=>x.why.includes("pickup zone")&&x.why.includes("delivery zone")).sort((a,b)=>b.s-a.s).slice(0,6)}
+function relatedPanel(X,o){
+  const rows=[];const add=(id,rel,how)=>{const r=X.orders.find(x=>x.id===id);if(r)rows.push({r,rel,how})};
+  if(o.masterId)add(o.masterId,"Master order","Consolidation");
+  if(isMaster(o))(o.children||[]).forEach(id=>add(id,"Child order","Consolidation"));
+  if(o.masterId){const m=X.orders.find(x=>x.id===o.masterId);(m?.children||[]).filter(id=>id!==o.id).forEach(id=>add(id,"Sibling in same master","Consolidation"))}
+  if(o.relatedTo)add(o.relatedTo,"Original order","Return (debrief)");(o.related||[]).forEach(id=>add(id,"Return order","Return (debrief)"));
+  (o.links||[]).forEach(l=>add(l.id,l.type,"Manual link"));
+  X.orders.filter(x=>(x.links||[]).some(l=>l.id===o.id)).forEach(x=>add(x.id,(x.links.find(l=>l.id===o.id).type)+" (linked from)","Manual link"));
+  const canLink=!["Cancelled"].includes(o.status);
+  return `<section class="panel"><div class="panel-h"><h2>Related orders (${rows.length})</h2></div>
+   ${rows.length?`<div class="tbl-wrap"><table><thead><tr><th>Relation</th><th>${t("order")}</th><th>${t("customer")}</th><th>Lane</th><th>Status</th><th>Source</th><th></th></tr></thead><tbody>
+   ${rows.map(({r,rel,how})=>`<tr><td>${esc(rel)}</td><td>${lnk(r.id,"data-relopen")}</td><td>${esc(cust(r.customerId).name)}${r.multiCustomer?" +":""}</td><td class="mono">${r.origin} → ${r.dest}</td><td>${isMaster(r)?pill("Master","p-info"):pill(r.status)}</td><td class="muted">${esc(how)}</td>
+     <td>${how==="Consolidation"&&isMaster(o)&&r.status==="Confirmed"?`<button class="btn sm" data-unkid="${r.id}">Remove from master</button>`:how==="Manual link"&&(o.links||[]).some(l=>l.id===r.id)?`<button class="btn sm" data-unlink="${r.id}">Unlink</button>`:""}</td></tr>`).join("")}</tbody></table></div>`:`<div class="panel-b muted" style="font-size:12.5px">No related orders yet.</div>`}
+   ${canLink?`<form class="panel-b row" id="relF" style="gap:8px;border-top:1px solid var(--line)"><input type="text" id="relId" placeholder="Order number to link" style="width:170px" aria-label="Order to link"><select id="relT" aria-label="Relation type"><option>Same delivery</option><option>Split from</option><option>Replacement for</option><option>Same customer PO</option><option>Claim / damage</option></select><button class="btn sm">Link order</button><span id="relErr" class="muted" style="font-size:12px"></span></form>`:""}
+  </section>`}
+function masterPanel(X,m){const k=kidsOf(X,m),pr=masterProgress(X,m),cap=EQUIP[m.equip]||{kg:1,pal:0},sim=["Master"].includes(m.status)&&k.every(c=>c.status==="Confirmed")?similarOrders(X,m):[];
+  return `<section class="panel"><div class="panel-h"><h2>Master order</h2>${pill(pr.label,pr.cls)}</div><div class="panel-b stack" style="gap:8px">
+   <div class="row" style="gap:20px;font-size:13px"><span>${k.length} orders · ${m.stops||"–"} stops · ${nfmt(m.km)} km</span><span>${m.multiCustomer?"Groupage (several customers)":esc(cust(m.customerId).name)}</span></div>
+   <div><div class="row" style="justify-content:space-between;font-size:12.5px"><span>Weight</span><span class="num">${nfmt(m.weight)} / ${nfmt(cap.kg)} kg · ${Math.round(m.weight/cap.kg*100)}%</span></div><div class="bar ${m.weight>cap.kg?"over":""}"><i style="width:${Math.min(100,m.weight/cap.kg*100)}%"></i></div></div>
+   ${cap.pal?`<div><div class="row" style="justify-content:space-between;font-size:12.5px"><span>Pallets</span><span class="num">${m.pallets} / ${cap.pal}</span></div><div class="bar ${m.pallets>cap.pal?"over":""}"><i style="width:${Math.min(100,m.pallets/cap.pal*100)}%"></i></div></div>`:""}
+   <dl class="kv"><dt>Separate trips</dt><dd class="num">${money2(m.sep||0,X.ccy)}</dd><dt>As one master</dt><dd class="num">${money2(m.con||0,X.ccy)} · saves <b style="color:var(--ok)">${money2((m.sep||0)-(m.con||0),X.ccy)}</b></dd><dt>Billing</dt><dd>Each child order is billed to its own customer. The master carries no charges.</dd></dl>
+   ${sim.length?`<div><b style="font-size:13px">Similar orders you can add</b><div class="tbl-wrap"><table><tbody>${sim.map(x=>`<tr><td>${lnk(x.o.id,"data-relopen")}</td><td>${esc(cust(x.o.customerId).name)}</td><td class="mono">${x.o.origin} → ${x.o.dest}</td><td class="r num">${nfmt(x.o.weight)} kg</td><td class="muted" style="font-size:12px">${x.s}% · ${esc(x.why.join(", "))}</td><td>${x.fits?`<button class="btn sm" data-addkid="${x.o.id}">Add</button>`:pill("Over capacity","p-warn")}</td></tr>`).join("")}</tbody></table></div></div>`:""}
+  </div></section>`}
+function openConsolidate(ids){
+  const X=T(), os=ids.map(id=>X.orders.find(o=>o.id===id)).filter(Boolean), c=masterCheck(X,os), prev=os.length>1&&!c.err.length?tripCostPreview(X,os,null):null;
+  $("#overlay").innerHTML=`<div class="modal-bg" id="mcbg"><div class="modal" style="width:min(860px,100%)">
+   <div class="row"><h2 style="margin:0;font-size:18px;margin-inline-end:auto">Consolidate into a master order</h2><button class="btn sm" id="mcX">${t("close")}</button></div>
+   <p class="muted" style="margin:0;font-size:12.5px">The selected orders become child orders of one master order. The master is planned and dispatched as one load; each child keeps its own customer, references, charges and invoice.</p>
+   <div class="tbl-wrap"><table><thead><tr><th>${t("order")}</th><th>Service</th><th>${t("customer")}</th><th>Lane</th><th>${t("pickup")}</th><th class="r">kg</th><th class="r">Pal</th><th>Equipment</th><th>Status</th></tr></thead><tbody>
+   ${os.map(o=>`<tr><td class="mono">${o.id}</td><td>${svcTag(o)}</td><td>${esc(cust(o.customerId).name)}</td><td class="mono">${o.origin} → ${o.dest}</td><td class="num">${dt(o.pickupTs,X.tz)}</td><td class="r num">${nfmt(o.weight)}</td><td class="r num">${o.pallets||0}</td><td>${esc(o.equip)}</td><td>${isMaster(o)?pill("Master","p-info"):pill(o.status)}</td></tr>`).join("")}
+   <tr><td colspan="5"><b>Total</b></td><td class="r num"><b>${nfmt(c.kg)}</b></td><td class="r num"><b>${c.pal}</b></td><td colspan="2" class="muted">${c.cap.kg?`capacity ${nfmt(c.cap.kg)} kg${c.cap.pal?` · ${c.cap.pal} pal`:""}`:""}</td></tr></tbody></table></div>
+   ${c.err.map(e=>`<div class="note bad">${esc(e)}</div>`).join("")}${c.warn.map(e=>`<div class="note warn">${esc(e)}</div>`).join("")}${c.info.map(e=>`<div class="note info">${esc(e)}</div>`).join("")}
+   ${prev?`<div class="quote"><div><div class="l">Separate trips</div><div class="v">${money2(prev.sep,X.ccy)}</div></div><div><div class="l">One master</div><div class="v">${money2(prev.con,X.ccy)}</div></div><div><div class="l">Saving</div><div class="v" style="color:var(--ok)">${money2(prev.sep-prev.con,X.ccy)}</div></div><div><div class="l">Stops</div><div class="v">${prev.stops}</div></div></div>`:""}
+   <div class="row" style="justify-content:flex-end"><button class="btn" id="mcC">${t("cancel")}</button><button class="btn primary" id="mcGo" ${c.err.length?"disabled":""}>Create master order</button></div></div></div>`;
+  $("#mcX").onclick=closeOverlay;$("#mcC").onclick=closeOverlay;$("#mcbg").onclick=e=>{if(e.target.id==="mcbg")closeOverlay()};
+  $("#mcGo").onclick=()=>{const m=makeMaster(X,os,ME().name);ui.sel.clear();toast(`${m.id} created with ${os.length} orders. Plan it under Planning as one load.`);refreshBehind();openOrder(m.id)};
+}
+
 const TENANTS = {gulf:buildTenant("gulf"), indus:buildTenant("indus"), euro:buildTenant("euro")};
 SEEDING=false;
 CUR_EQ=TENANTS.gulf.equip;
@@ -1171,6 +1253,7 @@ VIEWS.orders=function(){
   const X=T(); let rows=X.orders.filter(o=>{
     if(ui.status && o.status!==ui.status) return false;
     if(ui.svc && o.svc!==ui.svc) return false;
+    if(ui.kind==="master"&&!isMaster(o)) return false; if(ui.kind==="child"&&!o.masterId) return false; if(ui.kind==="single"&&(isMaster(o)||o.masterId)) return false;
     if(!ui.q) return true; const q=ui.q.toLowerCase();
     return [o.id,o.ref,cust(o.customerId).name,city(o.origin).name,city(o.dest).name,o.origin,o.dest].some(s=>s.toLowerCase().includes(q))});
   const key={id:o=>o.id,customer:o=>cust(o.customerId).name,lane:o=>o.origin+o.dest,pickup:o=>o.pickupTs,weight:o=>o.weight,equip:o=>o.equip,status:o=>STATUS_ORDER.indexOf(o.status),code:o=>curCode(T(),o)||"",ft:o=>fileTypeOf(T(),o),con:o=>o.conNote||"",sell:o=>o.sell,cost:o=>o.buy,margin:o=>(o.sell-o.buy)/o.sell,ref:o=>o.ref,pickupTs:o=>o.pickupTs,svc:o=>Object.keys(SERVICE).indexOf(o.svc),promise:o=>o.deliverBy}[ui.sort];
@@ -1186,12 +1269,14 @@ VIEWS.orders=function(){
      <input type="search" id="q" placeholder="${esc(t("search"))}" value="${esc(ui.q)}" aria-label="Search">
      <select id="fStatus" aria-label="Status"><option value="">${t("allStatus")}</option>${STATUS_ORDER.map(s=>`<option value="${s}" ${ui.status===s?"selected":""}>${esc(tst(s))} (${X.orders.filter(o=>o.status===s).length})</option>`).join("")}</select>
      <select id="fSvc" aria-label="Service level"><option value="">All service levels</option>${Object.entries(SERVICE).map(([k,S])=>`<option value="${k}" ${ui.svc===k?"selected":""}>${esc(S.name)}</option>`).join("")}</select>
+     <select id="fKind" aria-label="Order type"><option value="">All order types</option><option value="master" ${ui.kind==="master"?"selected":""}>Master orders</option><option value="child" ${ui.kind==="child"?"selected":""}>In a master order</option><option value="single" ${ui.kind==="single"?"selected":""}>Standalone orders</option></select>
      <details style="position:relative"><summary class="btn sm">${t("columns")}</summary>
       <div class="panel" style="position:absolute;z-index:4;padding:8px 12px;inset-inline-start:0;top:110%;display:flex;flex-direction:column;gap:4px;min-width:180px">
        ${Object.keys(COLS).map(k=>`<label class="row" style="gap:6px"><input type="checkbox" data-col="${k}" ${ui.cols.has(k)?"checked":""} ${k==="id"?"disabled":""}> ${esc(t(COLS[k]))}</label>`).join("")}
       </div></details>
     </div>
     <span class="muted" style="font-size:12.5px">${ui.sel.size?`${ui.sel.size} selected`:""}</span>
+    <button class="btn sm" id="bulkCon" ${ui.sel.size>1?"":"disabled"} title="Group the selected orders under one master order">Consolidate into master${ui.sel.size>1?` (${ui.sel.size})`:""}</button>
     <button class="btn sm" id="bulkLbl" ${ui.sel.size?"":"disabled"}>Print labels</button>
     <button class="btn sm" id="bulkHold" ${ui.sel.size?"":"disabled"}>Put on hold</button>
     <button class="btn primary" id="newOrder">+ ${t("newOrder")}</button>
@@ -1200,9 +1285,9 @@ VIEWS.orders=function(){
     <thead><tr><th><input type="checkbox" id="selAll" aria-label="Select page"></th>${Object.keys(COLS).map(th).join("")}</tr></thead>
     <tbody>${pageRows.map(o=>{const c=cust(o.customerId),m=(o.sell-o.buy)/o.sell;return `<tr class="click" data-order="${o.id}">
       <td><input type="checkbox" data-sel="${o.id}" ${ui.sel.has(o.id)?"checked":""} aria-label="Select ${o.id}"></td>
-      ${td("id",`<span class="mono">${o.id}</span>`)}${td("svc",svcTag(o))}${td("customer",esc(c.name))}${td("lane",`<span class="mono">${o.origin} → ${o.dest}</span>${city(o.origin).cc!==city(o.dest).cc?' <span class="pill p-info">Cross-border</span>':""}`)}
-      ${td("pickup",dt(o.pickupTs,X.tz),"num")}${td("promise",dt(o.deliverBy,X.tz),"num")}${td("weight",nfmt(o.weight)+" kg","r num")}${td("equip",esc(o.equip))}${td("status",`<span class="mono muted" style="font-size:11.5px">${fsCode(o)}</span> `+pill(o.status))}${td("ft",`<span class="mono">${fileTypeOf(X,o)}</span>`)}${td("con",o.conNote?`<span class="mono">${o.conNote}</span>`:"–")}${td("code",codeChip(X,curCode(X,o)))}
-      ${td("sell",money(o.sell,X.ccy),"r num")}${td("cost",money(o.buy,X.ccy),"r num")}${td("margin",`<span style="color:${m<X.guard?"var(--bad)":"inherit"}">${Math.round(m*100)}%</span>`,"r num")}${td("ref",`<span class="mono">${o.ref}</span>`)}
+      ${td("id",`<span class="mono">${o.id}</span>${isMaster(o)?` ${pill("Master · "+o.children.length,"p-info")}`:o.masterId?`<div class="muted" style="font-size:11.5px">↳ in <span class="mono">${o.masterId}</span></div>`:""}`)}${td("svc",svcTag(o))}${td("customer",esc(c.name))}${td("lane",`<span class="mono">${o.origin} → ${o.dest}</span>${city(o.origin).cc!==city(o.dest).cc?' <span class="pill p-info">Cross-border</span>':""}`)}
+      ${td("pickup",dt(o.pickupTs,X.tz),"num")}${td("promise",dt(o.deliverBy,X.tz),"num")}${td("weight",nfmt(o.weight)+" kg","r num")}${td("equip",esc(o.equip))}${td("status",`<span class="mono muted" style="font-size:11.5px">${fsCode(o)}</span> `+(isMaster(o)?pill(masterProgress(X,o).label,"p-info"):pill(o.status)))}${td("ft",`<span class="mono">${fileTypeOf(X,o)}</span>`)}${td("con",o.conNote?`<span class="mono">${o.conNote}</span>`:"–")}${td("code",codeChip(X,curCode(X,o)))}
+      ${td("sell",isMaster(o)?"–":money(o.sell,X.ccy),"r num")}${td("cost",isMaster(o)?"–":money(o.buy,X.ccy),"r num")}${td("margin",isMaster(o)?"–":`<span style="color:${m<X.guard?"var(--bad)":"inherit"}">${Math.round(m*100)}%</span>`,"r num")}${td("ref",`<span class="mono">${o.ref}</span>`)}
     </tr>`}).join("")}</tbody></table></div>
    <div class="pager"><span>${t("showing")} ${total?ui.page*ui.size+1:0}–${Math.min(total,(ui.page+1)*ui.size)} ${t("of")} ${nfmt(total)}</span>
     <select id="pgSize" aria-label="Rows per page">${[25,50,100].map(n=>`<option ${ui.size===n?"selected":""}>${n}</option>`).join("")}</select>
@@ -1211,6 +1296,8 @@ VIEWS.orders=function(){
   const q=$("#q"); q.addEventListener("input",e=>{ui.q=e.target.value;ui.page=0;VIEWS.orders();const n=$("#q");n.focus();n.setSelectionRange(n.value.length,n.value.length)});
   $("#fStatus").onchange=e=>{ui.status=e.target.value;ui.page=0;VIEWS.orders()};
   $("#fSvc").onchange=e=>{ui.svc=e.target.value;ui.page=0;VIEWS.orders()};
+  $("#fKind").onchange=e=>{ui.kind=e.target.value;ui.page=0;VIEWS.orders()};
+  $("#bulkCon").onclick=()=>openConsolidate([...ui.sel]);
   $("#bulkLbl").onclick=()=>{const ids=[...ui.sel].filter(id=>{const o=X.orders.find(x=>x.id===id);return o&&!["Draft","Cancelled"].includes(o.status)});if(!ids.length){toast("Draft and cancelled orders don't get labels.");return}openLabels(ids)};
   document.querySelectorAll("[data-sort]").forEach(el=>el.onclick=()=>{const k=el.dataset.sort;if(ui.sort===k)ui.dir*=-1;else{ui.sort=k;ui.dir=1}VIEWS.orders()});
   document.querySelectorAll("[data-col]").forEach(el=>el.onchange=()=>{el.checked?ui.cols.add(el.dataset.col):ui.cols.delete(el.dataset.col);VIEWS.orders();document.querySelector("details").open=true});
@@ -1303,7 +1390,7 @@ function openOrder(id){
   $("#overlay").innerHTML=`<div class="drawer-bg" id="dbg"><aside class="drawer">
    <div class="row"><h2 class="mono" style="margin-inline-end:auto">${o.id}</h2>${pill(o.status)}${codeChip(X,curCode(X,o))}<button class="btn sm" id="dtr">Track & trace</button><button class="btn sm" id="dx">${t("close")}</button></div>
    ${o.status==="On hold"&&o.holdReason?`<div class="note warn">${esc(o.holdReason)}</div>`:""}
-   <dl class="kv"><dt>${t("customer")}</dt><dd>${esc(c.name)}<div class="muted">${X.taxScheme} ${esc(c.taxId)} · ${esc(c.cycle)} billing · ${c.terms} days</div></dd>
+   <dl class="kv"><dt>${t("customer")}</dt><dd>${isMaster(o)&&o.multiCustomer?`Groupage · ${new Set(kidsOf(X,o).map(k=>k.customerId)).size} customers<div class="muted">${kidsOf(X,o).map(k=>esc(cust(k.customerId).name)).filter((v,i,a)=>a.indexOf(v)===i).join(", ")}</div>`:`${esc(c.name)}<div class="muted">${X.taxScheme} ${esc(c.taxId)} · ${esc(c.cycle)} billing · ${c.terms} days</div>`}</dd>
     <dt>Customer ref</dt><dd class="mono">${esc(o.ref)}</dd>
     <dt>${t("origin")}</dt><dd>${esc(city(o.origin).name)}</dd><dt>${t("destination")}</dt><dd>${esc(city(o.dest).name)} <span class="muted">(${nfmt(o.km)} km)</span></dd>
     <dt>${t("pickup")}</dt><dd class="num">${dt(o.pickupTs,X.tz)} <span class="muted">${X.tz}</span></dd><dt>Service level</dt><dd>${svcTag(o)} ${esc(SERVICE[o.svc].name)}</dd><dt>Promised by</dt><dd class="num">${dt(o.deliverBy,X.tz)} ${(()=>{const sl=slaStatus(X,o);return sl?pill(sl.t,sl.c):""})()}</dd>
@@ -1314,7 +1401,8 @@ function openOrder(id){
     ${o.relatedTo?`<dt>Related order</dt><dd>Return for <span class="mono">${o.relatedTo}</span></dd>`:""}${o.related?`<dt>Related orders</dt><dd class="mono">${o.related.join(", ")}</dd>`:""}${o.debrief?`<dt>Debrief</dt><dd>${esc(o.debrief.status)} · ${esc(o.debrief.qual)}</dd>`:""}
     ${tr?`<dt>Trip</dt><dd class="mono">${tr.id} · ${esc(veh(tr.vehicleId).plate)} · ${esc(drvr(tr.driverId).name)}</dd>`:""}
    </dl>
-   <section class="panel"><div class="panel-h"><h2>Costs & charges</h2><span class="muted" style="font-size:12px">${X.ccy} · decimal, never float</span></div><div class="tbl-wrap"><table><tbody>
+   ${isMaster(o)?masterPanel(X,o):""}
+   <section class="panel" ${isMaster(o)?"hidden":""}><div class="panel-h"><h2>Costs & charges</h2><span class="muted" style="font-size:12px">${X.ccy} · decimal, never float</span></div><div class="tbl-wrap"><table><tbody>
     <tr><th colspan="2">Revenue: charges to customer</th></tr>
     ${o.lines.sell.map(l=>row(l)).join("")}
     <tr><td>Subtotal excl. tax</td><td class="r num">${money2(o.sell,X.ccy)}</td></tr>
@@ -1336,7 +1424,7 @@ function openOrder(id){
      ${o.pod.sig?`<img src="${o.pod.sig}" alt="Recipient signature" style="background:#fff;border:1px solid var(--line);border-radius:6px;max-height:120px">`:""}</div></section>`:""}
    <div class="row">
     ${o.status==="Draft"?`<button class="btn primary" data-act="confirm">Confirm</button>`:""}
-    ${o.status==="Confirmed"?`<a class="btn primary" href="#planning">Plan this order</a>`:""}
+    ${o.status==="Confirmed"&&!o.masterId?`<a class="btn primary" href="#planning">Plan this order</a> <button class="btn" data-act="consol">Consolidate with similar orders</button>`:""}${isMaster(o)&&!o.tripId&&kidsOf(X,o).every(c=>c.status==="Confirmed")?`<a class="btn primary" href="#planning">Plan master order</a>`:""}
     ${o.status==="Closed"&&Date.now()-o.closedTs<=(X.cfg.fileTypes.find(f=>f.code===fileTypeOf(X,o))?.reopen||3)*DAY?`<button class="btn" data-act="reopen">Reopen file (999 → 998)</button>`:""}
     ${o.status==="Reopened"?`<div class="note warn" style="flex-basis:100%">File reopened. Add the missing charge above; it is billed on a supplementary invoice from Receivables → Unbilled.</div>`:""}
     ${o.status==="On hold"?`<button class="btn" data-act="release">${o.holdReason?"Approve margin & release":"Release hold"}</button>`:""}
@@ -1345,9 +1433,17 @@ function openOrder(id){
     ${!["Draft","Cancelled"].includes(o.status)?`<button class="btn" data-act="labels">Print labels (${Math.max(1,o.pallets)})</button>`:""}
     ${tr&&tr.ms<6?`<a class="btn" href="#track" data-trackset="${o.id}">Open customer tracking link</a>`:""}
    </div>
+   ${relatedPanel(X,o)}
    <section><h3 style="font-size:14px;margin:0 0 8px">History (audit)</h3>${hist.length?`<div class="tbl-wrap"><table><thead><tr><th>When</th><th>Field</th><th>Old</th><th>New</th><th>By</th></tr></thead><tbody>${hist.map(a=>`<tr><td class="num">${dt(a.ts,X.tz)}</td><td>${esc(a.field)}</td><td>${esc(a.old)}</td><td>${esc(a.new)}</td><td>${esc(a.by)}</td></tr>`).join("")}</tbody></table></div>`:`<p class="muted" style="margin:0">No changes in this session. Seeded history is not shown.</p>`}</section>
   </aside></div>`;
   $("#dx").onclick=closeOverlay; $("#dbg").onclick=e=>{if(e.target.id==="dbg")closeOverlay()};
+  document.querySelectorAll("[data-relopen]").forEach(b=>b.onclick=()=>openOrder(b.dataset.relopen));
+  document.querySelectorAll("[data-unkid]").forEach(b=>b.onclick=()=>{const c=X.orders.find(x=>x.id===b.dataset.unkid);removeFromMaster(X,o,c);toast(o.dissolved?`${o.id} dissolved: fewer than two orders left.`:`${c.id} removed from ${o.id}.`);openOrder(o.id);refreshBehind()});
+  document.querySelectorAll("[data-addkid]").forEach(b=>b.onclick=()=>{const c=X.orders.find(x=>x.id===b.dataset.addkid);addToMaster(X,o,c);toast(`${c.id} added to ${o.id}.`);openOrder(o.id);refreshBehind()});
+  document.querySelectorAll("[data-unlink]").forEach(b=>b.onclick=()=>{o.links=(o.links||[]).filter(l=>l.id!==b.dataset.unlink);audit(o.id,"related order",b.dataset.unlink,"");emit("order.unlinked",o.id,b.dataset.unlink);openOrder(o.id)});
+  $("#relF")&&($("#relF").onsubmit=e=>{e.preventDefault();const id=$("#relId").value.trim().toUpperCase(),r=X.orders.find(x=>x.id.toUpperCase()===id);
+    if(!r){$("#relErr").textContent=id?`No order ${id} in this tenant.`:"Enter an order number.";return}if(r.id===o.id){$("#relErr").textContent="An order can't be linked to itself.";return}if((o.links||[]).some(l=>l.id===r.id)){$("#relErr").textContent="Already linked.";return}
+    o.links=(o.links||[]).concat({id:r.id,type:$("#relT").value});audit(o.id,"related order","",`${r.id} (${$("#relT").value})`);emit("order.linked",o.id,`${r.id} · ${$("#relT").value}`);openOrder(o.id)});
   $("#dtr").onclick=()=>{trc.id=o.id;trc.q="";closeOverlay();if(route()==="trace")VIEWS.trace();else location.hash="trace"};
   document.querySelectorAll("[data-trackset]").forEach(a=>a.addEventListener("click",()=>{trk.id=a.dataset.trackset}));
   $("#accForm")&&($("#accForm").onsubmit=e=>{e.preventDefault();const code=$("#accCode").value,qty=Math.max(1,Math.round(+$("#accQty").value||1)),d=accDef(X,code);
@@ -1363,6 +1459,9 @@ function openOrder(id){
     if(a==="invoice"){const inv=makeInvoice(X,o.customerId,[o],Date.now());audit(o.id,"status","POD received","Invoiced");audit(inv.id,"(created)","",money2(inv.total,X.ccy));emit("invoice.issued",inv.id,`${c.name} · ${money2(inv.total,X.ccy)}`);refreshBehind();openInvoice(inv.id);return}
     if(a==="viewinv"){openInvoice(o.invoiceId);return}
     if(a==="labels"){openLabels([o.id]);return}
+    if(a==="consol"){const cap=EQUIP[o.equip]||{kg:0,pal:0};let kg=o.weight,pal=o.pallets||0;const pick=[o.id];
+      similarOrders(X,{...o,kind:"probe",children:[o.id]}).forEach(x=>{if(kg+x.o.weight<=cap.kg&&(!cap.pal||pal+(x.o.pallets||0)<=cap.pal)){pick.push(x.o.id);kg+=x.o.weight;pal+=(x.o.pallets||0)}});
+      if(pick.length<2){toast("No similar confirmed orders found: same pickup and delivery zone, equipment and day, within capacity.");return}openConsolidate(pick);return}
     openOrder(o.id); refreshBehind();});
 }
 
@@ -1447,19 +1546,19 @@ VIEWS.planning=function(){
   document.querySelectorAll("#planBody [data-open]").forEach(b=>b.onclick=e=>{e.stopPropagation();openOrder(b.dataset.open)});
 };
 function planBuilder(X){
-  const open=X.orders.filter(o=>o.status==="Confirmed").sort((a,b)=>a.pickupTs-b.pickupTs);
+  const open=X.orders.filter(o=>(o.status==="Confirmed"&&!o.masterId)||(isMaster(o)&&!o.tripId&&kidsOf(X,o).length&&kidsOf(X,o).every(c=>c.status==="Confirmed"))).sort((a,b)=>a.pickupTs-b.pickupTs);
   const freeV=freeVehicles(X);
   if(!freeV.find(v=>v.id===plan.vehicleId)) plan.vehicleId=freeV[0]?.id||"";
   const sel=open.filter(o=>ui.sel.has(o.id)); const v=veh(plan.vehicleId);
   const wt=sel.reduce((s,o)=>s+o.weight,0), pal=sel.reduce((s,o)=>s+o.pallets,0);
   const wPct=v?wt/v.kg*100:0, pPct=v&&v.pal?pal/v.pal*100:0;
   const equipMismatch=v&&sel.some(o=>o.equip!==v.equip), over=wPct>100||pPct>100;
-  const prev=sel.length&&v?tripCostPreview(X,sel,v.owner||null):null;
-  const tight=sel.filter(o=>["EXP","SBD"].includes(o.svc));
+  const exp=sel.flatMap(o=>isMaster(o)?kidsOf(X,o):[o]);const prev=exp.length&&v?tripCostPreview(X,exp,v.owner||null):null;
+  const tight=exp.filter(o=>["EXP","SBD"].includes(o.svc));
   $("#planBody").innerHTML=`<div class="grid g-2">
    <section class="panel"><div class="panel-h"><h2>${t("unplanned")} (${open.length})</h2><span class="muted" style="font-size:12.5px">Tick orders to build a load</span></div>
     <div class="tbl-wrap" style="max-height:560px;overflow:auto"><table><thead><tr><th></th><th>${t("order")}</th><th>Service</th><th>${t("customer")}</th><th>Lane</th><th>${t("pickup")}</th><th>Promised by</th><th class="r">${t("weight")}</th><th class="r">Pal</th><th>Equipment</th></tr></thead><tbody>
-    ${open.map(o=>`<tr><td><input type="checkbox" data-psel="${o.id}" ${ui.sel.has(o.id)?"checked":""} aria-label="Select ${o.id}"></td><td>${lnk(o.id,"data-open")}</td><td>${svcTag(o)}</td><td>${esc(cust(o.customerId).name)}</td><td class="mono">${o.origin} → ${o.dest}</td><td class="num">${dt(o.pickupTs,X.tz)}</td><td class="num">${dt(o.deliverBy,X.tz)}</td><td class="r num">${nfmt(o.weight)}</td><td class="r num">${o.pallets}</td><td>${esc(o.equip)}</td></tr>`).join("")||`<tr><td colspan="10" class="muted">All confirmed orders are planned. Create one under Orders.</td></tr>`}
+    ${open.map(o=>`<tr><td><input type="checkbox" data-psel="${o.id}" ${ui.sel.has(o.id)?"checked":""} aria-label="Select ${o.id}"></td><td>${lnk(o.id,"data-open")}${isMaster(o)?" "+pill("Master · "+o.children.length,"p-info"):""}</td><td>${svcTag(o)}</td><td>${esc(cust(o.customerId).name)}</td><td class="mono">${o.origin} → ${o.dest}</td><td class="num">${dt(o.pickupTs,X.tz)}</td><td class="num">${dt(o.deliverBy,X.tz)}</td><td class="r num">${nfmt(o.weight)}</td><td class="r num">${o.pallets}</td><td>${esc(o.equip)}</td></tr>`).join("")||`<tr><td colspan="10" class="muted">All confirmed orders are planned. Create one under Orders.</td></tr>`}
     </tbody></table></div></section>
    <section class="panel"><div class="panel-h"><h2>Load builder</h2></div><div class="panel-b stack">
     <label class="ctl" style="flex-direction:column;align-items:stretch">${t("selectVehicle")} (${freeV.length} available)
@@ -1467,17 +1566,17 @@ function planBuilder(X){
     ${v?`<dl class="kv"><dt>${t("driverL")}</dt><dd>${esc(drvr(v.driverId).name)} <span class="muted mono">${esc(drvr(v.driverId).phone)}</span></dd></dl>`:""}
     <div><div class="row" style="justify-content:space-between;font-size:12.5px"><span>${t("weight")}</span><span class="num">${nfmt(wt)} / ${nfmt(v?.kg||0)} kg · ${Math.round(wPct)}%</span></div><div class="bar ${wPct>100?"over":""}"><i style="width:${Math.min(100,wPct)}%"></i></div></div>
     <div><div class="row" style="justify-content:space-between;font-size:12.5px"><span>Pallets</span><span class="num">${pal} / ${v?.pal||"–"} · ${v?.pal?Math.round(pPct)+"%":"n/a"}</span></div><div class="bar ${pPct>100?"over":""}"><i style="width:${Math.min(100,pPct)}%"></i></div></div>
-    <div class="muted" style="font-size:12.5px">${t("selectedOrders")}: ${sel.length}${sel.length?` · ${stopCount(sel)} stops`:""}</div>
-    ${prev&&sel.length>1?`<div class="note ok">Consolidated trip cost ${money2(prev.con,X.ccy)} vs ${money2(prev.sep,X.ccy)} as separate trips. Saving ${money2(prev.sep-prev.con,X.ccy)}.</div>`:""}
+    <div class="muted" style="font-size:12.5px">${t("selectedOrders")}: ${sel.length}${sel.length?` · ${exp.length} shipment${exp.length===1?"":"s"} · ${stopCount(exp)} stops`:""}</div>
+    ${prev&&exp.length>1&&prev.sep-prev.con>0.5?`<div class="note ok">Consolidated trip cost ${money2(prev.con,X.ccy)} vs ${money2(prev.sep,X.ccy)} as separate trips. Saving ${money2(prev.sep-prev.con,X.ccy)}.</div>`:""}
     ${over?`<div class="note bad">Load is over capacity. Remove an order or pick a larger vehicle.</div>`:""}
     ${equipMismatch?`<div class="note warn">Some orders asked for different equipment than ${esc(v.equip)}. The planner can override.</div>`:""}
-    ${tight.length&&sel.length>1?`<div class="note warn">${tight.map(o=>o.id).join(", ")} ${tight.length>1?"have":"has"} a tight service level (${tight.map(o=>SERVICE[o.svc].short).join(", ")}). Put ${tight.length>1?"them":"it"} first in the stop sequence.</div>`:""}
+    ${tight.length&&exp.length>1?`<div class="note warn">${tight.map(o=>o.id).join(", ")} ${tight.length>1?"have":"has"} a tight service level (${tight.map(o=>SERVICE[o.svc].short).join(", ")}). Put ${tight.length>1?"them":"it"} first in the stop sequence.</div>`:""}
     <button class="btn primary" id="mkTrip" ${!sel.length||over||!v?"disabled":""}>${t("createTrip")}</button>
     <p class="muted" style="font-size:12px;margin:0">Route optimisation (OR-Tools) is Phase 3. This demo shows manual load building with live utilisation.</p>
    </div></section></div>`;
   document.querySelectorAll("[data-psel]").forEach(el=>el.onchange=()=>{el.checked?ui.sel.add(el.dataset.psel):ui.sel.delete(el.dataset.psel);VIEWS.planning()});
   $("#pv")&&($("#pv").onchange=e=>{plan.vehicleId=e.target.value;VIEWS.planning()});
-  $("#mkTrip").onclick=()=>{const trip=createTrip(X,sel,v);sel.forEach(o=>ui.sel.delete(o.id));drv.tripId=trip.id;
+  $("#mkTrip").onclick=()=>{const exp=sel.flatMap(o=>isMaster(o)?kidsOf(X,o):[o]);const trip=createTrip(X,exp,v);sel.filter(isMaster).forEach(m=>{m.tripId=trip.id;trace(X,m,"TRP-DSP","Planner",{note:trip.id})});sel.forEach(o=>ui.sel.delete(o.id));drv.tripId=trip.id;
     toast(`${trip.id} dispatched to ${drvr(v.driverId).name}. Open the Driver app to run it.`);VIEWS.planning()};
 }
 function planConsol(X){
@@ -1489,7 +1588,7 @@ function planConsol(X){
      const tight=s.orders.filter(o=>["EXP","SBD"].includes(o.svc));
      return `<section class="panel"><div class="panel-h"><h2>${esc(s.zones)} · ${esc(s.equip)} · pickup ${dt(new Date(s.day+"T08:00:00Z").getTime(),"UTC",false)} · ${s.orders.length} orders</h2>${pill(`Saves ${money(s.saving,X.ccy)} (${Math.round(s.saving/s.sep*100)}%)`,"p-ok")}</div>
       <div class="tbl-wrap"><table><thead><tr><th>${t("order")}</th><th>Service</th><th>${t("customer")}</th><th>Lane</th><th>${t("pickup")}</th><th>Promised by</th><th class="r">kg</th><th class="r">Pal</th></tr></thead><tbody>
-      ${s.orders.map(o=>`<tr><td>${lnk(o.id,"data-open")}</td><td>${svcTag(o)}</td><td>${esc(cust(o.customerId).name)}</td><td class="mono">${o.origin} → ${o.dest}</td><td class="num">${dt(o.pickupTs,X.tz)}</td><td class="num">${dt(o.deliverBy,X.tz)}</td><td class="r num">${nfmt(o.weight)}</td><td class="r num">${o.pallets}</td></tr>`).join("")}</tbody></table></div>
+      ${s.orders.map(o=>`<tr><td>${lnk(o.id,"data-open")}${isMaster(o)?" "+pill("Master · "+o.children.length,"p-info"):""}</td><td>${svcTag(o)}</td><td>${esc(cust(o.customerId).name)}</td><td class="mono">${o.origin} → ${o.dest}</td><td class="num">${dt(o.pickupTs,X.tz)}</td><td class="num">${dt(o.deliverBy,X.tz)}</td><td class="r num">${nfmt(o.weight)}</td><td class="r num">${o.pallets}</td></tr>`).join("")}</tbody></table></div>
       <div class="panel-b grid g-2e" style="gap:14px">
        <div class="stack" style="gap:8px">
         <div><div class="row" style="justify-content:space-between;font-size:12.5px"><span>Weight</span><span class="num">${nfmt(s.kg)} / ${nfmt(s.cap.kg)} kg · ${Math.round(s.kg/s.cap.kg*100)}%</span></div><div class="bar"><i style="width:${s.kg/s.cap.kg*100}%"></i></div></div>
@@ -1499,12 +1598,13 @@ function planConsol(X){
        <div class="stack" style="gap:8px">
         <dl class="kv"><dt>Separate trips</dt><dd class="num">${money2(s.sep,X.ccy)} · ${s.orders.length} trucks</dd><dt>Consolidated</dt><dd class="num">${money2(s.con,X.ccy)} · 1 truck, ${s.stops} stops, ${nfmt(s.tripKm)} km</dd><dt>Saving</dt><dd class="num" style="color:var(--ok)"><b>${money2(s.saving,X.ccy)}</b></dd></dl>
         <div class="row"><select data-cv="${i}" aria-label="Vehicle for group ${i+1}" style="flex:1;min-width:0">${fits.map(v=>`<option value="${v.id}" ${v.id===sv?"selected":""}>${esc(v.plate)} · ${nfmt(v.kg)} kg · ${v.owner?esc(X.parties.find(p=>p.id===v.owner).name):"own fleet"}</option>`).join("")||`<option>No free ${esc(s.equip)} with capacity</option>`}</select>
-        <button class="btn primary" data-cgo="${i}" ${fits.length?"":"disabled"}>Consolidate & dispatch</button></div>
+        <button class="btn" data-cmst="${i}">Create master order</button> <button class="btn primary" data-cgo="${i}" ${fits.length?"":"disabled"}>Consolidate & dispatch</button></div>
        </div></div></section>`}).join("")||`<div class="note info">No consolidation opportunities right now. Orders need the same pickup zone, delivery zone, pickup day and equipment.</div>`}
    <section class="panel"><div class="panel-h"><h2>Consolidated trips (${cons.length})</h2></div><div class="tbl-wrap"><table><thead><tr><th>Trip</th><th>Orders</th><th class="r">Stops</th><th>Vehicle</th><th class="r">Separate cost</th><th class="r">Consolidated cost</th><th class="r">Saving</th></tr></thead><tbody>
    ${cons.map(tr=>`<tr><td class="mono">${tr.id}</td><td class="mono">${tr.orderIds.join(", ")}</td><td class="r num">${tr.stops}</td><td class="mono">${esc(veh(tr.vehicleId).plate)}</td><td class="r num">${money2(tr.sep,X.ccy)}</td><td class="r num">${money2(tr.con,X.ccy)}</td><td class="r num" style="color:var(--ok)">${money2(tr.sep-tr.con,X.ccy)}</td></tr>`).join("")||`<tr><td colspan="7" class="muted">None yet.</td></tr>`}
    </tbody></table></div></section></div>`;
   document.querySelectorAll("[data-cv]").forEach(s=>s.onchange=()=>{plan.cv[s.dataset.cv]=s.value});
+  document.querySelectorAll("[data-cmst]").forEach(b=>b.onclick=()=>{const g=sug[+b.dataset.cmst];const m=makeMaster(X,g.orders,ME().name);toast(`${m.id} created with ${g.orders.length} orders. It now appears in Orders and in the load builder.`);VIEWS.planning()});
   document.querySelectorAll("[data-cgo]").forEach(b=>b.onclick=()=>{const s=sug[+b.dataset.cgo],v=veh(plan.cv[+b.dataset.cgo]);if(!v)return;
     const trip=createTrip(X,s.orders,v);plan.cv={};drv.tripId=trip.id;toast(`${trip.id}: ${s.orders.length} orders on ${v.plate}, saving ${money2(trip.sep-trip.con,X.ccy)}.`);VIEWS.planning()});
 }
@@ -2133,7 +2233,7 @@ MST.locations=X=>{
 /* ---------------- LABEL PRINTING ---------------- */
 const lbl={printer:0,copies:1};
 const pad3=n=>String(n).padStart(3,"0");
-function labelList(X,ids){const out=[];ids.map(id=>X.orders.find(o=>o.id===id)).filter(Boolean).forEach(o=>{const n=Math.max(1,o.pallets||1);for(let i=1;i<=n;i++)out.push({o,i,n})});return out}
+function labelList(X,ids){const out=[];ids=ids.flatMap(id=>{const o=X.orders.find(x=>x.id===id);return o&&isMaster(o)?o.children:[id]});ids.map(id=>X.orders.find(o=>o.id===id)).filter(Boolean).forEach(o=>{const n=Math.max(1,o.pallets||1);for(let i=1;i<=n;i++)out.push({o,i,n})});return out}
 const trackUrl=(X,o)=>`https://track.${X.p.domain}/t/${o.id}`;
 function zpl(X,{o,i,n}){const S=SERVICE[o.svc||"D2"],c=cust(o.customerId),a=city(o.origin),b=city(o.dest),kg=Math.round(o.weight/n);
   return `^XA^CI28^PW812^LL1218
@@ -2440,7 +2540,7 @@ const COVERAGE=[
  ["Reference types, types of date, amount types","Configuration → General tables","Table","1"],["Transport instructions, text blocks, email templates","Configuration → General tables","Table","1"],["Holiday calendar","Service-level deadlines","Live","1"],
  ["Status codes per object (file, trip, unit, invoice)","Orders, Control tower, Configuration","Live","1"],["Track & trace codes","Master data → Track & trace codes","Live","1"],["T&T code cascading","Trip → order events","Live","1"],["Events (6-digit) & follow-up actions","Configuration → Process flow","Table","3"],["Process-flow expectations & alerts","Control tower","Live","3"],["Hold events","Orders (On hold)","Live","1"],
  ["Trigger auto return message","Integrations","Live","4"],["EDI parameters","Configuration → Connectivity","Table","4"],["Message monitor with retry / reprocess","Integrations","Live","4"],["Agents (background jobs)","Configuration → Process flow","Live","1–4"],
- ["Drivers, activate for mobile","Master data → Fleet, Driver app","Live","1"],["Equipment, equipment types / groups","Master data","Live","0"],["Plan board","Planning","Live (load builder)","1"],["Trip debrief & return orders (related order)","Planning → Trip debrief","Live","1"],
+ ["Drivers, activate for mobile","Master data → Fleet, Driver app","Live","1"],["Equipment, equipment types / groups","Master data","Live","0"],["Plan board","Planning","Live (load builder)","1"],["Order consolidation into master orders & related orders","Orders, order details, Planning","Live","1"],["Trip debrief & return orders (related order)","Planning → Trip debrief","Live","1"],
  ["Distribution network: hubs, connections, fixed trips","Configuration → Transport","Table","3"],["Cross-docking & RF","–","Out of scope (warehouse)","–"],["File closing, reopening & archiving","Order details, Agents","Live","2"],
  ["Users, user groups, roles, authorisation per division","Admin & audit, Configuration","Live (roles) + table","0"],["Web portal users","Customer tracking / portal","Phase 2","2"],["Document types & output IDs","Configuration → Users & documents, Labels","Table","1"],["Alerts","Control tower, notifications","Live","3"],
  ["Dashboards & reports","Dashboard, Reports","Live","5"]];

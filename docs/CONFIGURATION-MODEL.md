@@ -114,6 +114,18 @@ Tenant (company) ─┬─ Division (legal entity: tax registration, base curren
 - **Equipment types / groups** (already in Phase 0): payload, volume, pallets, length, axles, temperature range, out-of-gauge flag, rate factor.
 - **Cross-docking / RF:** out of scope, in line with the brief (warehouse operations).
 
+## 7a. Master orders (order consolidation) and related orders (Phase 1)
+
+- **Master order** (file kind `Master`, file status 250): groups compatible confirmed orders into one load.
+  - **Checks before creating one:** same equipment; total weight and pallets within that equipment's capacity; no order already in another master. Warnings appear for mixed zones, different pickup days and tight service levels.
+  - **Cost preview:** separate trips versus one shared trip.
+  - **Billing and dispatch:** each child keeps its own customer, references, charges and invoice. The master carries no charges, and the trip cost is shared by weight. Dispatching the master dispatches all its children on one trip.
+  - **Where you create one:** select orders in Orders and click *Consolidate into master*; use *Consolidate with similar orders* in an order's details; or use *Create master order* on a Planning → Order consolidation suggestion.
+  - **Changing one:** add similar orders from the master's details, or remove a child. A master left with fewer than two orders is dissolved.
+- **Related orders panel** on every order shows: its master, siblings and children (consolidation); original and return orders (from trip debrief); and **manual links** (same delivery, split from, replacement for, same customer PO, claim / damage).
+- **T&T code `ORD-CON`** is logged on each child when it joins a master.
+- **Data model:** `order.kind` (standard / master), `order.master_id`, and `order_link` (from, to, relation type).
+
 ## 8. General tables (Phases 0–1)
 
 UN/LOCODE locations, delivery terms (Incoterms 2020), UN/ECE package codes, commodities (HS code, UN number, ADR class, temperature), tariff types, service levels, means of transport, reference types (mandatory per principal), types of date (monitored or not), amount types, transport instructions, quality codes, email templates, holiday calendars.
