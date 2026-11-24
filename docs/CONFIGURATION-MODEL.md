@@ -130,6 +130,25 @@ Tenant (company) ─┬─ Division (legal entity: tax registration, base curren
 
 UN/LOCODE locations, delivery terms (Incoterms 2020), UN/ECE package codes, commodities (HS code, UN number, ADR class, temperature), tariff types, service levels, means of transport, reference types (mandatory per principal), types of date (monitored or not), amount types, transport instructions, quality codes, email templates, holiday calendars.
 
+## 8a. MDM: master data uploads via Excel (Phase 0)
+
+- **Entities:** customers, locations, carriers, vehicles (with drivers), drivers, commodities, equipment types, exchange rates. More are added by defining columns, rules and a match key.
+- **Template:** every entity has a column template with required fields, format rules and examples. *Copy template* pastes into Excel. *Copy current data* exports the existing records for an edit-and-reupload round trip.
+- **Input:** .xlsx / .xls (first sheet, first row = headers; Excel date cells understood), .csv / .tsv, or cells pasted straight from Excel.
+- **Column mapping:** columns are matched automatically by header name and synonyms (e.g. TRN / GSTIN / VAT ID → Tax ID), and can be overridden.
+- **Modes:** create and update (upsert), create only, or update only. Records are matched on the entity's key (tax ID, location code, plate, mobile number, …).
+- **Row-level validation** checks:
+  - required fields, numbers and ranges, dates (ISO, DD/MM/YYYY, Excel serials) and enumerations;
+  - references to other masters (locations, equipment, carriers, plates);
+  - ISO country and currency codes against the global masters;
+  - the home-country tax-ID format;
+  - duplicates within the file.
+
+  Rejected rows are skipped and listed in an error report you can paste into Excel.
+- **Four-eyes approval** (tenant setting): uploads wait as *Pending approval* until a second person approves them.
+- **Upload history:** batch ID, source file, counts created / updated / rejected, who uploaded and who approved. Every record change is audited, and each applied batch emits `mdm.batch_applied`.
+- **Sample files:** `demo/samples/*.xlsx` for the UAE tenant. They include deliberate errors to show validation.
+
 ## 9. Coverage
 
 `demo → Configuration → Coverage overview` lists 45 configuration areas, with where each lives in HP TMS, whether it is Live in the demo, and its build phase. Use it as the traceability matrix between the reference SCD's areas and HP TMS.
