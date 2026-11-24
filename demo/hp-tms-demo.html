@@ -173,6 +173,9 @@ td.r,th.r{text-align:end}
 .tchain i{font-style:normal;color:var(--muted)}
 .tnode{border:1px solid var(--line);border-radius:6px;padding:4px 8px;display:flex;flex-direction:column;font-size:12.5px;min-width:0}
 .tnode small{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.cfgnav{border:0;background:none;text-align:start;padding:6px 8px;border-radius:5px;cursor:pointer;color:var(--fg);font-size:13px}
+.cfgnav:hover{background:var(--sunk)}
+.cfgnav[aria-current="true"]{background:var(--accent-soft);font-weight:600}
 .q-item{font-size:12px;font-family:var(--f-mono);padding:4px 0;border-bottom:1px dashed var(--line)}
 /* public tracking */
 .trk-head{border-radius:var(--r);padding:18px;color:#fff;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
@@ -215,7 +218,7 @@ td.r,th.r{text-align:end}
 <script>
 /* ---------------- i18n ---------------- */
 const I18N = {
- en:{dashboard:"Dashboard",orders:"Orders",planning:"Planning",tracking:"Control tower",driver:"Driver app",track:"Customer tracking",admin:"Admin & audit",finance:"Finance & billing",trace:"Track & trace",receivables:"Receivables (AR)",payables:"Payables (AP)",master:"Master data",reports:"Reports",unbilled:"Unbilled",invoices:"Customer invoices",aging:"Receivables aging",freightAudit:"Freight audit",profitability:"Profitability",rateCards:"Rate cards & charges",
+ en:{dashboard:"Dashboard",orders:"Orders",planning:"Planning",tracking:"Control tower",driver:"Driver app",track:"Customer tracking",admin:"Admin & audit",finance:"Finance & billing",trace:"Track & trace",setup:"Configuration",integrations:"Integrations",receivables:"Receivables (AR)",payables:"Payables (AP)",master:"Master data",reports:"Reports",unbilled:"Unbilled",invoices:"Customer invoices",aging:"Receivables aging",freightAudit:"Freight audit",profitability:"Profitability",rateCards:"Rate cards & charges",
   office:"Office",field:"Field & customer",tenant:"Tenant",language:"Language",
   shipmentsActive:"Active shipments",inTransit:"In transit",onTime:"On-time delivery",podPending:"POD pending",exceptions:"Open exceptions",revenue:"Revenue (month)",margin:"Gross margin",unplanned:"Unplanned orders",
   byStatus:"Orders by status",topLanes:"Top lanes by revenue",atRisk:"At-risk shipments",liveMap:"Live map",
@@ -226,7 +229,7 @@ const I18N = {
   offline:"Offline",online:"Online",airplane:"Airplane mode",queued:"queued",synced:"Synced",
   users:"Users",roles:"Roles & permissions",audit:"Audit log",events:"Domain events",isolation:"Tenant isolation",
   save:"Save",cancel:"Cancel",confirmOrder:"Confirm order",close:"Close"},
- ar:{dashboard:"لوحة المعلومات",orders:"الطلبات",planning:"التخطيط",tracking:"برج المراقبة",driver:"تطبيق السائق",track:"تتبع العميل",admin:"الإدارة والتدقيق",finance:"المالية والفوترة",trace:"التتبع والتعقب",receivables:"الذمم المدينة",payables:"الذمم الدائنة",master:"البيانات الرئيسية",reports:"التقارير",unbilled:"غير مفوتر",invoices:"فواتير العملاء",aging:"أعمار الذمم",freightAudit:"تدقيق الشحن",profitability:"الربحية",rateCards:"جداول الأسعار والرسوم",
+ ar:{dashboard:"لوحة المعلومات",orders:"الطلبات",planning:"التخطيط",tracking:"برج المراقبة",driver:"تطبيق السائق",track:"تتبع العميل",admin:"الإدارة والتدقيق",finance:"المالية والفوترة",trace:"التتبع والتعقب",setup:"الإعدادات",integrations:"التكاملات",receivables:"الذمم المدينة",payables:"الذمم الدائنة",master:"البيانات الرئيسية",reports:"التقارير",unbilled:"غير مفوتر",invoices:"فواتير العملاء",aging:"أعمار الذمم",freightAudit:"تدقيق الشحن",profitability:"الربحية",rateCards:"جداول الأسعار والرسوم",
   office:"المكتب",field:"الميدان والعملاء",tenant:"المستأجر",language:"اللغة",
   shipmentsActive:"الشحنات النشطة",inTransit:"قيد النقل",onTime:"التسليم في الموعد",podPending:"إثبات التسليم معلق",exceptions:"استثناءات مفتوحة",revenue:"الإيرادات (الشهر)",margin:"الهامش الإجمالي",unplanned:"طلبات غير مخططة",
   byStatus:"الطلبات حسب الحالة",topLanes:"أعلى المسارات إيراداً",atRisk:"شحنات معرضة للتأخير",liveMap:"الخريطة المباشرة",
@@ -237,7 +240,7 @@ const I18N = {
   offline:"غير متصل",online:"متصل",airplane:"وضع الطيران",queued:"في الانتظار",synced:"تمت المزامنة",
   users:"المستخدمون",roles:"الأدوار والصلاحيات",audit:"سجل التدقيق",events:"أحداث النظام",isolation:"عزل المستأجرين",
   save:"حفظ",cancel:"إلغاء",confirmOrder:"تأكيد الطلب",close:"إغلاق"},
- hi:{dashboard:"डैशबोर्ड",orders:"ऑर्डर",planning:"योजना",tracking:"कंट्रोल टावर",driver:"ड्राइवर ऐप",track:"ग्राहक ट्रैकिंग",admin:"एडमिन और ऑडिट",finance:"वित्त और बिलिंग",trace:"ट्रैक और ट्रेस",receivables:"प्राप्य (AR)",payables:"देय (AP)",master:"मास्टर डेटा",reports:"रिपोर्ट",unbilled:"बिना बिल",invoices:"ग्राहक चालान",aging:"प्राप्य एजिंग",freightAudit:"फ्रेट ऑडिट",profitability:"लाभप्रदता",rateCards:"रेट कार्ड और शुल्क",
+ hi:{dashboard:"डैशबोर्ड",orders:"ऑर्डर",planning:"योजना",tracking:"कंट्रोल टावर",driver:"ड्राइवर ऐप",track:"ग्राहक ट्रैकिंग",admin:"एडमिन और ऑडिट",finance:"वित्त और बिलिंग",trace:"ट्रैक और ट्रेस",setup:"कॉन्फ़िगरेशन",integrations:"इंटीग्रेशन",receivables:"प्राप्य (AR)",payables:"देय (AP)",master:"मास्टर डेटा",reports:"रिपोर्ट",unbilled:"बिना बिल",invoices:"ग्राहक चालान",aging:"प्राप्य एजिंग",freightAudit:"फ्रेट ऑडिट",profitability:"लाभप्रदता",rateCards:"रेट कार्ड और शुल्क",
   office:"कार्यालय",field:"फील्ड और ग्राहक",tenant:"टेनेंट",language:"भाषा",
   shipmentsActive:"सक्रिय शिपमेंट",inTransit:"रास्ते में",onTime:"समय पर डिलीवरी",podPending:"POD लंबित",exceptions:"खुले अपवाद",revenue:"राजस्व (माह)",margin:"सकल मार्जिन",unplanned:"अनियोजित ऑर्डर",
   byStatus:"स्थिति के अनुसार ऑर्डर",topLanes:"राजस्व के अनुसार शीर्ष लेन",atRisk:"जोखिम वाले शिपमेंट",liveMap:"लाइव मैप",
@@ -322,11 +325,11 @@ const TENANT_DEF = {
    {code:"TOLL",label:"FASTag toll",unit:"km",rate:2.4},{code:"WKND",label:"Sunday / holiday surcharge",unit:"%",rate:.1},{code:"ESC",label:"ODC escort & permit",unit:"trip",rate:15000},{code:"BORD",label:"Border fee",unit:"crossing",rate:0}],
   countryTax:{IN:{name:"GST (GTA)",rate:0.12}},
   cities:[
-   {code:"BWD",name:"Bhiwandi, Maharashtra",lat:19.30,lon:73.06,cc:"IN"},
-   {code:"CKN",name:"Chakan, Pune",lat:18.76,lon:73.86,cc:"IN"},
-   {code:"AMD",name:"Sanand, Ahmedabad",lat:22.99,lon:72.38,cc:"IN"},
-   {code:"NCR",name:"Manesar, Gurugram",lat:28.36,lon:76.94,cc:"IN"},
-   {code:"BLR",name:"Hoskote, Bengaluru",lat:13.07,lon:77.80,cc:"IN"}],
+   {code:"BWD",name:"Bhiwandi, Maharashtra",lat:19.30,lon:73.06,cc:"IN",state:"MH"},
+   {code:"CKN",name:"Chakan, Pune",lat:18.76,lon:73.86,cc:"IN",state:"MH"},
+   {code:"AMD",name:"Sanand, Ahmedabad",lat:22.99,lon:72.38,cc:"IN",state:"GJ"},
+   {code:"NCR",name:"Manesar, Gurugram",lat:28.36,lon:76.94,cc:"IN",state:"HR"},
+   {code:"BLR",name:"Hoskote, Bengaluru",lat:13.07,lon:77.80,cc:"IN",state:"KA"}],
   customers:["Sahyadri Agro Foods","Kaveri Textiles","Narmada Cements","Deccan Auto Components"],
   carriers:["Shree Ganesh Roadways"],
   drivers:["Ramesh Yadav","Sunil Patil","Gurpreet Singh","Mahesh Gowda","Anil Chauhan","Vijay Shinde","Rakesh Meena","Harish Reddy","Dinesh Jadhav","Santosh Pawar"],
@@ -335,8 +338,8 @@ const TENANT_DEF = {
   users:[["Priya Deshmukh","Tenant admin"],["Karan Shah","Transport planner"],["Meera Iyer","Finance / billing"]]
  }
 };
-const STATUS_ORDER = ["Draft","Confirmed","Dispatched","In transit","Delivered","POD received","Invoiced","On hold","Cancelled"];
-const STATUS_CLASS = {"Draft":"","Confirmed":"p-info","Dispatched":"p-acc","In transit":"p-acc","Delivered":"p-ok","POD received":"p-ok","Invoiced":"p-ok","On hold":"p-warn","Cancelled":"p-bad"};
+const STATUS_ORDER = ["Draft","Confirmed","Dispatched","In transit","Delivered","POD received","Invoiced","Reopened","Closed","On hold","Cancelled"];
+const STATUS_CLASS = {"Draft":"","Confirmed":"p-info","Dispatched":"p-acc","In transit":"p-acc","Delivered":"p-ok","POD received":"p-ok","Invoiced":"p-ok","On hold":"p-warn","Cancelled":"p-bad","Reopened":"p-warn","Closed":""};
 const MILESTONES = ["Trip accepted","Arrived at pickup","Loaded","Departed","Arrived at delivery","POD captured"];
 const MODULES = ["Master data","Orders","Planning","Execution","Control tower","Carriers & tendering","Rating","Finance","Documents","Admin"];
 const ACTIONS = ["view","create","edit","approve","delete","export"];
@@ -381,6 +384,7 @@ function buildTenant(key){
     const d={id:"D"+(T.drivers.length+1),name:D.drivers[di++ % D.drivers.length],phone:(D.ccy==="INR"?"+91 9":"+971 5")+(10000000+Math.floor(r()*89999999)),vehicleId:v.id,owner};T.drivers.push(d);v.driverId=d.id};
   for(let i=0;i<D.ownTrucks;i++) addVeh(null,i);
   D.carriers.forEach((_,ci)=>{for(let i=0;i<D.carrierTrucks;i++) addVeh("K"+(ci+1),i)});
+  cfgSeed(T,key,r);
   // order mix
   const n=D.nOrders, mix=[["Invoiced",.27],["POD received",.2],["Delivered",.06],["In transit",.09],["Dispatched",.05],["Confirmed",.16],["Draft",.04],["On hold",.03],["Cancelled",.05]];
   const statuses=[]; mix.forEach(([s,f])=>{for(let i=0;i<Math.round(f*n);i++)statuses.push(s)}); while(statuses.length<n)statuses.push("Confirmed"); statuses.length=n;
@@ -473,7 +477,11 @@ function buildTenant(key){
   T.roles=ROLE_NAMES.map((n,i)=>({id:"R"+(i+1),name:n,system:true,perms:defaultPerms(n)}));
   T.users=D.users.map(([n,role],i)=>({id:"U"+(i+1),name:n,email:n.toLowerCase().replace(/[^a-z]+/g,".")+"@"+(key==="gulf"?"gulfhaul.ae":"indusfreight.in"),role,scope:i===1?(key==="gulf"?"Branch: Jebel Ali":"Branch: Bhiwandi"):"Tenant",mfa:i<3||role==="Tenant admin",status:"Active"}));
   T.tt=JSON.parse(JSON.stringify(TT_BASE));
+  T.orders.filter(o=>o.status==="POD received"&&!o.tripId).slice(-4).forEach(o=>{const v=T.vehicles.find(v=>v.owner==(o.carrierId||null)&&v.equip===o.equip)||T.vehicles.find(v=>v.owner==(o.carrierId||null))||T.vehicles[0];
+    const tr={id:`${D.prefix}-TRP-${String(++T.tripSeq).padStart(4,"0")}`,vehicleId:v.id,driverId:v.driverId,orderIds:[o.id],from:o.origin,to:o.dest,ms:6,progress:1,startTs:o.pickupTs,debriefed:false};o.tripId=tr.id;T.trips.push(tr)});
+  T.orders.forEach(o=>{if(o.tripId||o.pod){assignConNote(T,o);assignSSCC(T,o)}});
   T.orders.forEach(o=>seedTrace(T,o,r));
+  seedMessages(T);
   // seed a few historical events
   T.events.push({ts:NOW0-2*HOUR,type:"tenant.seeded",agg:T.short,info:`${n} orders, ${T.vehicles.length} vehicles, ${custs.length} customers`});
   return T;
@@ -486,8 +494,10 @@ function quote(T,oc,dc,eq){
   return {km:dist,sell,cross};
 }
 function taxFor(T,o){const a=T.cityByCode[o.origin], b=T.cityByCode[o.dest];
-  if(a.cc!==b.cc) return {name:"Zero-rated (international transport)",rate:0};
-  return T.countryTax[a.cc]||{name:"Tax",rate:0}}
+  if(a.cc!==b.cc) return {name:"Zero-rated (international transport)",rate:0,code:"AE-Z0",parts:[{code:"AE-Z0",name:"Zero-rated (international transport)",rate:0}]};
+  if(a.cc==="IN"){if(a.state===b.state)return {name:"CGST 6% + SGST 6%",rate:.12,code:"IN-CGST6+SGST6",parts:[{code:"IN-CGST6",name:"CGST",rate:.06},{code:"IN-SGST6",name:"SGST",rate:.06}]};
+    return {name:"IGST (inter-state)",rate:.12,code:"IN-IGST12",parts:[{code:"IN-IGST12",name:"IGST",rate:.12}]}}
+  const c=T.countryTax[a.cc]||{name:"Tax",rate:0};const code=a.cc==="SA"?"SA-S15":"AE-S5";return {...c,code,parts:[{code,name:c.name,rate:c.rate}]}}
 
 
 /* ---------------- service levels ---------------- */
@@ -534,7 +544,7 @@ function recalc(X,o){
   if(f) sell.push({code:"FSC",label:`Fuel surcharge ${(f*100).toFixed(1)}% (diesel index ${X.fsc.price} ${X.fsc.unit})`,amount:round2(base*f)});
   if(cross){const d=accDef(X,"BORD");sell.push({code:"BORD",label:d.label,amount:d.rate})}
   (o.acc||[]).forEach(x=>{const d=accDef(X,x.code);if(!d)return;const amt=d.unit==="%"?round2(base*d.rate):round2(d.rate*x.qty);
-    sell.push({code:d.code,label:d.unit==="%"?`${d.label} ${Math.round(d.rate*100)}%`:`${d.label} · ${x.qty} ${d.unit} × ${d.rate} ${X.ccy}`,amount:amt,acc:true})});
+    sell.push({code:d.code,label:d.unit==="%"?`${d.label} ${Math.round(d.rate*100)}%`:`${d.label} · ${x.qty} ${d.unit} × ${d.rate} ${X.ccy}`,amount:amt,acc:true,supp:!!x.supp})});
   const sh=o.share||1, tk=o.tripKm||o.km, al=sh<1?` · ${Math.round(sh*100)}% allocated by weight`:"";
   if(o.carrierId){const k=X.parties.find(p=>p.id===o.carrierId);const cf=r5(tariff(X,tk,o.equip)*k.factor*sh);
     buy.push({code:"CFRT",label:`${k.name} · contract ${Math.round(k.factor*100)}% of tariff${al}`,amount:cf});
@@ -548,6 +558,7 @@ function recalc(X,o){
   if(sh<1&&o.stops>2) buy.push({code:"STOP",label:`Extra stops on consolidated trip (${o.stops-2})${al}`,amount:round2(X.own.stopCost*(o.stops-2)*sh)});
   sell.filter(s=>["SALIK","TOLL","ESC","BORD"].includes(s.code)).forEach(s=>buy.push({code:s.code,label:accDef(X,s.code).label+(s.code==="BORD"?" (agent cost)":" (pass-through)"),amount:s.code==="BORD"?round2(s.amount*.75):s.amount}));
   sell.filter(s=>s.code==="WAIT").forEach(s=>buy.push({code:"WAIT",label:o.carrierId?"Waiting paid to carrier":"Driver overtime (waiting)",amount:round2(s.amount*(o.carrierId?.7:.2))}));
+  if(X.cfg){const keep=l=>l.code==="FRT"||aagOn(X,l.code);const s2=sell.filter(keep),b2=buy.filter(keep);sell.length=0;sell.push(...s2);buy.length=0;buy.push(...b2)}
   o.lines={sell,buy}; o.sell=round2(sell.reduce((s,l)=>s+l.amount,0)); o.buy=round2(buy.reduce((s,l)=>s+l.amount,0));
 }
 
@@ -574,7 +585,7 @@ function createTrip(X,orders,v){
   const trip={id:`${X.prefix}-TRP-${pad4(++X.tripSeq)}`,vehicleId:v.id,driverId:v.driverId,orderIds:orders.map(o=>o.id),from:orders[0].origin,to:longest.dest,ms:0,progress:0,startTs:Date.now(),consolidated:orders.length>1,stops,sep:prev.sep,con:prev.con};
   X.trips.push(trip);
   orders.forEach(o=>{o.tripId=trip.id;trace(X,o,"PLN-ASG","Planner",{note:orders.length>1?`Consolidated: ${trip.id}, ${orders.length} orders`:trip.id})});
-  orders.forEach(o=>{audit(o.id,"status",o.status,"Dispatched");o.status="Dispatched";o.tripId=trip.id;o.ms=0;o.carrierId=v.owner||null;
+  orders.forEach(o=>{audit(o.id,"status",o.status,"Dispatched");o.status="Dispatched";o.tripId=trip.id;o.ms=0;o.carrierId=v.owner||null;assignConNote(X,o);
     if(orders.length>1){o.share=o.weight/totW;o.tripKm=tripKm;o.stops=stops}recalc(X,o)});
   emit("trip.created",trip.id,`${orders.length} order(s), ${v.plate}`);
   if(orders.length>1) emit("shipment.consolidated",trip.id,`${orders.map(o=>o.id).join(", ")} · ${stops} stops · saves ${money2(prev.sep-prev.con,X.ccy)}`);
@@ -587,14 +598,16 @@ function createTrip(X,orders,v){
 const pad4 = n => String(n).padStart(4,"0");
 function makeInvoice(X,custId,orders,issueTs){
   const c=X.parties.find(p=>p.id===custId);
-  const lines=orders.map(o=>({orderId:o.id,lane:`${o.origin} → ${o.dest}`,ref:o.ref,svc:o.svc,sell:o.lines.sell.map(l=>({...l})),net:o.sell,tax:taxFor(X,o)}));
-  const g={}; lines.forEach(l=>{const k=l.tax.name+"|"+l.tax.rate;g[k]=g[k]||{name:l.tax.name,rate:l.tax.rate,base:0,tax:0};g[k].base=round2(g[k].base+l.net);g[k].tax=round2(g[k].tax+l.net*l.tax.rate)});
+  const lines=orders.map(o=>{const sl=billLines(o);return {orderId:o.id,lane:`${o.origin} → ${o.dest}`,ref:o.ref,svc:o.svc,supp:o.status==="Reopened",sell:sl.map(l=>({...l})),net:round2(sl.reduce((s,l)=>s+l.amount,0)),tax:taxFor(X,o)}});
+  const g={}; lines.forEach(l=>(l.tax.parts||[l.tax]).forEach(pt=>{const k=pt.name+"|"+pt.rate;g[k]=g[k]||{name:pt.name,code:pt.code,rate:pt.rate,base:0,tax:0};g[k].base=round2(g[k].base+l.net);g[k].tax=round2(g[k].tax+l.net*pt.rate)}));
   const net=round2(lines.reduce((s,l)=>s+l.net,0)), tax=round2(Object.values(g).reduce((s,x)=>s+x.tax,0)), d=new Date(issueTs);
   const inv={id:`${X.prefix}-INV-${String(d.getUTCFullYear()).slice(2)}${String(d.getUTCMonth()+1).padStart(2,"0")}-${pad4(++X.invSeq)}`,customerId:custId,lines,taxGroups:Object.values(g),net,tax,total:round2(net+tax),
     issueTs,dueTs:issueTs+c.terms*DAY,paid:0,payments:[],credits:[],disputes:[]};
-  orders.forEach(o=>{o.invoiceId=inv.id;o.status="Invoiced";if(!SEEDING)trace(X,o,"INV-ISS","Billing",{note:inv.id})});
+  orders.forEach(o=>{if(o.status==="Reopened"){o.acc.forEach(a=>a.supp=false);recalc(X,o);o.suppInvoiceId=inv.id}else o.invoiceId=inv.id;o.status="Invoiced";if(!SEEDING)trace(X,o,"INV-ISS","Billing",{note:inv.id})});
   X.invoices.unshift(inv); return inv;
 }
+const billLines=o=>o.status==="Reopened"?o.lines.sell.filter(l=>l.supp):o.lines.sell;
+const billNet=o=>round2(billLines(o).reduce((s,l)=>s+l.amount,0));
 const invBalance = inv => {const b=round2(inv.total-inv.paid-inv.credits.reduce((s,c)=>s+c.total,0));return Math.abs(b)<0.005?0:b};
 function invStatus(inv){const b=invBalance(inv);if(b<=0.005)return "Paid";if(inv.disputes.some(d=>!d.closed))return "Disputed";if(Date.now()>inv.dueTs)return "Overdue";if(inv.paid>0||inv.credits.length)return "Part paid";return "Issued"}
 
@@ -667,6 +680,7 @@ const TT_BASE=[
  {code:"LBL-PRT",name:"Labels printed",cat:"Warehouse",x12:"",cust:false,notify:false,status:false,src:"Label service"},
  {code:"TRP-DSP",name:"Trip dispatched to driver",cat:"Trip",x12:"",cust:false,notify:false,status:true,src:"Planner, dispatcher"},
  {code:"TRP-ACC",name:"Driver accepted trip",cat:"Trip",x12:"",cust:false,notify:false,status:true,src:"Driver app, carrier portal"},
+ {code:"TRP-DBR",name:"Trip debriefed",cat:"Trip",x12:"",cust:false,notify:false,status:true,src:"Dispatcher (trip debrief)"},
  {code:"PU-ARR",name:"Arrived at pickup",cat:"Pickup",x12:"X3",cust:true,notify:false,status:true,custLabel:"Truck arrived for collection",src:"Driver app, geofence, telematics"},
  {code:"PU-LDD",name:"Loaded",cat:"Pickup",x12:"CP",cust:false,notify:false,status:true,src:"Driver app, WMS"},
  {code:"PU-DEP",name:"Departed pickup",cat:"Pickup",x12:"AF",cust:true,notify:true,status:true,custLabel:"Collected and on the way",src:"Driver app, geofence, telematics"},
@@ -687,6 +701,7 @@ function codeChip(X,code,title){if(!code)return "–";const d=ttDef(X,code);retu
 function trace(X,o,code,src,extra={}){
   o.trace=o.trace||[];if(code==="INT-POS")o.trace=o.trace.filter(e=>e.code!=="INT-POS");const ev={ts:extra.ts||Date.now(),code,src,by:extra.by||(SEEDING?"System":ME().name),loc:extra.loc||null,note:extra.note||"",tripId:o.tripId||null};
   o.trace.push(ev);o.trace.sort((a,b)=>a.ts-b.ts);
+  if(typeof sendReturnMsgs==="function")sendReturnMsgs(X,o,ev);
   const d=ttDef(X,code);
   if(!SEEDING&&d.notify&&d.cust){X.events.unshift({ts:Date.now(),type:"notification.queued",agg:o.id,info:`“${d.custLabel||d.name}” to customer by email and WhatsApp`})}
   return ev;}
@@ -721,6 +736,136 @@ function seedTrace(T,o,r){
   o.trace=ev.sort((x,y)=>x.ts-y.ts);
 }
 
+/* ---------------- CONFIGURATION MODEL (organisation, finance, relations, process flow) ---------------- */
+const FILE_STATUS={"Draft":100,"On hold":150,"Confirmed":200,"Dispatched":400,"In transit":500,"Delivered":600,"POD received":700,"Invoiced":800,"Cancelled":900,"Reopened":998,"Closed":999};
+const fsCode=o=>FILE_STATUS[o.status]??"";
+const TRIP_STATUS=[[100,"Created"],[200,"Dispatched"],[300,"Accepted"],[400,"At pickup"],[450,"Loaded"],[500,"Departed"],[600,"At delivery"],[700,"Completed"]];
+const tripStatus=tr=>tr.debriefed?[800,"Debriefed"]:TRIP_STATUS[Math.min(tr.ms+1,7)];
+function gs1check(d){let s=0;for(let i=d.length-1,w=3;i>=0;i--,w=w===3?1:3)s+=(+d[i])*w;return String((10-s%10)%10)}
+const ssccOf=(X,serial)=>{const b="0"+X.gs1+String(serial).padStart(16-X.gs1.length,"0");return b+gs1check(b)};
+const fmtSSCC=s=>`(00) ${s.slice(0,1)} ${s.slice(1,8)} ${s.slice(8,17)} ${s.slice(17)}`;
+function mod7(n){return String(n%7)}
+function assignConNote(X,o){if(o.conNote)return o.conNote;const key=o.carrierId||"OWN";const t=X.cfg.conNotes.find(c=>c.carrier===key)||X.cfg.conNotes[0];
+  const n=t.next++;o.conNote=`${t.prefix}${n}${mod7(n)}`;return o.conNote}
+function assignSSCC(X,o){if(o.ssccStart==null){o.ssccStart=X.ssccNext;X.ssccNext+=Math.max(1,o.pallets||1)}return o.ssccStart}
+function fileTypeOf(X,o){const a=X.cityByCode[o.origin],b=X.cityByCode[o.dest];
+  if(a.cc!==b.cc) return "XB/FTL"; if(EQUIP[o.equip]?.odc) return "PRJ/ODC"; if(/Container/.test(o.equip)) return "CTR/IMP";
+  if(o.weight<=8000&&(o.pallets||0)<=12) return "DOM/LTL"; return "DOM/FTL"}
+const branchOf=(X,o)=>X.cfg.branches.find(b=>b.city===o.origin)||X.cfg.branches[0];
+const aagOn=(X,code)=>X.cfg.aag.filter(r=>r.act===code).every(r=>r.active);
+const actOf=(X,code)=>X.cfg.activities.find(a=>a.code===code)||{code,name:code,salesGL:"400300",purchGL:"500100"};
+function cfgSeed(T,key,r){
+  const gulf=key==="gulf";
+  const branchNo=gulf?{JEA:1001,AQZ:1002,SHJ:1003,MUS:1004,KZD:1005,AAN:1006,RUH:2001,DMM:2002}:{BWD:3001,CKN:3002,AMD:3003,NCR:3004,BLR:3005};
+  const C={};
+  C.company=[{code:"01",name:T.name,taxId:T.taxId,ccy:T.ccy,country:gulf?"AE":"IN",fyStart:gulf?"01-Jan":"01-Apr",region:T.region}];
+  C.divisions=gulf?[{code:"01",name:"Gulf Haul Logistics LLC",country:"AE",taxNo:T.taxId,ccy:"AED",contra:"190100"},{code:"02",name:"Gulf Haul Logistics KSA LLC",country:"SA",taxNo:"310455612300003",ccy:"SAR",contra:"190200"}]
+    :[{code:"01",name:"Indus Freight · Maharashtra",country:"IN",taxNo:"27AAFCI4567K1Z2",ccy:"INR",contra:"190100"},{code:"02",name:"Indus Freight · Gujarat",country:"IN",taxNo:"24AAFCI4567K1Z8",ccy:"INR",contra:"190200"},{code:"03",name:"Indus Freight · Haryana",country:"IN",taxNo:"06AAFCI4567K1Z6",ccy:"INR",contra:"190300"},{code:"04",name:"Indus Freight · Karnataka",country:"IN",taxNo:"29AAFCI4567K1Z0",ccy:"INR",contra:"190400"}];
+  const divOf=c=>gulf?(c.cc==="SA"?"02":"01"):({MH:"01",GJ:"02",HR:"03",KA:"04"}[c.state]||"01");
+  C.branches=T.cities.map(c=>({code:String(branchNo[c.code]),name:c.name,city:c.code,division:divOf(c),costCentre:`CC-${c.code}`}));
+  C.departments=[{code:"DOM",name:"Domestic road",kind:"Operations"},...(gulf?[{code:"XB",name:"Cross-border road (GCC)",kind:"Operations"}]:[]),{code:"PRJ",name:"Project & ODC cargo",kind:"Operations"},{code:"CTR",name:"Container haulage",kind:"Operations"},{code:"FIN",name:"Invoicing",kind:"Invoice department"},{code:"SYS",name:"System internal (fixed)",kind:"Fixed internal"}];
+  const ft=(code,name,cat,svc,plan,docs)=>({code,name,cat,prefix:T.prefix,svc,plan,docs,minClose:90,maxClose:95,reopen:3,archive:9,modules:"TMS, Billing, Process flow"});
+  C.fileTypes=[ft("DOM/FTL","Domestic full truckload","Shipment","NBD","Manual or optimiser","Delivery note, labels"),ft("DOM/LTL","Domestic groupage (LTL)","Shipment","D2","Consolidation","Delivery note, labels"),
+    ...(gulf?[ft("XB/FTL","Cross-border FTL","Shipment","STD","Manual","CMR, delivery note, labels, customs docs")]:[]),ft("PRJ/ODC","Project / out-of-gauge","Shipment","TD","Manual","Permit, escort plan, CMR"),ft("CTR/IMP","Container import haulage","Shipment","TD","Manual","EIR, delivery order"),
+    ft("DOM/TRP","Domestic trip","Trip","","Planboard","Trip sheet, loading list"),...(gulf?[ft("XB/TRP","Cross-border trip","Trip","","Planboard","Trip sheet, CMR")]:[]),ft("SYS/GEN","General file (internal)","General","","–","–")];
+  C.ledger=[["110000","Bank","Balance sheet"],["120000","Trade debtors (control)","Balance sheet"],["120500","Unbilled revenue (accrual)","Balance sheet"],["190100","Inter-division contra","Balance sheet"],["210000","Trade creditors (control)","Balance sheet"],["215000","Accrued carrier cost","Balance sheet"],["220100",gulf?"Output VAT payable":"Output GST payable","Balance sheet"],["220200",gulf?"Input VAT receivable":"Input GST receivable","Balance sheet"],
+    ["400100","Road freight revenue","P&L revenue"],["400200","Fuel surcharge revenue","P&L revenue"],["400300","Accessorial revenue","P&L revenue"],["400400","Toll recoveries","P&L revenue"],["500100","Subcontracted freight cost","P&L cost"],["500200","Fuel cost (own fleet)","P&L cost"],["500300","Driver cost","P&L cost"],["500400","Vehicle running cost","P&L cost"],["500500","Tolls & permits","P&L cost"],["500600","Border & customs cost","P&L cost"]].map(([code,name,type])=>({code,name,type}));
+  C.costCentres=C.branches.map(b=>({code:b.costCentre,name:`${b.name} operations`,branch:b.code}));
+  C.journals=[{code:"SI",name:"Sales invoices",type:"Sales"},{code:"SC",name:"Sales credit notes",type:"Sales"},{code:"PI",name:"Purchase invoices",type:"Purchase"},{code:"AC",name:"Cost accruals at dispatch",type:"Memorial"},{code:"BK",name:"Bank receipts & payments",type:"Bank"}];
+  C.vat=gulf?[{code:"AE-S5",name:"UAE VAT standard rate",rate:.05,payGL:"220100",recGL:"220200"},{code:"AE-Z0",name:"Zero-rated (international transport)",rate:0,payGL:"220100",recGL:"220200"},{code:"SA-S15",name:"KSA VAT standard rate",rate:.15,payGL:"220100",recGL:"220200"}]
+    :[{code:"IN-CGST6",name:"CGST (intra-state)",rate:.06,payGL:"220100",recGL:"220200"},{code:"IN-SGST6",name:"SGST (intra-state)",rate:.06,payGL:"220100",recGL:"220200"},{code:"IN-IGST12",name:"IGST (inter-state)",rate:.12,payGL:"220100",recGL:"220200"}];
+  C.terms=[30,45,60].map(d=>({code:`N${d}`,name:`Net ${d} days`,days:d,rule:"Invoice date + days"}));
+  C.fx=gulf?[["USD",3.6725],["EUR",3.98],["GBP",4.66],["SAR",.9793],["INR",.0435]]:[["USD",84.2],["EUR",91.3],["AED",22.93],["GBP",106.9],["SAR",22.45]];
+  C.fx=C.fx.map(([ccy,rate])=>({ccy,base:T.ccy,rate,date:new Date(NOW0).toISOString().slice(0,10),source:gulf?"Central Bank of the UAE":"RBI reference rate"}));
+  C.activities=[["FRT","Freight","S","400100","",true],["SVC","Service level surcharge","S","400300","",true],["FSC","Fuel surcharge","S","400200","",true],["BORD","Border crossing & customs fee","S/P","400300","500600",true],["WAIT","Waiting / detention","S/P","400300","500100",true],["DROP","Additional drop","S","400300","",true],["TAIL","Tail-lift","S","400300","",true],["WKND","Weekend / holiday surcharge","S","400300","",true],["ESC","ODC escort & permit","S/P","400300","500500",true],[gulf?"SALIK":"TOLL",gulf?"Salik toll":"FASTag toll","S/P","400400","500500",true],
+    ["CFRT","Carrier freight","P","","500100",true],["CFSC","Carrier fuel surcharge","P","","500100",true],["DSL","Diesel (own fleet)","P","","500200",true],["DRV","Driver trip allowance","P","","500300",true],["VEH","Vehicle running cost","P","","500400",true],["STOP","Extra stop handling","P","","500400",true]].map(([code,name,sp,salesGL,purchGL,vat])=>({code,name,sp,salesGL,purchGL,vat:vat?"Per tax rule":"–",cc:"Branch of file"}));
+  C.aag=[["*","Order","S","Principal","FRT","Always"],["*","Order","S","Principal","SVC","Service level has a surcharge"],["*","Order","S","Principal","FSC","Fuel index band above 0%"],...(gulf?[["XB/FTL","Order","S","Principal","BORD","Lane crosses a border"]]:[]),["*","Order","S","Principal","(accessorials)","Added on the order"],
+    ["*","Order","P","Carrier","CFRT","Subcontracted"],["*","Order","P","Carrier","CFSC","Subcontracted, fuel band above 0%"],["*","Trip","P","Internal relation (own fleet)","DSL","Own fleet"],["*","Trip","P","Internal relation (own fleet)","DRV","Own fleet"],["*","Trip","P","Internal relation (own fleet)","VEH","Own fleet"],["*","Trip","P","Internal relation (own fleet)","STOP","Consolidated trip with extra stops"]]
+    .map(([ft,file,ps,to,act,cond],i)=>({id:"AAG"+(i+1),from:"2026-01-01",till:"",fileType:ft,file,ps,to,act,cond,ifEmpty:"Charge principal",active:true}));
+  C.unloc=T.cities.map(c=>({code:c.code,unloc:{JEA:"AEJEA",AQZ:"AEDXB",SHJ:"AESHJ",MUS:"AEAUH",KZD:"AEKHL",AAN:"AEAAN",RUH:"SARUH",DMM:"SADMM",BWD:"INBOM",CKN:"INPNQ",AMD:"INAMD",NCR:"INDEL",BLR:"INBLR"}[c.code],name:c.name,country:c.cc,zone:c.zone||c.code}));
+  C.incoterms=[["EXW","Ex Works","Consignee"],["FCA","Free Carrier","Consignee"],["CPT","Carriage Paid To","Shipper"],["CIP","Carriage and Insurance Paid To","Shipper"],["DAP","Delivered at Place","Shipper"],["DPU","Delivered at Place Unloaded","Shipper"],["DDP","Delivered Duty Paid","Shipper"]].map(([code,name,payer])=>({code,name,payer,version:"Incoterms 2020"}));
+  C.packages=[["PX","Pallet (1200 × 1000)",1.2,1.0,1.6],["PE","Euro pallet (1200 × 800)",1.2,.8,1.6],["CT","Carton",.6,.4,.4],["CR","Crate",1.0,.8,.8],["DR","Drum",.6,.6,.9],["BG","Bag / sack",.8,.5,.2],["RO","Roll / coil",1.5,1.5,1.5]].map(([code,name,l,w,h])=>({code,name,dims:`${l} × ${w} × ${h} m`,stackable:code!=="RO"}));
+  C.commodities=[["GEN","General cargo","9999","","",""],["FMCG","Packaged food (ambient)","2106","","",""],["CHL","Chilled food","0406","","","2–8 °C"],["PHA","Pharmaceuticals","3004","","","15–25 °C"],["STL","Steel coils & sections","7208","","",""],["CON","Construction materials","6810","","",""],["ELC","Consumer electronics","8528","","",""],["PNT","Paint (flammable)","3208","UN1263","3",""],["LIB","Lithium-ion batteries","8507","UN3480","9",""],["LPG","LPG cylinders","2711","UN1075","2.1",""]].map(([code,name,hs,un,adr,temp])=>({code,name,hs,un,adr,temp}));
+  C.tariffTypes=[["STD","Standard tariff (distance × equipment)"],["CON","Customer contract"],["SPT","Spot quote"],["ZON","Zone to zone"],["WBK","Weight break (LTL)"],["CAR","Carrier buy rate"]].map(([code,name])=>({code,name}));
+  C.means=[["RT","Road – articulated truck"],["RR","Road – rigid truck"],["RV","Road – light commercial van"],["SE","Sea"],["AI","Air"],["RA","Rail"]].map(([code,name])=>({code,name}));
+  C.refTypes=[["PO","Customer purchase order","Mandatory for all principals",""],["DN","Customer delivery note","Optional",""],["CN","Con note","System generated","Con note format per carrier"],["BL","Bill of lading","Container files",""],["CNTR","Container number","Container files","ISO 6346 check digit"],["SEAL","Seal number","Cross-border & container",""],["INV","Commercial invoice","Cross-border",""]].map(([code,name,use,format])=>({code,name,use,format}));
+  C.dateTypes=[["0010","Requested pickup",true],["0020","Requested delivery",true],["0030","Promised delivery (service level)",true],["0040","Actual pickup",false],["0050","Actual delivery",false],["0060","POD received",false],["0070","Container free time ends",true],["0080","Customs release",true]].map(([code,name,monitor])=>({code,name,monitor,allowUpdate:true}));
+  C.amountTypes=[["DV","Declared value"],["IV","Insurance value"],["COD","Cash on delivery"],["CV","Customs value"],["DU","Duty & taxes"]].map(([code,name])=>({code,name}));
+  C.instructions=[["TI01","Tail-lift required at delivery"],["TI02","Call consignee 30 min before arrival"],["TI03","Keep 2–8 °C, log temperature every 15 min"],["TI04","Do not stack"],["TI05","Delivery appointment required"],["TI06","Hazmat placards and ADR kit required"]].map(([code,text])=>({code,text}));
+  C.quality=[["Q00","OK, no remarks"],["Q10","Damaged packaging"],["Q11","Damaged goods"],["Q20","Short delivered"],["Q30","Refused: wrong goods"],["Q31","Refused: consignee closed"],["Q32","Refused: no appointment"],["Q40","Consignee not available"],["Q50","Documents returned (ROD)"]].map(([code,name])=>({code,name}));
+  C.emailTpl=[["ETA","ETA update","PU-DEP, NTF-ETA"],["DLY","Delay notice","EXC-DLY"],["POD","Proof of delivery available","DL-POD"],["INV","Invoice issued","INV-ISS"]].map(([code,name,trig])=>({code,name,trigger:trig,langs:"English, Arabic, Hindi"}));
+  C.relGroups=[["DEB-LOC","Local customers","Debtor","120000"],["DEB-IC","Intercompany customers","Debtor","120000"],["CRE-SUB","Subcontract carriers","Creditor","210000"],["CRE-SUP","Other suppliers","Creditor","210000"]].map(([code,name,type,ctrl])=>({code,name,type,ctrl}));
+  C.regTypes=[["1","Trade licence"],["2","Chamber of commerce"],["1001",gulf?"TRN (VAT)":"GSTIN"],["1002",gulf?"Emirates/Commercial registration":"PAN"],["1010","Excluded from unrated-consignment check (Y/N)"]].map(([code,name])=>({code,name}));
+  C.conNotes=[{type:"OWN",carrier:"OWN",carrierName:"Own fleet",prefix:T.prefix+"C",from:10000001,to:19999999,next:10004211},...T.parties.filter(p=>p.type==="carrier").map((k,i)=>({type:k.code,carrier:k.id,carrierName:k.name,prefix:k.code,from:(i+2)*10000000+1,to:(i+3)*10000000-1,next:(i+2)*10000000+700+i*37}))];
+  T.gs1=gulf?"6291234":"8901234"; T.ssccNext=4100;
+  C.ssccRanges=[{relation:T.name,prefix:T.gs1,from:1,to:999999999,next:"auto",use:"Own labels (SSCC)"}];
+  const K=T.parties.filter(p=>p.type==="carrier"), cu=T.parties.filter(p=>p.type==="customer");
+  C.carrierSel=gulf?[{seq:10,branch:"*",dept:"*",principal:cu[2].id,loadZone:"DXB",unloadZone:"AUH",op:">",weight:20000,svc:"D2",carrier:K[1].id},{seq:20,branch:"*",dept:"XB",principal:"*",loadZone:"*",unloadZone:"RUH",op:"",weight:0,svc:"STD",carrier:K[0].id},{seq:30,branch:"*",dept:"*",principal:cu[1].id,loadZone:"*",unloadZone:"*",op:"",weight:0,svc:"NBD",carrier:"OWN"},{seq:90,branch:"*",dept:"DOM",principal:"*",loadZone:"DXB",unloadZone:"DXB",op:"<=",weight:3000,svc:"SBD",carrier:"OWN"}]
+    :[{seq:10,branch:"*",dept:"*",principal:"*",loadZone:"AMD",unloadZone:"NCR",op:"",weight:0,svc:"STD",carrier:K[0].id},{seq:20,branch:"*",dept:"*",principal:cu[0].id,loadZone:"*",unloadZone:"*",op:"",weight:0,svc:"NBD",carrier:"OWN"}];
+  C.statusCodes=[...Object.entries(FILE_STATUS).map(([n,c])=>({object:"File (order)",code:c,name:n})),...TRIP_STATUS.map(([c,n])=>({object:"Trip / leg",code:c,name:n})),{object:"Trip / leg",code:800,name:"Debriefed"},
+    ...[[100,"Labelled"],[200,"Scanned at pickup"],[300,"At hub"],[500,"Delivered"],[550,"Short"],[560,"Damaged"]].map(([c,n])=>({object:"Unit (pallet / package)",code:c,name:n})),
+    ...[[100,"Issued"],[200,"Part paid"],[300,"Paid"],[400,"Disputed"],[500,"Overdue"]].map(([c,n])=>({object:"Sales invoice",code:c,name:n})),
+    ...[[100,"Received"],[150,"Matching needed"],[200,"Needs review"],[300,"Approved"],[400,"In payment batch"],[500,"Paid"]].map(([c,n])=>({object:"Purchase invoice",code:c,name:n}))];
+  C.cascade=[["PU-DEP","Trip","All orders on the trip","Take over PU-DEP; file status 500",10],["DL-ARR","Trip","Orders for that stop","Take over DL-ARR",20],["DL-POD","Unit","Order, when every unit is delivered","Take over DL-POD; file status 700",30],["EXC-DLY","Trip","All orders on the trip","Take over EXC-DLY; raise alert",40],["INV-ISS","Invoice","Orders on the invoice","File status 800",50]].map(([cond,type,target,action,prio])=>({cond,type,target,action,prio}));
+  C.events=[["100010","File created","ORD-CRT","–"],["100020","File confirmed","ORD-CNF","Email template: booking confirmed"],["100500","File put on hold","ORD-HLD","Alert to customer service"],["105001","Margin below guardrail (bespoke)","ORD-HLD","Task for Finance approver"],["200010","Trip dispatched","TRP-DSP","Push to driver app"],["200100","Trip completed","DL-POD","Open trip debrief"],["200150","Trip debriefed","TRP-DBR","Create return order when refused"],["300100","Unit scanned at pickup","PU-LDD","–"],["300500","Unit delivered","DL-POD","Cascade to order"],["500010","Sales invoice issued","INV-ISS","Send invoice email + e-invoice"],["600010","Carrier document expired","–","Block tendering, alert carrier manager"]].map(([code,name,tt,action])=>({code,module:code.slice(0,2),name,tt,action,bespoke:+code.slice(2)>=5000}));
+  C.holds=[["H01","Credit limit reached"],["H02","Margin below guardrail"],["H03","Missing customer documents"],["H04","Customs hold"],["H05","Customer request"]].map(([code,name])=>({code,name,blocks:"Planning and dispatch"}));
+  C.expect=[["PF01","TRP-DSP","TRP-ACC",2,"Alert dispatcher: driver hasn't accepted"],["PF02","PU-ARR","PU-DEP",3,"Detention risk: notify customer service"],["PF03","DL-ARR","DL-POD",2,"Alert dispatcher: POD not captured"],["PF04","DL-POD","INV-ISS",72,"Task for billing: shipment not invoiced"],["PF05","ORD-CNF","PLN-ASG",24,"Task for planner: order not planned"]].map(([id,after,expect,hours,action])=>({id,after,expect,hours,action,active:true}));
+  C.autoReturn=[["PU-DEP","*","*","X12 214","Direct"],["DL-ARR","*","*","X12 214","Direct"],["DL-POD","*","*","X12 214","Direct"],["EXC-DLY","*","*","Email","Direct"],["DL-POD",cu[2].id,"*","Webhook","Indirect"],["INV-ISS","*","*",gulf?"e-invoice (XML)":"GST e-invoice (IRP)","Indirect"]].map(([code,principal,fileType,format,type],i)=>({id:"AR"+(i+1),code,principal,fileType,format,type,active:true}));
+  C.edi=[[cu[2].id,"DOM","ORDERS-IN","X12 204","1 – TMS","Trip planning: N"],[cu[0].id,"DOM","MANIFEST-IN","CSV over SFTP","3 – Shipping units","Trip planning: N"],[K[0].id,"XB","TRIP-PLAN","XML","1 – TMS","Trip planning: Y"],["*","*","STATUS-OUT","X12 214","1 – TMS","–"],["*","FIN","INVOICE-OUT","XML / IRP","51 – Electronic invoice","–"]].map(([relation,dept,message,format,setting,params])=>({relation,dept,message,format,setting,params}));
+  C.debriefStatus=[["DS01","Delivered OK"],["DS02","Delivered with remarks"],["DS03","Partially delivered"],["DS04","Refused"],["DS05","Return on documents (ROD)"]].map(([code,name],i)=>({code,name,context:"4 – Delivery",prio:i,createsReturn:code==="DS03"||code==="DS04"}));
+  C.hubs=(gulf?[["HUB-JEA","Jebel Ali cross-dock","JEA"],["HUB-MUS","Mussafah hub","MUS"],["HUB-RUH","Riyadh hub","RUH"]]:[["HUB-BWD","Bhiwandi DC","BWD"],["HUB-AMD","Sanand hub","AMD"]]).map(([code,name,city])=>({code,name,city,type:"Cross-dock"}));
+  C.pcZones=gulf?[["DXB","Dubai","AE","No postal codes: zone by area / Makani"],["SHJ","Sharjah","AE","No postal codes: zone by area"],["AUH","Abu Dhabi","AE","No postal codes: zone by area"],["AAN","Al Ain","AE","No postal codes: zone by area"],["RUH","Riyadh","SA","Postcodes 11000–14999"],["DMM","Dammam","SA","Postcodes 31000–34999"]].map(([zone,city,cc,rng])=>({zone,city,cc,range:rng}))
+    :[["BWD","Bhiwandi / Thane","IN","PIN 421301–421308"],["CKN","Pune (Chakan)","IN","PIN 410501–410507"],["AMD","Ahmedabad","IN","PIN 380001–382481"],["NCR","Gurugram / Manesar","IN","PIN 122001–122052"],["BLR","Bengaluru","IN","PIN 560001–562114"]].map(([zone,city,cc,rng])=>({zone,city,cc,range:rng}));
+  C.connections=(gulf?[["HUB-JEA","HUB-MUS","Mon–Sat","18:00","Next day 06:00",10],["HUB-JEA","HUB-RUH","Sun, Tue, Thu","16:00","+2 days 08:00",10],["HUB-MUS","HUB-JEA","Mon–Sat","18:00","Next day 06:00",10]]:[["HUB-BWD","HUB-AMD","Daily","20:00","Next day 10:00",10],["HUB-AMD","HUB-BWD","Daily","20:00","Next day 10:00",10]]).map(([from,to,days,cutoff,arrival,prio])=>({from,to,days,cutoff,arrival,prio}));
+  C.fixedTrips=(gulf?[["FT-01","Daily shuttle JEA → MUS","HUB-JEA","HUB-MUS","Mon–Sat 06:00","Curtain-sider"],["FT-02","Riyadh linehaul","HUB-JEA","HUB-RUH","Sun, Tue, Thu 20:00","Curtain-sider"]]:[["FT-01","Bhiwandi → Sanand linehaul","HUB-BWD","HUB-AMD","Daily 21:00","Curtain-sider"]]).map(([code,name,from,to,when,equip])=>({code,name,from,to,when,equip,active:true}));
+  C.userGroups=[["0","Planboard","Planners Dubai"],["1","Quote / tariff","Commercial"],["4","Dashboard","Management"],["5","Alerts","Control tower"],["8","Costs and charges","Finance"],["9","Customer portal dashboard","Customer users"],["11","Event monitor","Control tower"]].map(([type,purpose,group])=>({type,purpose,group}));
+  C.docTypes=[["010","Delivery note","DOM, XB, PRJ","Print + archive"],["020","CMR consignment note","XB","Print + archive"],["030","Shipping labels (SSCC)","DOM, XB, PRJ, CTR","Label printer (ZPL)"],["040","Trip sheet","DOM, XB","Print"],["050","Proof of delivery","All","Archive + customer portal"],["060","Sales invoice","FIN","Email + archive + e-invoice"],["070","Credit note","FIN","Email + archive"]].filter(d=>gulf||d[0]!=="020").map(([code,name,dept,output])=>({code,name,dept,output}));
+  C.agents=[["AG01","ETA recalculation","Every 5 min"],["AG02","Process-flow expectations monitor","Every 5 min"],["AG03","Auto return messages (EDI out)","Every 1 min"],["AG04","Closing files","Daily 01:00"],["AG05","Archiving files","Daily 02:00"],["AG06","Exchange rate import","Daily 06:00"],["AG07","Document expiry alerts","Daily 07:00"]].map(([id,name,interval])=>({id,name,interval,status:1,lastRun:NOW0-(id==="AG04"||id==="AG05"?20:3)*HOUR,result:"OK"}));
+  T.cfg=C; T.messages=[];
+}
+function carrierRule(X,o){const b=branchOf(X,o),ft=fileTypeOf(X,o),dept=ft.split("/")[0];
+  return [...X.cfg.carrierSel].sort((a,c)=>a.seq-c.seq).find(r=>(r.branch==="*"||r.branch===b.code)&&(r.dept==="*"||r.dept===dept)&&(r.principal==="*"||r.principal===o.customerId)&&(r.loadZone==="*"||r.loadZone===zoneOf(X,o.origin))&&(r.unloadZone==="*"||r.unloadZone===zoneOf(X,o.dest))
+    &&(!r.op||({">":o.weight>r.weight,">=":o.weight>=r.weight,"<":o.weight<r.weight,"<=":o.weight<=r.weight,"=":o.weight===r.weight}[r.op])))}
+function pfAlerts(X){const out=[],now=Date.now();
+  X.cfg.expect.filter(e=>e.active).forEach(e=>X.orders.forEach(o=>{if(["Cancelled","Closed","On hold"].includes(o.status))return;const tr=o.trace||[];
+    const a=[...tr].reverse().find(x=>x.code===e.after);if(!a)return;if(tr.some(x=>x.code===e.expect&&x.ts>=a.ts))return;const due=a.ts+e.hours*HOUR;if(now>due)out.push({rule:e,o,due,late:now-due})}));
+  return out.sort((a,b)=>b.late-a.late)}
+function sendReturnMsgs(X,o,ev){if(SEEDING)return;X.cfg.autoReturn.filter(r=>r.active&&r.code===ev.code&&(r.principal==="*"||r.principal===o.customerId)&&(r.fileType==="*"||r.fileType===fileTypeOf(X,o))).forEach(r=>{
+  const fail=Math.random()<.08;X.messages.unshift({id:"MSG-"+(X.messages.length+1001),ts:Date.now(),dir:"OUT",partner:cust(o.customerId).name,format:r.format,type:r.type,subject:`${ev.code} · ${o.id}`,orderId:o.id,code:ev.code,status:fail?"Failed":r.type==="Indirect"?"Queued":"Sent",retries:0,error:fail?"Partner endpoint timed out (HTTP 504)":""});
+  if(fail) X.events.unshift({ts:Date.now(),type:"integration.message_failed",agg:o.id,info:`${r.format} ${ev.code}`})})}
+function seedMessages(T){const cu=T.parties.filter(p=>p.type==="customer");let n=0;const add=(m)=>T.messages.push({id:"MSG-"+(++n),retries:0,error:"",...m});
+  T.orders.filter(o=>o.trace).slice(-60).forEach(o=>(o.trace||[]).filter(e=>["PU-DEP","DL-POD"].includes(e.code)&&e.ts>NOW0-3*DAY).forEach(e=>add({ts:e.ts+20e3,dir:"OUT",partner:cust0(T,o).name,format:"X12 214",type:"Direct",subject:`${e.code} · ${o.id}`,orderId:o.id,code:e.code,status:"Sent"})));
+  add({ts:NOW0-5*HOUR,dir:"IN",partner:cu[2].name,format:"X12 204",type:"ORDERS-IN",subject:"Load tender · 3 orders",status:"Processed"});
+  add({ts:NOW0-4*HOUR,dir:"IN",partner:cu[0].name,format:"CSV over SFTP",type:"MANIFEST-IN",subject:"Manifest · 42 shipping units",status:"Processed"});
+  add({ts:NOW0-3*HOUR,dir:"IN",partner:cu[4%cu.length].name,format:"X12 204",type:"ORDERS-IN",subject:"Load tender · 1 order",status:"Error",error:"Unknown unloading address code ‘WH-77’. Map it under Relations → addresses, then reprocess."});
+  const lastPod=T.orders.find(o=>o.trace&&o.trace.some(e=>e.code==="DL-POD"&&e.ts>NOW0-2*DAY));
+  if(lastPod) add({ts:NOW0-50*60e3,dir:"OUT",partner:cust0(T,lastPod).name,format:"X12 214",type:"Direct",subject:`DL-POD · ${lastPod.id}`,orderId:lastPod.id,code:"DL-POD",status:"Failed",error:"Partner endpoint timed out (HTTP 504)"});
+  T.messages.sort((a,b)=>b.ts-a.ts)}
+const cust0=(T,o)=>T.parties.find(p=>p.id===o.customerId);
+function journalSales(X,inv){const rows={};const add=(gl,dr,cr,txt)=>{const k=gl+txt;rows[k]=rows[k]||{gl,txt,dr:0,cr:0};rows[k].dr+=dr;rows[k].cr+=cr};
+  add("120000",inv.total,0,`Trade debtors · ${cust(inv.customerId).name}`);
+  inv.lines.forEach(l=>l.sell.forEach(s=>{const a=actOf(X,s.code);add(a.salesGL||"400300",0,s.amount,a.name)}));
+  inv.taxGroups.forEach(g=>{if(g.tax)add("220100",0,g.tax,`${g.name}`)});
+  return Object.values(rows).map(r=>({...r,dr:round2(r.dr),cr:round2(r.cr)}))}
+function journalPurchase(X,ci){const S=ciState(X,ci),rows=[];const acc=S.acc,pay=S.pay,inputRate=X.key==="gulf"?.05:.12;const vat=round2(pay*inputRate);
+  rows.push({gl:"215000",txt:"Release accrued carrier cost",dr:round2(Math.min(acc,pay)),cr:0});
+  if(Math.abs(pay-acc)>.005&&pay>0) rows.push({gl:"500100",txt:"Price variance vs accrual",dr:round2(Math.max(0,pay-acc)),cr:round2(Math.max(0,acc-pay))});
+  rows.push({gl:"220200",txt:X.key==="gulf"?"Input VAT 5%":"Input GST 12%",dr:vat,cr:0});
+  rows.push({gl:"210000",txt:`Trade creditors · ${X.parties.find(p=>p.id===ci.carrierId).name}`,dr:0,cr:round2(pay+vat)});return rows}
+function journalTable(X,rows,journal){const td=rows.reduce((s,r)=>s+r.dr,0),tc=rows.reduce((s,r)=>s+r.cr,0);
+  return `<div class="tbl-wrap"><table><thead><tr><th>Journal</th><th>GL account</th><th>Description</th><th class="r">Debit</th><th class="r">Credit</th></tr></thead><tbody>
+  ${rows.map(r=>`<tr><td class="mono">${journal}</td><td class="mono">${r.gl} <span class="muted" style="font-family:var(--f-sans)">${esc(X.cfg.ledger.find(l=>l.code===r.gl)?.name||"")}</span></td><td>${esc(r.txt)}</td><td class="r num">${r.dr?n2(r.dr):""}</td><td class="r num">${r.cr?n2(r.cr):""}</td></tr>`).join("")}
+  <tr><td colspan="3"><b>Total</b> ${Math.abs(td-tc)<.01?pill("Balanced","p-ok"):pill("Out of balance","p-bad")}</td><td class="r num"><b>${n2(td)}</b></td><td class="r num"><b>${n2(tc)}</b></td></tr></tbody></table></div>`}
+function runAgent(X,id){const a=X.cfg.agents.find(x=>x.id===id);a.lastRun=Date.now();let res="OK";
+  if(id==="AG04"){const ft=X.cfg.fileTypes[0];let n=0;X.orders.forEach(o=>{if(o.status!=="Invoiced"||!o.invoiceId)return;const inv=X.invoices.find(i=>i.id===o.invoiceId);if(!inv||invBalance(inv)>0)return;if(Date.now()-o.createdTs<ft.minClose*DAY)return;audit(o.id,"file status",fsCode(o),999);o.status="Closed";o.closedTs=Date.now();n++});res=`${n} files closed (invoiced, paid, older than ${ft.minClose} days)`;emit("agent.closing_files",X.short,res)}
+  if(id==="AG05"){const ft=X.cfg.fileTypes[0];const n=X.orders.filter(o=>o.status==="Closed"&&Date.now()-o.closedTs>ft.archive*DAY).length;res=`${n} files archived (closed more than ${ft.archive} days ago)`}
+  if(id==="AG03"){let n=0;X.messages.filter(m=>m.status==="Failed"||m.status==="Queued").forEach(m=>{if(m.dir==="OUT"){m.status="Sent";m.retries++;n++}});res=`${n} messages sent or retried`}
+  if(id==="AG02"){res=`${pfAlerts(X).length} open expectation breaches`}
+  if(id==="AG01"){res=`${X.trips.filter(t=>t.ms<6).length} trip ETAs recalculated`}
+  if(id==="AG06"){X.cfg.fx.forEach(f=>{f.rate=round2(f.rate*(1+(Math.random()-.5)*.004)*10000)/10000;f.date=new Date().toISOString().slice(0,10)});res=`${X.cfg.fx.length} rates updated`}
+  if(id==="AG07"){const n=X.parties.filter(p=>p.type==="carrier"&&carrierHealth(p).c!=="p-ok").length;res=`${n} carrier(s) with expiring or expired documents alerted`}
+  a.result=res;a.status=1;return res}
+
 const TENANTS = {gulf:buildTenant("gulf"), indus:buildTenant("indus")};
 SEEDING=false;
 CUR_EQ=TENANTS.gulf.equip;
@@ -739,6 +884,8 @@ const ICONS = {
  tracking:'<circle cx="12" cy="10" r="3"/><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/>',
  driver:'<rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/>',
  track:'<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+ setup:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/>',
+ integrations:'<path d="M7 7h10l-3-3M17 17H7l3 3"/>',
  trace:'<circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.5 6H15a3 3 0 0 1 0 6H9a3 3 0 0 0 0 6h6.5"/>',
  receivables:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M12 12.5v5M9.5 15l2.5 2.5 2.5-2.5"/>',
  payables:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M12 17.5v-5M9.5 15l2.5-2.5 2.5 2.5"/>',
@@ -746,11 +893,11 @@ const ICONS = {
  reports:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
  admin:'<path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/><path d="M9 12l2 2 4-4"/>'
 };
-const ROUTES=["dashboard","orders","planning","tracking","trace","receivables","payables","master","reports","driver","track","admin"];
+const ROUTES=["dashboard","orders","planning","tracking","trace","receivables","payables","master","reports","integrations","setup","driver","track","admin"];
 function route(){const h=location.hash.slice(1);return ROUTES.includes(h)?h:"dashboard"}
 function renderNav(){
   const cur=route(); const link=k=>`<a href="#${k}" ${cur===k?'aria-current="page"':""}><svg viewBox="0 0 24 24">${ICONS[k]}</svg><span>${t(k)}</span></a>`;
-  $("#nav").innerHTML=`<div class="nav-sep">${t("office")}</div>${["dashboard","orders","planning","tracking","trace","receivables","payables","master","reports","admin"].map(link).join("")}<div class="nav-sep">${t("field")}</div>${["driver","track"].map(link).join("")}`;
+  $("#nav").innerHTML=`<div class="nav-sep">${t("office")}</div>${["dashboard","orders","planning","tracking","trace","receivables","payables","master","reports","integrations","setup","admin"].map(link).join("")}<div class="nav-sep">${t("field")}</div>${["driver","track"].map(link).join("")}`;
   $("#tenantName").textContent=T().short;
   $("#sideFoot").innerHTML=`${esc(ME().name)} · ${esc(ME().role)}<br>Region: ${esc(T().region)}<br>Demo build · sample data`;
   $("#lblTenant").textContent=t("tenant"); $("#lblLang").textContent=t("language");
@@ -762,7 +909,7 @@ function render(){
 window.addEventListener("hashchange",()=>{closeOverlay();render()});
 $("#langSel").value=lang;
 $("#langSel").addEventListener("change",e=>{lang=e.target.value;try{localStorage.setItem("hptms.lang",lang)}catch(x){};render()});
-$("#tenantSel").addEventListener("change",e=>{tenantKey=e.target.value;CUR_EQ=T().equip;fin.ci=null;fin.sel.clear();fin.batch.clear();rep.cust="";rep.carrier="";ui.page=0;ui.sel.clear();drv.tripId=null;render();toast(`Signed in to ${T().name}. Tenant ${T().short} data only.`)});
+$("#tenantSel").addEventListener("change",e=>{tenantKey=e.target.value;intg.sel=null;CUR_EQ=T().equip;fin.ci=null;fin.sel.clear();fin.batch.clear();rep.cust="";rep.carrier="";ui.page=0;ui.sel.clear();drv.tripId=null;render();toast(`Signed in to ${T().name}. Tenant ${T().short} data only.`)});
 
 /* ---------------- shared UI bits ---------------- */
 const pill=(s,cls)=>`<span class="pill ${cls??STATUS_CLASS[s]??""}">${esc(tst(s))}</span>`;
@@ -846,14 +993,14 @@ function bindOrderClicks(){document.querySelectorAll("[data-order]").forEach(el=
 
 /* ---------------- ORDERS ---------------- */
 const ui={q:"",status:"",sort:"pickupTs",dir:-1,page:0,size:25,sel:new Set(),cols:new Set(["id","svc","customer","lane","pickup","promise","weight","status","code","sell","margin"]),svc:""};
-const COLS={id:"order",svc:"Service",customer:"customer",promise:"Promised by",lane:"Lane",pickup:"pickup",weight:"weight",equip:"Equipment",status:"status",code:"Status code",sell:"sell",cost:"cost",margin:"marginCol",ref:"Customer ref"};
+const COLS={id:"order",svc:"Service",customer:"customer",promise:"Promised by",lane:"Lane",pickup:"pickup",weight:"weight",equip:"Equipment",status:"status",ft:"File type",con:"Con note",code:"Status code",sell:"sell",cost:"cost",margin:"marginCol",ref:"Customer ref"};
 VIEWS.orders=function(){
   const X=T(); let rows=X.orders.filter(o=>{
     if(ui.status && o.status!==ui.status) return false;
     if(ui.svc && o.svc!==ui.svc) return false;
     if(!ui.q) return true; const q=ui.q.toLowerCase();
     return [o.id,o.ref,cust(o.customerId).name,city(o.origin).name,city(o.dest).name,o.origin,o.dest].some(s=>s.toLowerCase().includes(q))});
-  const key={id:o=>o.id,customer:o=>cust(o.customerId).name,lane:o=>o.origin+o.dest,pickup:o=>o.pickupTs,weight:o=>o.weight,equip:o=>o.equip,status:o=>STATUS_ORDER.indexOf(o.status),code:o=>curCode(T(),o)||"",sell:o=>o.sell,cost:o=>o.buy,margin:o=>(o.sell-o.buy)/o.sell,ref:o=>o.ref,pickupTs:o=>o.pickupTs,svc:o=>Object.keys(SERVICE).indexOf(o.svc),promise:o=>o.deliverBy}[ui.sort];
+  const key={id:o=>o.id,customer:o=>cust(o.customerId).name,lane:o=>o.origin+o.dest,pickup:o=>o.pickupTs,weight:o=>o.weight,equip:o=>o.equip,status:o=>STATUS_ORDER.indexOf(o.status),code:o=>curCode(T(),o)||"",ft:o=>fileTypeOf(T(),o),con:o=>o.conNote||"",sell:o=>o.sell,cost:o=>o.buy,margin:o=>(o.sell-o.buy)/o.sell,ref:o=>o.ref,pickupTs:o=>o.pickupTs,svc:o=>Object.keys(SERVICE).indexOf(o.svc),promise:o=>o.deliverBy}[ui.sort];
   rows.sort((a,b)=>{const x=key(a),y=key(b);return (x>y?1:x<y?-1:0)*ui.dir});
   const total=rows.length, pages=Math.max(1,Math.ceil(total/ui.size)); ui.page=Math.min(ui.page,pages-1);
   const pageRows=rows.slice(ui.page*ui.size,(ui.page+1)*ui.size);
@@ -881,7 +1028,7 @@ VIEWS.orders=function(){
     <tbody>${pageRows.map(o=>{const c=cust(o.customerId),m=(o.sell-o.buy)/o.sell;return `<tr class="click" data-order="${o.id}">
       <td><input type="checkbox" data-sel="${o.id}" ${ui.sel.has(o.id)?"checked":""} aria-label="Select ${o.id}"></td>
       ${td("id",`<span class="mono">${o.id}</span>`)}${td("svc",svcTag(o))}${td("customer",esc(c.name))}${td("lane",`<span class="mono">${o.origin} → ${o.dest}</span>${city(o.origin).cc!==city(o.dest).cc?' <span class="pill p-info">Cross-border</span>':""}`)}
-      ${td("pickup",dt(o.pickupTs,X.tz),"num")}${td("promise",dt(o.deliverBy,X.tz),"num")}${td("weight",nfmt(o.weight)+" kg","r num")}${td("equip",esc(o.equip))}${td("status",pill(o.status))}${td("code",codeChip(X,curCode(X,o)))}
+      ${td("pickup",dt(o.pickupTs,X.tz),"num")}${td("promise",dt(o.deliverBy,X.tz),"num")}${td("weight",nfmt(o.weight)+" kg","r num")}${td("equip",esc(o.equip))}${td("status",`<span class="mono muted" style="font-size:11.5px">${fsCode(o)}</span> `+pill(o.status))}${td("ft",`<span class="mono">${fileTypeOf(X,o)}</span>`)}${td("con",o.conNote?`<span class="mono">${o.conNote}</span>`:"–")}${td("code",codeChip(X,curCode(X,o)))}
       ${td("sell",money(o.sell,X.ccy),"r num")}${td("cost",money(o.buy,X.ccy),"r num")}${td("margin",`<span style="color:${m<X.guard?"var(--bad)":"inherit"}">${Math.round(m*100)}%</span>`,"r num")}${td("ref",`<span class="mono">${o.ref}</span>`)}
     </tr>`}).join("")}</tbody></table></div>
    <div class="pager"><span>${t("showing")} ${total?ui.page*ui.size+1:0}–${Math.min(total,(ui.page+1)*ui.size)} ${t("of")} ${nfmt(total)}</span>
@@ -906,7 +1053,7 @@ VIEWS.orders=function(){
 function openNewOrder(){
   const X=T(); const custs=X.parties.filter(p=>p.type==="customer"), carriers=X.parties.filter(p=>p.type==="carrier");
   const today=new Date(Date.now()+DAY).toISOString().slice(0,10);
-  const optAcc=X.acc.filter(a=>["TAIL","DROP","WKND"].includes(a.code));
+  const optAcc=X.acc.filter(a=>["TAIL","DROP","WKND"].includes(a.code));const nofU={k:false,s:false};
   $("#overlay").innerHTML=`<div class="modal-bg" id="mbg"><form class="modal" id="nof" novalidate>
    <div class="row"><h2 style="margin:0;font-size:18px;margin-inline-end:auto">${t("newOrder")}</h2><span class="muted" style="font-size:12px">Instant quote from the ${esc(X.short)} rate card</span></div>
    <div class="form">
@@ -931,6 +1078,11 @@ function openNewOrder(){
   </form></div>`;
   const calc=()=>{const o=$("#no-o").value,d=$("#no-d").value,e=$("#no-e").value,w=+$("#no-w").value,pal=+$("#no-pal").value,disc=Math.max(0,Math.min(50,+$("#no-disc").value||0));
     const msg=[];let ok=true;
+    const rule=o!==d?carrierRule(X,{customerId:$("#no-c").value,origin:o,dest:d,weight:w,pallets:pal,equip:e}):null;
+    if(rule){let kv=rule.carrier==="OWN"?"":rule.carrier;const kk=X.parties.find(p=>p.id===kv);
+      if(!nofU.k){if(kk&&(kk.status!=="Approved"||carrierHealth(kk).c==="p-bad")){msg.push(["warn",`Rule ${rule.seq} points to ${kk.name}, which is blocked by an expired document. Own fleet is used instead.`]);kv=""}$("#no-k").value=kv}
+      if(!nofU.s&&rule.svc)$("#no-s").value=rule.svc;
+      msg.push(["info",`Carrier selection rule ${rule.seq} applied: ${rule.carrier==="OWN"?"own fleet":kk?.name} · ${SERVICE[rule.svc]?.name||"default service"}. Change either field to override.`])}
     if(o===d){msg.push(["bad","Origin and destination must be different."]);ok=false}
     if(!(w>0)){msg.push(["bad","Enter a weight above 0 kg."]);ok=false}
     if(w>EQUIP[e].kg){msg.push(["bad",`${nfmt(w)} kg is over the ${e} limit of ${nfmt(EQUIP[e].kg)} kg. Choose a larger vehicle or split the order.`]);ok=false}
@@ -951,6 +1103,7 @@ function openNewOrder(){
     $("#no-msg").innerHTML=msg.map(([c,s])=>`<div class="note ${c}">${esc(s)}</div>`).join("");
     $("#no-ok").disabled=!ok; return {ok,tmp,w,pal,m};
   };
+  $("#no-k").addEventListener("input",()=>nofU.k=true);$("#no-s").addEventListener("input",()=>nofU.s=true);
   document.querySelectorAll("#nof input,#nof select").forEach(el=>el.addEventListener("input",calc)); calc();
   $("#no-x").onclick=closeOverlay; $("#mbg").onclick=e=>{if(e.target.id==="mbg")closeOverlay()};
   $("#nof").onsubmit=e=>{e.preventDefault();const r=calc();if(!r.ok)return;
@@ -971,9 +1124,9 @@ function openOrder(id){
   const taxAmt=round2(o.sell*tax.rate), m=o.sell?(o.sell-o.buy)/o.sell:0;
   const hist=X.audit.filter(a=>a.entity===o.id);
   const lk=o.carrierId?X.parties.find(p=>p.id===o.carrierId).name:"Own fleet";
-  const locked=["Invoiced","Cancelled"].includes(o.status);
+  const locked=["Invoiced","Cancelled","Closed"].includes(o.status);
   const ms=MILESTONES.map((mm,i)=>`<li class="${i<o.ms?"done":i===o.ms&&tr?"now":""}"><div>${esc(mm)}${i<o.ms&&o.msTs?.[i]?` <span class="muted num">· ${dt(o.msTs[i],X.tz)}</span>`:""}</div></li>`).join("");
-  const row=(l,neg)=>`<tr><td style="white-space:normal">${esc(l.label)}</td><td class="r num">${money2(l.amount,X.ccy)}</td></tr>`;
+  const row=(l,neg)=>`<tr><td style="white-space:normal"><span class="mono muted" style="font-size:11px" title="Activity ${esc(actOf(X,l.code).name)} · GL ${esc(actOf(X,l.code).salesGL||actOf(X,l.code).purchGL)}">${l.code}</span> ${esc(l.label)}${l.supp?" "+pill("Supplementary","p-warn"):""}</td><td class="r num">${money2(l.amount,X.ccy)}</td></tr>`;
   $("#overlay").innerHTML=`<div class="drawer-bg" id="dbg"><aside class="drawer">
    <div class="row"><h2 class="mono" style="margin-inline-end:auto">${o.id}</h2>${pill(o.status)}${codeChip(X,curCode(X,o))}<button class="btn sm" id="dtr">Track & trace</button><button class="btn sm" id="dx">${t("close")}</button></div>
    ${o.status==="On hold"&&o.holdReason?`<div class="note warn">${esc(o.holdReason)}</div>`:""}
@@ -983,6 +1136,9 @@ function openOrder(id){
     <dt>${t("pickup")}</dt><dd class="num">${dt(o.pickupTs,X.tz)} <span class="muted">${X.tz}</span></dd><dt>Service level</dt><dd>${svcTag(o)} ${esc(SERVICE[o.svc].name)}</dd><dt>Promised by</dt><dd class="num">${dt(o.deliverBy,X.tz)} ${(()=>{const sl=slaStatus(X,o);return sl?pill(sl.t,sl.c):""})()}</dd>
     <dt>Cargo</dt><dd>${nfmt(o.weight)} kg · ${o.pallets} pallets · ${esc(o.equip)}</dd>
     <dt>Haulier</dt><dd>${esc(lk)}</dd>
+    <dt>File</dt><dd><span class="mono">${fileTypeOf(X,o)}</span> · ${esc(X.cfg.fileTypes.find(f=>f.code===fileTypeOf(X,o))?.name||"")} · branch ${branchOf(X,o).code} · status <span class="mono">${fsCode(o)}</span></dd>
+    ${o.conNote?`<dt>Con note</dt><dd class="mono">${o.conNote}</dd>`:""}${o.ssccStart!=null?`<dt>SSCC range</dt><dd class="mono" style="font-size:12px">${fmtSSCC(ssccOf(X,o.ssccStart))} … +${Math.max(1,o.pallets)-1}</dd>`:""}
+    ${o.relatedTo?`<dt>Related order</dt><dd>Return for <span class="mono">${o.relatedTo}</span></dd>`:""}${o.related?`<dt>Related orders</dt><dd class="mono">${o.related.join(", ")}</dd>`:""}${o.debrief?`<dt>Debrief</dt><dd>${esc(o.debrief.status)} · ${esc(o.debrief.qual)}</dd>`:""}
     ${tr?`<dt>Trip</dt><dd class="mono">${tr.id} · ${esc(veh(tr.vehicleId).plate)} · ${esc(drvr(tr.driverId).name)}</dd>`:""}
    </dl>
    <section class="panel"><div class="panel-h"><h2>Costs & charges</h2><span class="muted" style="font-size:12px">${X.ccy} · decimal, never float</span></div><div class="tbl-wrap"><table><tbody>
@@ -1008,6 +1164,8 @@ function openOrder(id){
    <div class="row">
     ${o.status==="Draft"?`<button class="btn primary" data-act="confirm">Confirm</button>`:""}
     ${o.status==="Confirmed"?`<a class="btn primary" href="#planning">Plan this order</a>`:""}
+    ${o.status==="Closed"&&Date.now()-o.closedTs<=(X.cfg.fileTypes.find(f=>f.code===fileTypeOf(X,o))?.reopen||3)*DAY?`<button class="btn" data-act="reopen">Reopen file (999 → 998)</button>`:""}
+    ${o.status==="Reopened"?`<div class="note warn" style="flex-basis:100%">File reopened. Add the missing charge above; it is billed on a supplementary invoice from Receivables → Unbilled.</div>`:""}
     ${o.status==="On hold"?`<button class="btn" data-act="release">${o.holdReason?"Approve margin & release":"Release hold"}</button>`:""}
     ${o.status==="POD received"?`<button class="btn primary" data-act="invoice">Create invoice</button>`:""}
     ${o.invoiceId?`<button class="btn" data-act="viewinv">View invoice ${o.invoiceId}</button>`:""}
@@ -1021,12 +1179,13 @@ function openOrder(id){
   document.querySelectorAll("[data-trackset]").forEach(a=>a.addEventListener("click",()=>{trk.id=a.dataset.trackset}));
   $("#accForm")&&($("#accForm").onsubmit=e=>{e.preventDefault();const code=$("#accCode").value,qty=Math.max(1,Math.round(+$("#accQty").value||1)),d=accDef(X,code);
     if(d.unit==="%"&&o.acc.some(a=>a.code===code)){toast(`${d.label} is already on this order.`);return}
-    const before=o.sell,beforeBuy=o.buy;o.acc.push({code,qty});recalc(X,o);
+    const before=o.sell,beforeBuy=o.buy;o.acc.push({code,qty,supp:o.status==="Reopened"});recalc(X,o);
     audit(o.id,"sell (excl. tax)",money2(before,X.ccy),money2(o.sell,X.ccy));if(o.buy!==beforeBuy)audit(o.id,"cost accrual",money2(beforeBuy,X.ccy),money2(o.buy,X.ccy));
     emit("charge.added",o.id,`${d.label} × ${qty}`);openOrder(o.id);refreshBehind()});
   document.querySelectorAll("[data-act]").forEach(b=>b.onclick=()=>{const a=b.dataset.act;
     const set=(s,ev,info="")=>{audit(o.id,"status",o.status,s);o.status=s;emit(ev,o.id,info)};
     if(a==="confirm"){set("Confirmed","order.confirmed");trace(X,o,"ORD-CNF","Manual entry")}
+    if(a==="reopen"){audit(o.id,"file status",999,998);o.status="Reopened";emit("file.reopened",o.id,ME().name)}
     if(a==="release"){trace(X,o,"ORD-CNF","Manual entry",{note:o.holdReason?"Margin approved by Finance":"Hold released"});if(o.holdReason){audit(o.id,"margin approval","pending",`approved by ${ME().name}`);o.holdReason=null;set("Confirmed","order.margin_approved",`${Math.round(m*100)}%`)}else set("Confirmed","order.released")}
     if(a==="invoice"){const inv=makeInvoice(X,o.customerId,[o],Date.now());audit(o.id,"status","POD received","Invoiced");audit(inv.id,"(created)","",money2(inv.total,X.ccy));emit("invoice.issued",inv.id,`${c.name} · ${money2(inv.total,X.ccy)}`);refreshBehind();openInvoice(inv.id);return}
     if(a==="viewinv"){openInvoice(o.invoiceId);return}
@@ -1075,6 +1234,7 @@ function openInvoice(id,form){
     <button class="btn" data-form="disp" ${bal<=0?"disabled":""}>Log customer dispute</button>
    </div>
    ${formHTML}
+   <details><summary class="muted" style="cursor:pointer;font-size:12.5px">Journal posting (SI) to the ledger</summary>${journalTable(X,journalSales(X,inv),"SI")}</details>
    <p class="muted" style="font-size:12px;margin:0">${gulf?"Bilingual layout with seller and buyer TRN. KSA tax lines get ZATCA Phase 2 clearance (XML + QR) in Phase 2 of the build.":"GST tax invoice. The IRN and signed QR from the India IRP come in Phase 2 of the build."}</p>
   </div></div>`;
   const reopen=f=>{openInvoice(id,f);refreshBehind()};
@@ -1106,9 +1266,10 @@ VIEWS.planning=function(){
   const X=T(), n=consolSuggestions(X).length;
   $("#view").innerHTML=`<section class="panel"><div class="tabs" role="tablist" style="padding:0 10px">
     <button role="tab" aria-selected="${plan.tab==="builder"}" data-ptab="builder">Load builder</button>
-    <button role="tab" aria-selected="${plan.tab==="consol"}" data-ptab="consol">Order consolidation${n?` (${n})`:""}</button></div><div class="panel-b" id="planBody"></div></section>`;
+    <button role="tab" aria-selected="${plan.tab==="consol"}" data-ptab="consol">Order consolidation${n?` (${n})`:""}</button>
+    <button role="tab" aria-selected="${plan.tab==="debrief"}" data-ptab="debrief">Trip debrief${X.trips.filter(t=>t.ms>=6&&!t.debriefed).length?` (${X.trips.filter(t=>t.ms>=6&&!t.debriefed).length})`:""}</button></div><div class="panel-b" id="planBody"></div></section>`;
   document.querySelectorAll("[data-ptab]").forEach(b=>b.onclick=()=>{plan.tab=b.dataset.ptab;VIEWS.planning()});
-  (plan.tab==="builder"?planBuilder:planConsol)(X);
+  ({builder:planBuilder,consol:planConsol,debrief:planDebrief}[plan.tab])(X);
   document.querySelectorAll("#planBody [data-open]").forEach(b=>b.onclick=e=>{e.stopPropagation();openOrder(b.dataset.open)});
 };
 function planBuilder(X){
@@ -1184,9 +1345,11 @@ VIEWS.tracking=function(){
     <p class="muted" style="font-size:12px;margin:0 14px 14px">Positions update every second in this demo (production: GPS every 30–60 s). Geofences raise "Arrived" automatically.</p></section>
    <section class="panel"><div class="panel-h"><h2>Open exceptions</h2></div><div class="panel-b stack" id="ctEx"></div></section>
   </div>
+  ${(()=>{const al=pfAlerts(X);return `<section class="panel"><div class="panel-h"><h2>Process-flow alerts (${al.length})</h2><span class="muted" style="font-size:12px">Expected events that haven't happened in time · rules under Configuration → Process flow</span></div><div class="tbl-wrap" style="max-height:260px;overflow:auto"><table><thead><tr><th>Rule</th><th>${t("order")}</th><th>Waiting for</th><th>Overdue by</th><th>Action</th></tr></thead><tbody>${al.slice(0,25).map(a=>`<tr><td class="mono">${a.rule.id}</td><td>${lnk(a.o.id,"data-open")}</td><td>${codeChip(X,a.rule.expect)} after ${codeChip(X,a.rule.after)}</td><td class="num" style="color:var(--bad)">${fmtH(a.late)}</td><td style="white-space:normal">${esc(a.rule.action)}</td></tr>`).join("")||`<tr><td colspan="5" class="muted">Nothing overdue.</td></tr>`}</tbody></table></div></section>`})()}
   <section class="panel"><div class="panel-h"><h2>${t("atRisk")}</h2><span class="muted" style="font-size:12px">Ranked by risk score: ETA vs delivery window, plus open exceptions</span></div>
    <div class="tbl-wrap"><table><thead><tr><th>Trip</th><th>${t("order")}</th><th>${t("vehicle")}</th><th>${t("driverL")}</th><th>Status code</th><th>Milestone</th><th>${t("progress")}</th><th>${t("eta")}</th><th>Deliver by</th><th>${t("risk")}</th><th></th></tr></thead><tbody id="ctRows"></tbody></table></div></section>`;
   updateTracking();
+  document.querySelectorAll("#view [data-open]").forEach(b=>b.onclick=e=>{e.stopPropagation();openOrder(b.dataset.open)});
 };
 function updateTracking(){
   const X=T(); if(!$("#ctRows")) return;
@@ -1454,7 +1617,7 @@ VIEWS.payables=function(){
   AP[fin.aptab](X); bindFinLinks();
 };
 FIN.unbilled=X=>{
-  const ub=X.orders.filter(o=>o.status==="POD received").sort((a,b)=>a.customerId.localeCompare(b.customerId,undefined,{numeric:true})||a.pod.ts-b.pod.ts);
+  const ub=X.orders.filter(o=>o.status==="POD received"||(o.status==="Reopened"&&billNet(o)>0)).sort((a,b)=>a.customerId.localeCompare(b.customerId,undefined,{numeric:true})||(a.pod?.ts||0)-(b.pod?.ts||0));
   [...fin.sel].forEach(id=>{if(!ub.find(o=>o.id===id))fin.sel.delete(id)});
   const waiting=X.orders.filter(o=>o.status==="Delivered").length, sel=ub.filter(o=>fin.sel.has(o.id)), nc=new Set(sel.map(o=>o.customerId)).size;
   $("#finBody").innerHTML=`<div class="stack">
@@ -1462,12 +1625,12 @@ FIN.unbilled=X=>{
     <button class="btn sm" id="ubAll">${sel.length===ub.length&&ub.length?"Clear":"Select all"}</button>
     <button class="btn primary" id="ubGo" ${sel.length?"":"disabled"}>Create ${nc||""} invoice${nc===1?"":"s"}${sel.length?` (${sel.length} shipments)`:""}</button></div>
    <div class="tbl-wrap"><table><thead><tr><th></th><th>${t("order")}</th><th>${t("customer")}</th><th>Billing cycle</th><th>Lane</th><th>POD date</th><th class="r">Net</th><th>Tax</th><th class="r">Total</th></tr></thead><tbody>
-   ${ub.map(o=>{const tx=taxFor(X,o),c=cust(o.customerId);return `<tr><td><input type="checkbox" data-ub="${o.id}" ${fin.sel.has(o.id)?"checked":""} aria-label="Select ${o.id}"></td><td>${lnk(o.id,"data-open")}</td><td>${esc(c.name)}</td><td>${esc(c.cycle)}</td><td class="mono">${o.origin} → ${o.dest}</td><td class="num">${dt(o.pod.ts,X.tz,false)}</td><td class="r num">${money2(o.sell,X.ccy)}</td><td>${esc(tx.name)} ${Math.round(tx.rate*100)}%</td><td class="r num">${money2(o.sell*(1+tx.rate),X.ccy)}</td></tr>`}).join("")||`<tr><td colspan="9" class="muted">Nothing to bill. Complete a delivery with POD in the Driver app and it appears here.</td></tr>`}
+   ${ub.map(o=>{const tx=taxFor(X,o),c=cust(o.customerId);return `<tr><td><input type="checkbox" data-ub="${o.id}" ${fin.sel.has(o.id)?"checked":""} aria-label="Select ${o.id}"></td><td>${lnk(o.id,"data-open")}</td><td>${esc(c.name)}</td><td>${esc(c.cycle)}</td><td class="mono">${o.origin} → ${o.dest}</td><td class="num">${o.pod?dt(o.pod.ts,X.tz,false):"–"}${o.status==="Reopened"?" "+pill("Supplementary","p-warn"):""}</td><td class="r num">${money2(billNet(o),X.ccy)}</td><td>${esc(tx.name)} ${Math.round(tx.rate*100)}%</td><td class="r num">${money2(billNet(o)*(1+tx.rate),X.ccy)}</td></tr>`}).join("")||`<tr><td colspan="9" class="muted">Nothing to bill. Complete a delivery with POD in the Driver app and it appears here.</td></tr>`}
    </tbody></table></div></div>`;
   document.querySelectorAll("[data-ub]").forEach(c=>c.onchange=()=>{c.checked?fin.sel.add(c.dataset.ub):fin.sel.delete(c.dataset.ub);rerender()});
   $("#ubAll").onclick=()=>{if(sel.length===ub.length)fin.sel.clear();else ub.forEach(o=>fin.sel.add(o.id));rerender()};
   $("#ubGo").onclick=()=>{const by={};sel.forEach(o=>(by[o.customerId]=by[o.customerId]||[]).push(o));let tot=0;const ids=[];
-    Object.entries(by).forEach(([cid,os])=>{os.forEach(o=>audit(o.id,"status","POD received","Invoiced"));const inv=makeInvoice(X,cid,os,Date.now());tot+=inv.total;ids.push(inv.id);
+    Object.entries(by).forEach(([cid,os])=>{os.forEach(o=>audit(o.id,"status",o.status,"Invoiced"));const inv=makeInvoice(X,cid,os,Date.now());tot+=inv.total;ids.push(inv.id);
       audit(inv.id,"(created)","",money2(inv.total,X.ccy));emit("invoice.issued",inv.id,`${cust(cid).name} · ${os.length} shipment(s) · ${money2(inv.total,X.ccy)}`)});
     fin.sel.clear();toast(`${ids.length} invoice(s) issued, ${money2(tot,X.ccy)} incl. tax. They are now under Customer invoices.`);rerender()};
 };
@@ -1551,7 +1714,7 @@ AP.pinv=X=>{
        return `<tr><td class="mono">${esc(l.ref)}</td><td>${lnk(l.orderId,"data-open")}<div class="muted mono" style="font-size:11.5px">${o.origin} → ${o.dest}</div></td><td>${how}${l.why?`<div class="muted" style="font-size:11.5px">${esc(l.why.join(", "))}</div>`:""}</td><td>${o.pod?pill("✓","p-ok"):pill("Missing","p-warn")}</td><td class="r num">${money2(o.buy,X.ccy)}</td><td class="r num">${money2(l.amount,X.ccy)}</td><td class="r num" style="color:${Math.abs(m.v)>0.005?(m.ok?"var(--warn)":"var(--bad)"):"inherit"}">${m.v>0?"+":""}${money2(m.v,X.ccy)}</td><td>${pill(m.res,m.cls)}</td><td class="muted" style="white-space:normal">${esc(l.note)}</td>
         <td style="white-space:nowrap">${locked?"":[m.res==="Over tolerance"?`<button class="btn sm" data-cil="${i}|accept">Accept</button> <button class="btn sm" data-cil="${i}|dispute">Dispute</button>`:"",m.dup?`<button class="btn sm" data-cil="${i}|reject">Reject line</button>`:"",m.needsApproval?`<button class="btn sm" data-cil="${i}|approve">Approve</button>`:"",l.matchedBy&&l.matchedBy!=="self-billing"&&l.matchedBy!=="reference"?`<button class="btn sm" data-cil="${i}|unmatch">Unmatch</button>`:""].join(" ")}</td></tr>`}).join("")}
      <tr><td colspan="4"><b>Totals</b> · ${S.matched}/${ci.lines.length} lines matched</td><td class="r num"><b>${money2(S.acc,X.ccy)}</b></td><td class="r num"><b>${money2(S.inv,X.ccy)}</b></td><td class="r num"><b>${money2(S.inv-S.acc,X.ccy)}</b></td><td colspan="3">Payable now: <b class="num">${money2(S.pay,X.ccy)}</b></td></tr>
-     </tbody></table></div></section>`}
+     </tbody></table></div>${S.pay>0?`<details class="panel-b"><summary class="muted" style="cursor:pointer;font-size:12.5px">Journal posting (PI): accrual release, variance, input tax and creditor</summary>${journalTable(X,journalPurchase(X,ci),"PI")}</details>`:""}</section>`}
   $("#finBody").innerHTML=`<div class="stack">
    <div class="row" style="gap:12px">
     <div class="seg" role="radiogroup" aria-label="Matching mode"><button role="radio" aria-checked="${X.apMode==="auto"}" data-apmode="auto">Auto-match & auto-approve</button><button role="radio" aria-checked="${X.apMode==="manual"}" data-apmode="manual">Manual review</button></div>
@@ -1807,7 +1970,7 @@ function zpl(X,{o,i,n}){const S=SERVICE[o.svc||"D2"],c=cust(o.customerId),a=city
 ^FO30,236^A0N,22,22^FDTO^FS^FO30,262^A0N,34,34^FD${c.name}^FS^FO30,302^A0N,30,30^FD${b.name}^FS
 ^FO30,350^GB752,2,2^FS
 ^FO30,372^A0N,150,150^FD${b.code}^FS^FO430,380^A0N,24,24^FDDELIVER BY^FS^FO430,410^A0N,34,34^FD${new Date(o.deliverBy+X.tzOff*HOUR).toISOString().slice(0,16).replace("T"," ")}^FS^FO430,452^A0N,24,24^FD${S.name}^FS
-^FO50,560^BY3,3,170^BCN,170,Y,N,N^FD${o.id}-${pad3(i)}^FS
+^FO50,560^BY3,3,170^BCN,170,Y,N,N^FD>;>800${ssccOf(X,o.ssccStart+i-1)}^FS
 ^FO30,800^A0N,26,26^FDORDER ${o.id}   REF ${o.ref}^FS
 ^FO30,840^A0N,44,44^FDPIECE ${i} / ${n}^FS^FO30,894^A0N,30,30^FD${kg} kg  ${o.equip}${o.equip==="Reefer"?"  KEEP 2-8 C":""}^FS
 ^FO560,800^BQN,2,6^FDQA,${trackUrl(X,o)}^FS
@@ -1816,11 +1979,12 @@ function labelCard(X,{o,i,n}){const S=SERVICE[o.svc||"D2"],c=cust(o.customerId),
   return `<div class="label"><div class="lb-top"><div><b>${esc(X.short)}</b><small>${esc(X.name)}</small></div><span class="lb-svc">${S.short}</span></div>
    <div class="lb-addr"><small>FROM</small><b>${esc(a.name)}</b><small>TO</small><b>${esc(c.name)}</b><span>${esc(b.name)}</span></div>
    <div class="lb-route"><span class="lb-zone">${b.code}</span><div><small>DELIVER BY</small><b>${dt(o.deliverBy,X.tz)}</b><small>${esc(S.name)}</small></div></div>
-   <div class="lb-bc"><svg data-bc="${o.id}-${pad3(i)}" aria-label="Barcode ${o.id}-${pad3(i)}"></svg></div>
+   <div class="lb-bc"><small>SSCC</small><svg data-bc="00${ssccOf(X,o.ssccStart+i-1)}" data-hr="${fmtSSCC(ssccOf(X,o.ssccStart+i-1))}" aria-label="SSCC barcode"></svg></div>${o.conNote?`<div style="font-size:11px"><small>CON NOTE</small> <b class="mono">${o.conNote}</b></div>`:""}
    <div class="lb-foot"><div><small>ORDER</small> <b>${o.id}</b><br><small>REF</small> ${esc(o.ref)}<br><b class="lb-piece">Piece ${i} / ${n}</b><br>${nfmt(Math.round(o.weight/n))} kg · ${esc(o.equip)}${o.equip==="Reefer"?"<br><b>KEEP 2–8 °C</b>":""}</div><div class="lb-qr" data-qr="${trackUrl(X,o)}"></div></div></div>`}
 function openLabels(ids){
   const X=T(), labs=labelList(X,ids), orders=new Set(labs.map(l=>l.o.id)).size;
   const printers=X.key==="gulf"?["Zebra ZT411 · Jebel Ali dock 3","Zebra ZD621 · Mussafah hub","Honeywell PC42t · Sharjah"]:["Zebra ZT411 · Bhiwandi DC","TSC TE244 · Chakan"];
+  [...new Set(labs.map(l=>l.o))].forEach(o=>{assignSSCC(X,o);if(!["Draft","Confirmed","On hold"].includes(o.status))assignConNote(X,o)});
   const show=labs.slice(0,6), z=labs.map(l=>zpl(X,l)).join("\n");
   $("#overlay").innerHTML=`<div class="modal-bg" id="lbg"><div class="modal" style="width:min(980px,100%)">
    <div class="row"><h2 style="margin:0;font-size:18px;margin-inline-end:auto">Shipping labels · ${labs.length} label${labs.length===1?"":"s"} for ${orders} order${orders===1?"":"s"}</h2><button class="btn sm" id="lx">${t("close")}</button></div>
@@ -1835,7 +1999,7 @@ function openLabels(ids){
    <p class="muted" style="font-size:12px;margin:0">One label per pallet or package. The barcode is Code 128 (order + piece) and is scanned by the driver app at pickup and delivery. The QR code opens the customer tracking page.</p>
   </div></div>`;
   $("#lx").onclick=closeOverlay; $("#lbg").onclick=e=>{if(e.target.id==="lbg")closeOverlay()};
-  document.querySelectorAll("svg[data-bc]").forEach(s=>{try{if(window.JsBarcode)JsBarcode(s,s.dataset.bc,{format:"CODE128",height:58,width:1.5,margin:0,fontSize:12,font:"monospace",background:"#ffffff",lineColor:"#000000"});else throw 0}catch(e){s.outerHTML=`<div class="lb-fallback">||| ${esc(s.dataset.bc)} |||</div>`}});
+  document.querySelectorAll("svg[data-bc]").forEach(s=>{try{if(window.JsBarcode)JsBarcode(s,s.dataset.bc,{format:"CODE128",height:58,width:1.3,margin:0,fontSize:11,font:"monospace",text:s.dataset.hr,background:"#ffffff",lineColor:"#000000"});else throw 0}catch(e){s.outerHTML=`<div class="lb-fallback">||| ${esc(s.dataset.hr||s.dataset.bc)} |||</div>`}});
   document.querySelectorAll("[data-qr]").forEach(el=>{try{if(window.qrcode){const q=qrcode(0,"M");q.addData(el.dataset.qr);q.make();el.innerHTML=q.createSvgTag(3,0)}else el.textContent="QR"}catch(e){el.textContent="QR"}});
   $("#lP").onchange=e=>lbl.printer=+e.target.value; $("#lC").onchange=e=>lbl.copies=Math.max(1,Math.min(5,+e.target.value||1));
   $("#lZ").onclick=()=>{const done=()=>toast("ZPL copied.");navigator.clipboard?.writeText(z).then(done).catch(()=>{const ta=$("#lZt");ta.closest("details").open=true;ta.select();toast("Select-all is ready. Press Ctrl+C or ⌘C to copy.")})||(()=>{const ta=$("#lZt");ta.closest("details").open=true;ta.select()})()};
@@ -1933,6 +2097,8 @@ VIEWS.reports=function(){
 const trc={q:"",id:null,show214:false};
 function traceFind(X,q){q=q.trim().toUpperCase();if(!q)return null;
   const piece=q.match(/^(.*)-(\d{3})$/);
+  const dg=q.replace(/[^0-9]/g,"");if(dg.length>=18){const ss=dg.slice(-18),ser=parseInt(ss.slice(8,17),10);const so=X.orders.find(x=>x.ssccStart!=null&&ser>=x.ssccStart&&ser<x.ssccStart+Math.max(1,x.pallets));if(so)return {o:so,piece:ser-so.ssccStart+1}}
+  const cn=X.orders.find(x=>x.conNote&&x.conNote.toUpperCase()===q);if(cn)return {o:cn};
   let o=X.orders.find(x=>x.id.toUpperCase()===q||x.ref.toUpperCase()===q||(piece&&x.id.toUpperCase()===piece[1]));
   if(o) return {o,piece:piece&&o.id.toUpperCase()===piece[1]?+piece[2]:null};
   const tr=X.trips.find(t=>t.id.toUpperCase()===q)||X.trips.find(t=>t.ms<6&&veh(t.vehicleId).plate.toUpperCase().replace(/\s/g,"")===q.replace(/\s/g,""));
@@ -1972,7 +2138,7 @@ VIEWS.trace=function(){
    <div class="stack">
     ${tr&&tr.ms<6?`<section class="panel"><div class="panel-h"><h2>Live position</h2>${codeChip(X,tripCode(X,tr).code)}${tripCode(X,tr).ex?codeChip(X,tripCode(X,tr).ex):""}</div><div class="panel-b" id="trMap">${mapSVG({trips:[tr],highlight:tr.id})}</div></section>`:""}
     <section class="panel"><div class="panel-h"><h2>Piece traceability · ${n} piece${n===1?"":"s"}</h2></div><div class="tbl-wrap" style="max-height:260px;overflow:auto"><table><thead><tr><th>Barcode</th><th>Labelled</th><th>Pickup scan</th><th>Delivery scan</th></tr></thead><tbody>
-     ${Array.from({length:Math.min(n,30)},(_,i)=>`<tr ${trc.piece===i+1?'style="background:var(--accent-soft)"':""}><td class="mono">${o.id}-${pad3(i+1)}</td><td>${lb?"✓":"–"}</td><td>${pk?"✓":"–"}</td><td>${dl?(o.pod?.qty!=null&&i>=o.pod.qty?pill("Short","p-bad"):"✓"):"–"}</td></tr>`).join("")}
+     ${Array.from({length:Math.min(n,30)},(_,i)=>`<tr ${trc.piece===i+1?'style="background:var(--accent-soft)"':""}><td class="mono" style="font-size:12px">${o.ssccStart!=null?fmtSSCC(ssccOf(X,o.ssccStart+i)):o.id+"-"+pad3(i+1)}</td><td>${lb?"✓":"–"}</td><td>${pk?"✓":"–"}</td><td>${dl?(o.pod?.qty!=null&&i>=o.pod.qty?pill("Short","p-bad"):"✓"):"–"}</td></tr>`).join("")}
     </tbody></table></div></section>
     <section class="panel"><div class="panel-h"><h2>Latest events (3 days)</h2></div><div class="tbl-wrap"><table><tbody>
      ${feed.map(e=>`<tr class="click" data-tro="${e.oid}"><td class="num" style="font-size:12px">${dt(e.ts,X.tz)}</td><td>${codeChip(X,e.code)}</td><td class="mono" style="font-size:12px">${e.oid}</td><td class="muted" style="font-size:12px">${esc(e.src)}</td></tr>`).join("")}
@@ -2038,6 +2204,192 @@ function openTTForm(i){
     audit("tt-code:"+code,i!=null?"updated":"(created)","",v.name);emit(i!=null?"tracking.code_updated":"tracking.code_created",code,v.name);closeOverlay();toast(`${code} saved.`);rerender()};
 }
 
+/* ---------------- CONFIGURATION SCREENS ---------------- */
+const cfgUI={id:"coverage",q:""};
+const CFG_TABLES=[
+ ["Organisation","company","Company","company",[["code","Code"],["name","Legal name"],["taxId","Tax registration"],["ccy","Base currency"],["country","Country"],["fyStart","Fiscal year starts"],["region","Data region"]],"Tenant-level defaults. One company per tenant; data never leaves its region."],
+ ["Organisation","divisions","Divisions (legal entities)","divisions",[["code","Division"],["name","Legal entity"],["country","Country"],["taxNo","Tax registration"],["ccy","Base currency"],["contra","Contra account"]],"Each legal entity is a division with its own tax registration and base currency. The contra account balances cross-division postings, e.g. a trip run with another entity's truck. In India there is one division per state GST registration."],
+ ["Organisation","branches","Branches","branches",[["code","Branch (4 digits)"],["name","Name"],["city","Location"],["division","Division"],["costCentre","Cost centre"]],"Live: every order is registered at the branch of its pickup location. The branch decides the cost centre on postings."],
+ ["Organisation","departments","Departments","departments",[["code","Department"],["name","Name"],["kind","Kind"]],"Orders and trips are registered against a department. A separate invoice department splits operations and finance work."],
+ ["Organisation","fileTypes","File types","fileTypes",[["code","Department / handling"],["name","Description"],["cat","File category"],["svc","Default service level","svc"],["plan","Planning method"],["docs","Document set"],["minClose","Min. days before closing","num"],["maxClose","Max. days open (error log)","num"],["reopen","Reopen window (days)","num"],["archive","Archive after closing (days)","num"]],"Live: each order gets a file type (department + handling code) from its lane, equipment and size. The file type steers the default service level, documents, planning, charge generation and when the file may be closed and archived."],
+ ["Finance","ledger","Ledger accounts","ledger",[["code","GL account"],["name","Name"],["type","Type"]],"Live: activities and VAT codes post to these accounts in the journal previews on invoices and purchase invoices."],
+ ["Finance","costCentres","Cost centres","costCentres",[["code","Cost centre"],["name","Name"],["branch","Branch"]],"Each posting line carries the cost centre of the file's branch."],
+ ["Finance","journals","Journals","journals",[["code","Journal"],["name","Name"],["type","Type"]],"SI sales invoices, SC credit notes, PI purchase invoices, AC accruals at dispatch."],
+ ["Finance","vat","VAT / GST codes","vat",[["code","Tax code"],["name","Description"],["rate","Rate","pct"],["payGL","Payable GL (sales)"],["recGL","Receivable GL (purchases)"]],"Live: the tax code is chosen per lane (domestic, cross-border; in India intra-state CGST + SGST or inter-state IGST)."],
+ ["Finance","terms","Payment terms","terms",[["code","Code"],["name","Description"],["days","Days","num"],["rule","Due date rule"]],"Due date = invoice date + days."],
+ ["Finance","fx","Exchange rates","fx",[["ccy","Currency"],["base","Base"],["rate","Rate","num"],["date","Valid from"],["source","Source"]],"Updated daily by the exchange-rate agent."],
+ ["Finance","activities","Activities (cost & charge codes)","activities",[["code","Activity"],["name","Description"],["sp","Sales / purchase"],["salesGL","Sales GL"],["purchGL","Purchase GL"],["vat","VAT"],["cc","Cost centre"]],"Live: every cost and charge line on an order is an activity, and posts to its GL account."],
+ ["Finance","aag","Automatic activity generation","aag",[["id","Rule"],["from","From date"],["till","Till date"],["fileType","File type"],["file","Type of file"],["ps","P / S"],["to","Charge to"],["act","Activity"],["cond","Condition"],["ifEmpty","If relation missing"],["active","Active","bool"]],"Live: switch a rule off and that charge stops being generated on new and re-rated orders."],
+ ["General tables","unloc","Locations (UN/LOCODE)","unloc",[["code","Location"],["unloc","UN/LOCODE"],["name","Name"],["country","Country"],["zone","Zone"]],"Location codes must be unique across all countries."],
+ ["General tables","incoterms","Delivery terms","incoterms",[["code","Code"],["name","Name"],["payer","Freight paid by"],["version","Version"]],"Decides who is charged for freight (principal, shipper or consignee)."],
+ ["General tables","packages","Package codes","packages",[["code","Code"],["name","Description"],["dims","Dimensions"],["stackable","Stackable","bool"]],"UN/ECE package codes used on order lines and labels."],
+ ["General tables","commodities","Commodities","commodities",[["code","Code"],["name","Description"],["hs","HS code"],["un","UN number"],["adr","ADR class"],["temp","Temperature"]],"Dangerous goods carry a UN number and ADR class."],
+ ["General tables","tariffTypes","Tariff types","tariffTypes",[["code","Code"],["name","Description"]],""],
+ ["General tables","service","Service levels",null,null,"Live: drives the promised delivery time, surcharge and carrier selection."],
+ ["General tables","means","Means of transport","means",[["code","Code"],["name","Description"]],""],
+ ["General tables","refTypes","Reference types","refTypes",[["code","Code"],["name","Description"],["use","Use"],["format","Format"]],"Con notes are generated from the con note format per carrier."],
+ ["General tables","dateTypes","Types of date","dateTypes",[["code","Code"],["name","Description"],["monitor","Monitored","bool"],["allowUpdate","Allow update","bool"]],"Monitored dates feed the process-flow expectations."],
+ ["General tables","amountTypes","Amount types","amountTypes",[["code","Code"],["name","Description"]],""],
+ ["General tables","instructions","Transport instructions","instructions",[["code","Code"],["text","Instruction"]],"Printed on the trip sheet and shown in the driver app."],
+ ["General tables","quality","Quality codes","quality",[["code","Code"],["name","Description"]],"Used as qualification codes in trip debrief."],
+ ["General tables","emailTpl","Email templates","emailTpl",[["code","Code"],["name","Template"],["trigger","Triggered by"],["langs","Languages"]],""],
+ ["Relations","relGroups","Relation groups","relGroups",[["code","Group"],["name","Description"],["type","Debtor / creditor"],["ctrl","Control account"]],"Debtor and creditor control accounts for the ledger."],
+ ["Relations","regTypes","Registration types","regTypes",[["code","Type"],["name","Description"]],"Codes 1–999 are standard, 1000 and up are tenant-specific."],
+ ["Relations","conNotes","Con note types per carrier","conNotes",[["type","Type"],["carrierName","Carrier"],["prefix","Prefix"],["from","From","num"],["to","Through","num"],["next","Next number","num"]],"Live: a con note number (prefix + number + mod-7 check digit) is issued when the order is dispatched. It's printed on labels and searchable in Track & trace."],
+ ["Relations","ssccRanges","Shipping unit ranges (SSCC)","ssccRanges",[["relation","Relation"],["prefix","GS1 company prefix"],["from","From serial","num"],["to","Through serial","num"],["use","Use"]],"Live: each pallet label carries an 18-digit SSCC with GS1 check digit."],
+ ["Relations","carrierSel","Consignment carrier selection","carrierSel",[["seq","Sequence","num"],["branch","Branch"],["dept","Department"],["principal","Principal","cust"],["loadZone","Loading zone"],["unloadZone","Unloading zone"],["op","Weight operator"],["weight","Weight kg","num"],["svc","Service level","svc"],["carrier","Carrier","carr"]],"Live: when entering an order, the first matching rule (lowest sequence) sets the haulier and service level. A blocked carrier falls back to own fleet."],
+ ["Process flow","statusCodes","Status codes per object","statusCodes",[["object","Object"],["code","Status","num"],["name","Description"]],"Live: files (orders), trips, units, sales and purchase invoices each have their own numbered statuses. 998 = reopened, 999 = closed."],
+ ["Process flow","ttcodes","Track & trace codes",null,null,""],
+ ["Process flow","cascade","T&T code cascading","cascade",[["cond","T&T code (condition)"],["type","Logged on"],["target","Cascades to"],["action","Result"],["prio","Priority","num"]],"Live: a code logged on a trip or unit is taken over by the orders it belongs to."],
+ ["Process flow","events","Events","events",[["code","Event (6 digits)"],["module","Module"],["name","Description"],["tt","Linked T&T code"],["action","Follow-up action"],["bespoke","Bespoke (5000+)","bool"]],"First 2 digits = module (10 file, 20 trip, 30 unit, 50 invoice, 60 relation). 0000–4999 standard, 5000–9999 tenant-specific."],
+ ["Process flow","expect","Process-flow expectations","expect",[["id","Rule"],["after","After T&T code"],["expect","Expect T&T code"],["hours","Within hours","num"],["action","Action when missed"],["active","Active","bool"]],"Live: breaches show in the Control tower under Process-flow alerts."],
+ ["Process flow","holds","Hold events","holds",[["code","Code"],["name","Reason"],["blocks","Blocks"]],""],
+ ["Process flow","agents","Agents (background jobs)",null,null,""],
+ ["Connectivity","autoReturn","Trigger auto return message","autoReturn",[["id","Rule"],["code","T&T code"],["principal","Principal","cust"],["fileType","File type"],["format","Message"],["type","Direct / indirect"],["active","Active","bool"]],"Live: when a matching T&T code is logged, a status message goes to the customer. Watch it in Integrations."],
+ ["Connectivity","edi","EDI parameters","edi",[["relation","Relation","cust"],["dept","Department"],["message","Message"],["format","Format"],["setting","Type of setting"],["params","Parameters"]],"Inbound and outbound message settings per partner. Trip planning = Y only for the trip-plan message."],
+ ["Transport","debriefStatus","Debrief status codes","debriefStatus",[["code","Code"],["name","Description"],["context","Context"],["prio","Priority","num"],["createsReturn","Creates return order","bool"]],"Live: used in Planning → Trip debrief. Refused and partial deliveries create a related return order."],
+ ["Transport","hubs","Hubs & cross-docks","hubs",[["code","Hub"],["name","Name"],["city","Location"],["type","Type"]],""],
+ ["Transport","pcZones","Postcode zones","pcZones",[["zone","Zone"],["city","City"],["cc","Country"],["range","Postcode range"]],"The UAE has no postal codes, so zones there are by area (and Makani number)."],
+ ["Transport","connections","Network connections","connections",[["from","From hub"],["to","To hub"],["days","Days"],["cutoff","Cut-off"],["arrival","Arrival"],["prio","Priority","num"]],"Linehaul schedule used to build multi-leg shipments (Phase 3)."],
+ ["Transport","fixedTrips","Fixed trips (templates)","fixedTrips",[["code","Code"],["name","Description"],["from","From"],["to","To"],["when","Schedule"],["equip","Equipment"],["active","Active","bool"]],"Recurring trips the auto-planner fills first (Phase 3)."],
+ ["Users & documents","userGroups","User groups","userGroups",[["type","Type"],["purpose","Purpose"],["group","User group"]],""],
+ ["Users & documents","docTypes","Document types & outputs","docTypes",[["code","Type"],["name","Document"],["dept","Departments"],["output","Output"]],""],
+].map(([grp,id,name,key,cols,note])=>({grp,id,name,key,cols,note}));
+const COVERAGE=[
+ ["Organisation: company, divisions, branches, departments","Configuration → Organisation","Live","0"],["File types (department + handling code)","Configuration → File types","Live","0–1"],["File numbering per branch","Orders (prefix-YYMM-seq)","Live","1"],
+ ["Ledger accounts, cost centres, journals","Configuration → Finance","Live (journal preview)","2"],["Currencies & exchange rates","Configuration → Finance","Table + agent","0"],["Payment terms","Configuration → Finance","Live","2"],["VAT / GST codes","Configuration → Finance","Live","2"],
+ ["Activities (cost & charge codes)","Order charges, invoices","Live","2"],["Automatic activity generation","Configuration → Finance","Live","2"],["Cost & charge screen","Order details → Costs & charges","Live","2"],["Journal posting & accrual GL logic","Invoice and purchase invoice details","Live (preview)","2"],
+ ["Business relations, groups, registration types","Master data + Configuration → Relations","Live","0"],["Credit limit","Receivables aging","Live","2"],["Con note types & con note per carrier","Configuration → Relations","Live","1"],["Shipping unit (SSCC) ranges","Labels","Live","1"],["Consignment carrier selection","New order","Live","2"],
+ ["Locations (UN/LOCODE), zones, postcode zones","Configuration → General tables / Transport","Table","0"],["Delivery terms (Incoterms)","Configuration → General tables","Table","1"],["Package codes, commodities, DG","Configuration → General tables","Table","0"],["Service levels","Orders, labels, reports","Live","1"],["Tariff types, tariff, zone prioritising","Rate cards","Live (standard tariff)","2"],
+ ["Reference types, types of date, amount types","Configuration → General tables","Table","1"],["Transport instructions, text blocks, email templates","Configuration → General tables","Table","1"],["Holiday calendar","Service-level deadlines","Live","1"],
+ ["Status codes per object (file, trip, unit, invoice)","Orders, Control tower, Configuration","Live","1"],["Track & trace codes","Master data → Track & trace codes","Live","1"],["T&T code cascading","Trip → order events","Live","1"],["Events (6-digit) & follow-up actions","Configuration → Process flow","Table","3"],["Process-flow expectations & alerts","Control tower","Live","3"],["Hold events","Orders (On hold)","Live","1"],
+ ["Trigger auto return message","Integrations","Live","4"],["EDI parameters","Configuration → Connectivity","Table","4"],["Message monitor with retry / reprocess","Integrations","Live","4"],["Agents (background jobs)","Configuration → Process flow","Live","1–4"],
+ ["Drivers, activate for mobile","Master data → Fleet, Driver app","Live","1"],["Equipment, equipment types / groups","Master data","Live","0"],["Plan board","Planning","Live (load builder)","1"],["Trip debrief & return orders (related order)","Planning → Trip debrief","Live","1"],
+ ["Distribution network: hubs, connections, fixed trips","Configuration → Transport","Table","3"],["Cross-docking & RF","–","Out of scope (warehouse)","–"],["File closing, reopening & archiving","Order details, Agents","Live","2"],
+ ["Users, user groups, roles, authorisation per division","Admin & audit, Configuration","Live (roles) + table","0"],["Web portal users","Customer tracking / portal","Phase 2","2"],["Document types & output IDs","Configuration → Users & documents, Labels","Table","1"],["Alerts","Control tower, notifications","Live","3"],
+ ["Dashboards & reports","Dashboard, Reports","Live","5"]];
+function cfgFmt(X,v,type){if(v==null||v==="")return "–";if(type==="bool")return v?"✓":"–";if(type==="pct")return Math.round(v*1000)/10+"%";if(type==="num")return typeof v==="number"?nfmt(v):esc(v);
+  if(type==="cust")return v==="*"?"Any":esc(X.parties.find(p=>p.id===v)?.name||v);if(type==="carr")return v==="OWN"?"Own fleet":esc(X.parties.find(p=>p.id===v)?.name||v);if(type==="svc")return v?esc(SERVICE[v]?.name||v):"–";return esc(v)}
+VIEWS.setup=function(){
+  const X=T(), groups=[...new Set(CFG_TABLES.map(t=>t.grp))];
+  const cur=cfgUI.id==="coverage"?null:CFG_TABLES.find(t=>t.id===cfgUI.id);
+  $("#view").innerHTML=`<div class="grid" id="cfgGrid" style="grid-template-columns:minmax(0,250px) minmax(0,1fr)">
+   <aside class="panel" style="align-self:start"><div class="panel-b stack" style="gap:2px;padding:8px">
+    <button class="cfgnav" data-cfg="coverage" aria-current="${cfgUI.id==="coverage"}">Coverage overview</button>
+    ${groups.map(g=>`<div class="nav-sep" style="color:var(--muted);padding:10px 8px 4px">${g}</div>${CFG_TABLES.filter(t=>t.grp===g).map(t=>`<button class="cfgnav" data-cfg="${t.id}" aria-current="${cfgUI.id===t.id}">${esc(t.name)}</button>`).join("")}`).join("")}
+   </div></aside>
+   <section class="panel" style="min-width:0"><div id="cfgBody"></div></section></div>`;
+  if(window.innerWidth<900) $("#cfgGrid").style.gridTemplateColumns="minmax(0,1fr)";
+  document.querySelectorAll("[data-cfg]").forEach(b=>b.onclick=()=>{cfgUI.id=b.dataset.cfg;VIEWS.setup()});
+  const body=$("#cfgBody");
+  if(!cur){const cnt=s=>COVERAGE.filter(c=>c[2].startsWith(s)).length;
+    body.innerHTML=`<div class="panel-h"><h2>Configuration coverage</h2><span class="muted" style="font-size:12px">${COVERAGE.length} configuration areas</span></div><div class="panel-b stack">
+     <p class="muted" style="margin:0;font-size:12.5px;max-width:820px">How each configuration area of an LSP transport system maps onto HP TMS. "Live" means the setting changes behaviour in this demo; "Table" means it's maintained here and used in a later phase.</p>
+     <div class="row" style="gap:20px">${[["Live",cnt("Live")],["Table",cnt("Table")],["Later phase",COVERAGE.filter(c=>/^Phase|Out of scope/.test(c[2])).length]].map(([l,v])=>`<div><div class="muted" style="font-size:11.5px;text-transform:uppercase;letter-spacing:.06em">${l}</div><div style="font-size:22px;font-weight:600">${v}</div></div>`).join("")}</div>
+     <div class="tbl-wrap"><table><thead><tr><th>Configuration area</th><th>Where in HP TMS</th><th>Status in demo</th><th>Build phase</th></tr></thead><tbody>
+     ${COVERAGE.map(([a,w,s,p])=>`<tr><td style="white-space:normal">${esc(a)}</td><td style="white-space:normal">${esc(w)}</td><td>${pill(s,s.startsWith("Live")?"p-ok":s.startsWith("Table")?"p-info":"")}</td><td class="num">${esc(p)}</td></tr>`).join("")}</tbody></table></div></div>`;return}
+  if(cur.id==="ttcodes"){body.innerHTML=`<div class="panel-h"><h2>Track & trace codes</h2></div><div class="panel-b" id="mBody"></div>`;MST.ttcodes(X);return}
+  if(cur.id==="service"){body.innerHTML=`<div class="panel-h"><h2>Service levels</h2></div><div class="panel-b stack"><p class="muted" style="margin:0;font-size:12.5px">${esc(cur.note)}</p><div class="tbl-wrap"><table><thead><tr><th>Code</th><th>Label code</th><th>Service level</th><th class="r">Surcharge</th><th class="r">Business days</th><th>Cut-off</th><th class="r">Max. distance</th><th>Cross-border</th><th class="r">Orders</th></tr></thead><tbody>
+    ${Object.entries(SERVICE).map(([k,S])=>`<tr><td class="mono">${k}</td><td>${svcTag({svc:k})}</td><td>${esc(S.name)}</td><td class="r num">${S.sur>0?"+":""}${Math.round(S.sur*100)}%</td><td class="r num">${S.days??(k==="SBD"?0:"–")}</td><td>${S.cutoff?S.cutoff+":00":"–"}</td><td class="r num">${S.maxKm?nfmt(S.maxKm)+" km":"–"}</td><td>${S.noCross?"No":"Yes"}</td><td class="r num">${X.orders.filter(o=>o.svc===k).length}</td></tr>`).join("")}</tbody></table></div>
+    <p class="muted" style="margin:0;font-size:12.5px">Business days skip ${X.weekend.map(w=>["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][w]).join(" and ")} and these public holidays: ${X.holidays.join(", ")}.</p></div>`;return}
+  if(cur.id==="agents"){const ST=["Not activated","Activated","Stopping","Erroneous","Restart requested","Paused"];
+    body.innerHTML=`<div class="panel-h"><h2>Agents (background jobs)</h2></div><div class="panel-b stack"><div class="tbl-wrap"><table><thead><tr><th>Agent</th><th>Interval</th><th>Status</th><th>Last run</th><th>Last result</th><th></th></tr></thead><tbody>
+     ${X.cfg.agents.map(a=>`<tr><td>${esc(a.name)}</td><td>${esc(a.interval)}</td><td>${pill(`${a.status} · ${ST[a.status]}`,a.status===1?"p-ok":a.status===5?"p-warn":a.status===3?"p-bad":"")}</td><td class="num">${dt(a.lastRun,X.tz)}</td><td style="white-space:normal;min-width:200px">${esc(a.result)}</td><td style="white-space:nowrap"><button class="btn sm" data-agrun="${a.id}" ${a.status===5?"disabled":""}>Run now</button> <button class="btn sm" data-agp="${a.id}">${a.status===5?"Resume":"Pause"}</button></td></tr>`).join("")}</tbody></table></div>
+     <p class="muted" style="margin:0;font-size:12.5px">Status codes: 0 not activated · 1 activated · 2 stopping · 3 erroneous · 4 restart requested · 5 paused. "Closing files" closes orders that are invoiced, fully paid and older than the file type's minimum (90 days); they get file status 999 and can be reopened within 3 days.</p></div>`;
+    document.querySelectorAll("[data-agrun]").forEach(b=>b.onclick=()=>{const r=runAgent(X,b.dataset.agrun);audit("agent:"+b.dataset.agrun,"run","",r);toast(r);VIEWS.setup()});
+    document.querySelectorAll("[data-agp]").forEach(b=>b.onclick=()=>{const a=X.cfg.agents.find(x=>x.id===b.dataset.agp);const old=a.status;a.status=a.status===5?1:5;audit("agent:"+a.id,"status",old,a.status);emit("agent.status_changed",a.name,a.status===5?"paused":"activated");VIEWS.setup()});return}
+  const rows=X.cfg[cur.key]||[];
+  const live=cur.note.startsWith("Live");
+  const extra=cur.id==="expect"?(()=>{const al=pfAlerts(X);return `<div class="note ${al.length?"warn":"ok"}">${al.length} open breach${al.length===1?"":"es"} right now. They're listed in the Control tower.</div>`})():"";
+  body.innerHTML=`<div class="panel-h"><h2>${esc(cur.name)}</h2>${live?pill("Drives behaviour","p-ok"):""}<span class="muted" style="font-size:12px">${rows.length} rows</span><button class="btn sm primary" id="cfgAdd">+ Add</button></div>
+   <div class="panel-b stack"><p class="muted" style="margin:0;font-size:12.5px;max-width:860px">${esc(cur.note.replace(/^Live: /,""))}</p>${extra}
+   <div class="tbl-wrap"><table><thead><tr>${cur.cols.map(c=>`<th class="${["num","pct"].includes(c[2])?"r":""}">${esc(c[1])}</th>`).join("")}<th></th></tr></thead><tbody>
+   ${rows.map((r,i)=>`<tr>${cur.cols.map(c=>`<td class="${["num","pct"].includes(c[2])?"r num":""}" style="${c[2]?"":"white-space:normal"}">${cfgFmt(X,r[c[0]],c[2])}</td>`).join("")}<td style="white-space:nowrap"><button class="btn sm" data-cfge="${i}">Edit</button> <button class="btn sm" data-cfgd="${i}">Delete</button></td></tr>`).join("")||`<tr><td colspan="${cur.cols.length+1}" class="muted">No rows yet.</td></tr>`}
+   </tbody></table></div><div id="cfgDel"></div></div>`;
+  $("#cfgAdd").onclick=()=>cfgEdit(X,cur,null);
+  document.querySelectorAll("[data-cfge]").forEach(b=>b.onclick=()=>cfgEdit(X,cur,+b.dataset.cfge));
+  document.querySelectorAll("[data-cfgd]").forEach(b=>b.onclick=()=>{const i=+b.dataset.cfgd,r=rows[i];
+    $("#cfgDel").innerHTML=`<div class="note warn row" style="gap:10px"><span style="margin-inline-end:auto">Delete ${esc(String(r[cur.cols[0][0]]))} from ${esc(cur.name)}?</span><button class="btn sm" id="cfgDy">Delete</button><button class="btn sm" id="cfgDn">${t("cancel")}</button></div>`;
+    $("#cfgDn").onclick=()=>$("#cfgDel").innerHTML="";
+    $("#cfgDy").onclick=()=>{rows.splice(i,1);audit("config:"+cur.id,String(r[cur.cols[0][0]]),"present","deleted");emit("config.updated",cur.name,"row deleted");VIEWS.setup()}});
+};
+function cfgEdit(X,cur,i){
+  const r=i==null?{}:X.cfg[cur.key][i];
+  const input=c=>{const [k,l,type]=c,v=r[k]??"";
+    if(type==="bool")return `<label style="flex-direction:row;align-items:center;gap:8px;color:var(--fg)"><input type="checkbox" data-cf="${k}" ${v?"checked":""}> ${esc(l)}</label>`;
+    if(type==="cust")return `<label>${esc(l)}<select data-cf="${k}"><option value="*">Any</option>${X.parties.filter(p=>p.type==="customer").map(p=>`<option value="${p.id}" ${v===p.id?"selected":""}>${esc(p.name)}</option>`).join("")}</select></label>`;
+    if(type==="carr")return `<label>${esc(l)}<select data-cf="${k}"><option value="OWN">Own fleet</option>${X.parties.filter(p=>p.type==="carrier").map(p=>`<option value="${p.id}" ${v===p.id?"selected":""}>${esc(p.name)}</option>`).join("")}</select></label>`;
+    if(type==="svc")return `<label>${esc(l)}<select data-cf="${k}"><option value="">–</option>${Object.entries(SERVICE).map(([sk,S])=>`<option value="${sk}" ${v===sk?"selected":""}>${esc(S.name)}</option>`).join("")}</select></label>`;
+    if(type==="pct")return `<label>${esc(l)} (%)<input type="number" step="0.1" data-cf="${k}" value="${v===""?"":Math.round(v*1000)/10}"></label>`;
+    return `<label>${esc(l)}<input type="${type==="num"?"number":"text"}" data-cf="${k}" value="${esc(v)}"></label>`};
+  $("#overlay").innerHTML=`<div class="modal-bg" id="cbg"><form class="modal" id="cf" novalidate><h2 style="margin:0;font-size:18px">${i==null?"Add to":"Edit"} ${esc(cur.name)}</h2>
+   <div class="form">${cur.cols.map(input).join("")}</div><div id="cfErr"></div>
+   <div class="row" style="justify-content:flex-end"><button type="button" class="btn" id="cfX">${t("cancel")}</button><button class="btn primary">${t("save")}</button></div></form></div>`;
+  $("#cfX").onclick=closeOverlay; $("#cbg").onclick=e=>{if(e.target.id==="cbg")closeOverlay()};
+  $("#cf").onsubmit=e=>{e.preventDefault();const v={...r};
+    cur.cols.forEach(([k,,type])=>{const el=document.querySelector(`[data-cf="${k}"]`);v[k]=type==="bool"?el.checked:type==="num"?(el.value===""?"":+el.value):type==="pct"?(+el.value||0)/100:el.value.trim()});
+    const k0=cur.cols[0][0];
+    if(v[k0]===""||v[k0]==null){$("#cfErr").innerHTML=`<div class="note bad">Enter ${esc(cur.cols[0][1])}.</div>`;return}
+    if(X.cfg[cur.key].some((x,j)=>j!==i&&String(x[k0])===String(v[k0]))){$("#cfErr").innerHTML=`<div class="note bad">${esc(String(v[k0]))} already exists.</div>`;return}
+    if(i==null)X.cfg[cur.key].push(v);else X.cfg[cur.key][i]=v;
+    if(cur.id==="aag"){let n=0;X.orders.forEach(o=>{if(["Draft","Confirmed","On hold","Dispatched","In transit"].includes(o.status)){recalc(X,o);n++}});toast(`Rule saved. ${n} open orders re-rated.`)}else toast(`${cur.name} saved.`);
+    audit("config:"+cur.id,String(v[k0]),i==null?"":"changed",i==null?"added":"updated");emit("config.updated",cur.name,String(v[k0]));closeOverlay();VIEWS.setup()};
+}
+
+/* ---------------- INTEGRATIONS (message monitor) ---------------- */
+const intg={dir:"",st:"",sel:null};
+VIEWS.integrations=function(){
+  const X=T(), ms=X.messages.filter(m=>(!intg.dir||m.dir===intg.dir)&&(!intg.st||m.status===intg.st));
+  const day=X.messages.filter(m=>m.ts>Date.now()-DAY), fail=X.messages.filter(m=>m.status==="Failed"||m.status==="Error");
+  const sel=X.messages.find(m=>m.id===intg.sel);
+  const stc={Sent:"p-ok",Processed:"p-ok",Queued:"p-info",Failed:"p-bad",Error:"p-bad"};
+  const payload=m=>{if(m.dir==="OUT"&&/214/.test(m.format)&&m.orderId){const o=X.orders.find(x=>x.id===m.orderId);return o?edi214(X,o):""}
+    if(m.dir==="OUT")return JSON.stringify({event:m.code,order:m.orderId,timestamp:new Date(m.ts).toISOString(),tenant:X.short},null,2);
+    return m.format==="X12 204"?"ST*204*0001~\nB2**GHLX**PO-55120**PP~\nS5*1*LD~\nN1*SH*…~\nS5*2*UL~\nN1*CN*…~\nSE*8*0001~":"unit_id,order_ref,package,qty,weight_kg\n…"};
+  $("#view").innerHTML=`<div class="grid g-kpi">${kpi("Messages (24 h)",nfmt(day.length),`${day.filter(m=>m.dir==="IN").length} in · ${day.filter(m=>m.dir==="OUT").length} out`)}${kpi("Failed or in error",nfmt(fail.length),"Retry or reprocess below")}${kpi("Success rate",day.length?Math.round(day.filter(m=>!["Failed","Error"].includes(m.status)).length/day.length*100)+"%":"–","Last 24 hours")}${kpi("Auto return rules",nfmt(X.cfg.autoReturn.filter(r=>r.active).length),"Configuration → Connectivity")}</div>
+   ${sel?`<section class="panel"><div class="panel-h"><h2 class="mono">${sel.id}</h2>${pill(sel.status,stc[sel.status])}<button class="btn sm" id="imX">${t("close")}</button></div><div class="panel-b stack">
+     <dl class="kv"><dt>Direction</dt><dd>${sel.dir==="IN"?"Inbound":"Outbound"}</dd><dt>Partner</dt><dd>${esc(sel.partner)}</dd><dt>Format</dt><dd>${esc(sel.format)}</dd><dt>Retries</dt><dd>${sel.retries}</dd>${sel.error?`<dt>Error</dt><dd style="color:var(--bad)">${esc(sel.error)}</dd>`:""}</dl>
+     <textarea class="mono" readonly style="width:100%;height:150px">${esc(payload(sel))}</textarea></div></section>`:""}
+   <section class="panel"><div class="panel-h"><h2>Message monitor</h2>
+    <select id="imD" aria-label="Direction"><option value="">All directions</option><option value="IN" ${intg.dir==="IN"?"selected":""}>Inbound</option><option value="OUT" ${intg.dir==="OUT"?"selected":""}>Outbound</option></select>
+    <select id="imS" aria-label="Status"><option value="">All statuses</option>${["Sent","Processed","Queued","Failed","Error"].map(s=>`<option ${intg.st===s?"selected":""}>${s}</option>`).join("")}</select>
+    <button class="btn sm" id="imRetry" ${fail.filter(m=>m.dir==="OUT").length?"":"disabled"}>Retry all failed</button></div>
+   <div class="tbl-wrap"><table><thead><tr><th>When</th><th>ID</th><th>Dir.</th><th>Partner</th><th>Format</th><th>Subject</th><th>Status</th><th class="r">Retries</th><th>Error</th><th></th></tr></thead><tbody>
+   ${ms.slice(0,150).map(m=>`<tr class="click" data-msg="${m.id}"><td class="num">${dt(m.ts,X.tz)}</td><td class="mono">${m.id}</td><td>${m.dir==="IN"?"⇣ In":"⇡ Out"}</td><td>${esc(m.partner)}</td><td>${esc(m.format)}</td><td class="mono" style="font-size:12px">${esc(m.subject)}</td><td>${pill(m.status,stc[m.status])}</td><td class="r num">${m.retries}</td><td class="muted" style="white-space:normal;min-width:160px;font-size:12px">${esc(m.error)}</td>
+    <td>${m.status==="Failed"?`<button class="btn sm" data-retry="${m.id}">Retry</button>`:m.status==="Error"?`<button class="btn sm" data-reproc="${m.id}">Reprocess</button>`:""}</td></tr>`).join("")||`<tr><td colspan="10" class="muted">No messages match.</td></tr>`}
+   </tbody></table></div><p class="muted" style="font-size:12px;margin:8px 14px 14px">Outbound status messages are created by the auto return message rules when T&T codes are logged. Every message keeps its payload, status, retries and error, so a failed one can be resent.</p></section>`;
+  $("#imD").onchange=e=>{intg.dir=e.target.value;VIEWS.integrations()};$("#imS").onchange=e=>{intg.st=e.target.value;VIEWS.integrations()};
+  $("#imX")&&($("#imX").onclick=()=>{intg.sel=null;VIEWS.integrations()});
+  document.querySelectorAll("[data-msg]").forEach(r=>r.onclick=()=>{intg.sel=r.dataset.msg;VIEWS.integrations()});
+  const retry=m=>{m.retries++;m.status="Sent";m.error="";audit(m.id,"status","Failed","Sent (retry)");emit("integration.message_retried",m.id,m.subject)};
+  document.querySelectorAll("[data-retry]").forEach(b=>b.onclick=e=>{e.stopPropagation();retry(X.messages.find(m=>m.id===b.dataset.retry));toast("Message resent.");VIEWS.integrations()});
+  document.querySelectorAll("[data-reproc]").forEach(b=>b.onclick=e=>{e.stopPropagation();const m=X.messages.find(x=>x.id===b.dataset.reproc);m.retries++;m.status="Processed";m.error="";audit(m.id,"status","Error","Processed (reprocessed)");emit("integration.message_reprocessed",m.id,m.subject);toast("Message reprocessed after the mapping fix.");VIEWS.integrations()});
+  $("#imRetry").onclick=()=>{let n=0;X.messages.filter(m=>m.status==="Failed"&&m.dir==="OUT").forEach(m=>{retry(m);n++});toast(`${n} message(s) resent.`);VIEWS.integrations()};
+};
+
+/* ---------------- TRIP DEBRIEF ---------------- */
+function planDebrief(X){
+  const trips=X.trips.filter(t=>t.ms>=6&&!t.debriefed), done=X.trips.filter(t=>t.debriefed).slice(-8).reverse(), DS=X.cfg.debriefStatus, Q=X.cfg.quality;
+  $("#planBody").innerHTML=`<div class="stack"><p class="muted" style="margin:0;font-size:12.5px">After a trip is completed, the dispatcher debriefs each delivery: the result, a qualification code and any remarks. Refused and partial deliveries create a related return order automatically.</p>
+   ${trips.map(tr=>`<section class="panel" data-dtrip="${tr.id}"><div class="panel-h"><h2 class="mono">${tr.id}</h2><span class="muted">${esc(veh(tr.vehicleId).plate)} · ${esc(drvr(tr.driverId).name)}</span>${pill(`${tripStatus(tr)[0]} · ${tripStatus(tr)[1]}`,"p-info")}</div>
+    <div class="tbl-wrap"><table><thead><tr><th>${t("order")}</th><th>${t("customer")}</th><th>Lane</th><th class="r">Pallets delivered</th><th>Debrief status</th><th>Qualification</th><th>Remark</th></tr></thead><tbody>
+    ${tr.orderIds.map(id=>{const o=X.orders.find(x=>x.id===id),q=o.pod?.qty??o.pallets;return `<tr><td>${lnk(o.id,"data-open")}</td><td>${esc(cust(o.customerId).name)}</td><td class="mono">${o.origin} → ${o.dest}</td><td class="r num">${q} / ${o.pallets}</td>
+      <td><select data-dbs="${o.id}" aria-label="Debrief status ${o.id}">${DS.map(d=>`<option value="${d.code}" ${(q<o.pallets?"DS03":"DS01")===d.code?"selected":""}>${d.code} · ${esc(d.name)}</option>`).join("")}</select></td>
+      <td><select data-dbq="${o.id}" aria-label="Qualification ${o.id}">${Q.map(c=>`<option value="${c.code}" ${(q<o.pallets?"Q20":"Q00")===c.code?"selected":""}>${c.code} · ${esc(c.name)}</option>`).join("")}</select></td>
+      <td><input type="text" data-dbr="${o.id}" placeholder="Optional" aria-label="Remark ${o.id}"></td></tr>`}).join("")}</tbody></table></div>
+    <div class="panel-b row"><button class="btn primary" data-dgo="${tr.id}">Complete debrief</button></div></section>`).join("")||`<div class="note ok">No trips waiting for debrief. Complete a trip in the Driver app and it appears here.</div>`}
+   ${done.length?`<section class="panel"><div class="panel-h"><h2>Recently debriefed</h2></div><div class="tbl-wrap"><table><thead><tr><th>Trip</th><th>Order</th><th>Result</th><th>Related order</th></tr></thead><tbody>
+    ${done.flatMap(tr=>tr.orderIds.map(id=>{const o=X.orders.find(x=>x.id===id);return `<tr><td class="mono">${tr.id}</td><td>${lnk(o.id,"data-open")}</td><td>${esc(o.debrief?.status||"")} · ${esc(o.debrief?.qual||"")}</td><td>${(o.related||[]).map(r=>lnk(r,"data-open")).join(" ")||"–"}</td></tr>`})).join("")}</tbody></table></div></section>`:""}</div>`;
+  document.querySelectorAll("[data-dgo]").forEach(b=>b.onclick=()=>{const tr=X.trips.find(t=>t.id===b.dataset.dgo);const made=[];
+    tr.orderIds.forEach(id=>{const o=X.orders.find(x=>x.id===id),st=document.querySelector(`[data-dbs="${id}"]`).value,q=document.querySelector(`[data-dbq="${id}"]`).value,rm=document.querySelector(`[data-dbr="${id}"]`).value.trim();
+      const def=X.cfg.debriefStatus.find(d=>d.code===st);o.debrief={status:`${st} ${def.name}`,qual:`${q} ${X.cfg.quality.find(c=>c.code===q)?.name||""}`,remark:rm,ts:Date.now()};
+      trace(X,o,"TRP-DBR","Debrief",{note:`${st} ${def.name} · ${q}${rm?" · "+rm:""}`});audit(o.id,"debrief","",`${st} · ${q}`);
+      if(def.createsReturn){const delivered=o.pod?.qty??(st==="DS04"?0:o.pallets);const pal=Math.max(1,st==="DS04"?o.pallets:o.pallets-delivered);const share=Math.min(1,pal/Math.max(1,o.pallets));
+        const pickupTs=Date.now()+DAY;const ret={id:nextOrderId(X,pickupTs),customerId:o.customerId,ref:"RET-"+o.ref,origin:o.dest,dest:o.origin,equip:o.equip,weight:Math.round(o.weight*share/10)*10,pallets:pal,pickupTs,svc:"D2",status:"Confirmed",km:o.km,tripId:null,pod:null,createdTs:Date.now(),ms:0,carrierId:null,acc:[],relatedTo:o.id};
+        ret.deliverBy=slaDeadline(X,"D2",pickupTs,ret.km);autoAcc(X,ret);recalc(X,ret);X.orders.unshift(ret);o.related=(o.related||[]).concat(ret.id);
+        trace(X,ret,"ORD-CRT","Debrief",{note:`Return order for ${o.id} (${def.name})`});trace(X,ret,"ORD-CNF","System");audit(ret.id,"(created)","",`return order for ${o.id}`);emit("order.return_created",ret.id,`related to ${o.id}`);made.push(ret.id)}});
+    tr.debriefed=true;emit("trip.debriefed",tr.id,`${tr.orderIds.length} order(s)`);toast(made.length?`${tr.id} debriefed. Return order ${made.join(", ")} created and ready to plan.`:`${tr.id} debriefed.`);VIEWS.planning()});
+}
 /* ---------------- live tick ---------------- */
 setInterval(()=>{
   Object.values(TENANTS).forEach(X=>X.trips.forEach(tr=>{

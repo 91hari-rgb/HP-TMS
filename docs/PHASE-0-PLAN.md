@@ -442,6 +442,12 @@ erDiagram
     INTEGRATION_MESSAGE }o--o| ORDER : "may create"
 ```
 
+
+### 7.4 Additions from the configuration model (see `docs/CONFIGURATION-MODEL.md`)
+Phase 0 also creates these tenant-scoped tables (all with `tenant_id`, RLS, audit, soft delete):
+`division` (legal entity: tax registration, base currency, contra GL), `department`, `file_type` (+ `file_type_setting`), `ledger_account`, `cost_centre`, `journal`, `tax_code` (replaces the simpler `tax_code` above: adds payable/receivable GL and per-lane selection), `activity` (cost & charge codes with GL mapping), `activity_generation_rule`, `relation_group`, `registration_type`, `con_note_type` (per carrier, with number range), `sscc_range`, `carrier_selection_rule`, `status_code` (per object type: file, trip/leg, unit, sales invoice, purchase invoice), `tt_code`, `tt_cascade_rule`, `event_definition` (6-digit module + sequence), `process_expectation`, `hold_reason`, `auto_return_rule`, `edi_parameter`, `agent` (background job registry and status), `debrief_status`, `quality_code`, `hub`, `zone`, `network_connection`, `fixed_trip`.
+`branch` gains `division_id` and `cost_centre_id`; orders gain `department_id`, `file_type_id`, `file_status_code`, `con_note_no`, `related_order_id`.
+
 ## 8. Phase 0 APIs (all under `/api/v1`, OpenAPI generated)
 
 | Area | Endpoints |
