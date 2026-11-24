@@ -146,6 +146,7 @@ td.r,th.r{text-align:end}
 .sig{width:100%;height:140px;background:#fff;border:2px dashed #b7c2cb;border-radius:10px;touch-action:none;display:block}
 .ph-body input{background:#fff;border:1px solid #c9d2da;border-radius:10px;padding:12px;font-size:16px;color:#111;width:100%}
 .ph-body label{font-size:12.5px;color:#4d5a66;display:flex;flex-direction:column;gap:4px}
+.lnk{background:none;border:0;padding:0;color:var(--info);cursor:pointer;text-decoration:underline;text-underline-offset:2px}
 .q-item{font-size:12px;font-family:var(--f-mono);padding:4px 0;border-bottom:1px dashed var(--line)}
 /* public tracking */
 .trk-head{border-radius:var(--r);padding:18px;color:#fff;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
@@ -186,7 +187,7 @@ td.r,th.r{text-align:end}
 <script>
 /* ---------------- i18n ---------------- */
 const I18N = {
- en:{dashboard:"Dashboard",orders:"Orders",planning:"Planning",tracking:"Control tower",driver:"Driver app",track:"Customer tracking",admin:"Admin & audit",
+ en:{dashboard:"Dashboard",orders:"Orders",planning:"Planning",tracking:"Control tower",driver:"Driver app",track:"Customer tracking",admin:"Admin & audit",finance:"Finance & billing",unbilled:"Unbilled",invoices:"Customer invoices",aging:"Receivables aging",freightAudit:"Freight audit",profitability:"Profitability",rateCards:"Rate cards & charges",
   office:"Office",field:"Field & customer",tenant:"Tenant",language:"Language",
   shipmentsActive:"Active shipments",inTransit:"In transit",onTime:"On-time delivery",podPending:"POD pending",exceptions:"Open exceptions",revenue:"Revenue (month)",margin:"Gross margin",unplanned:"Unplanned orders",
   byStatus:"Orders by status",topLanes:"Top lanes by revenue",atRisk:"At-risk shipments",liveMap:"Live map",
@@ -197,7 +198,7 @@ const I18N = {
   offline:"Offline",online:"Online",airplane:"Airplane mode",queued:"queued",synced:"Synced",
   users:"Users",roles:"Roles & permissions",audit:"Audit log",events:"Domain events",isolation:"Tenant isolation",
   save:"Save",cancel:"Cancel",confirmOrder:"Confirm order",close:"Close"},
- ar:{dashboard:"لوحة المعلومات",orders:"الطلبات",planning:"التخطيط",tracking:"برج المراقبة",driver:"تطبيق السائق",track:"تتبع العميل",admin:"الإدارة والتدقيق",
+ ar:{dashboard:"لوحة المعلومات",orders:"الطلبات",planning:"التخطيط",tracking:"برج المراقبة",driver:"تطبيق السائق",track:"تتبع العميل",admin:"الإدارة والتدقيق",finance:"المالية والفوترة",unbilled:"غير مفوتر",invoices:"فواتير العملاء",aging:"أعمار الذمم",freightAudit:"تدقيق الشحن",profitability:"الربحية",rateCards:"جداول الأسعار والرسوم",
   office:"المكتب",field:"الميدان والعملاء",tenant:"المستأجر",language:"اللغة",
   shipmentsActive:"الشحنات النشطة",inTransit:"قيد النقل",onTime:"التسليم في الموعد",podPending:"إثبات التسليم معلق",exceptions:"استثناءات مفتوحة",revenue:"الإيرادات (الشهر)",margin:"الهامش الإجمالي",unplanned:"طلبات غير مخططة",
   byStatus:"الطلبات حسب الحالة",topLanes:"أعلى المسارات إيراداً",atRisk:"شحنات معرضة للتأخير",liveMap:"الخريطة المباشرة",
@@ -208,7 +209,7 @@ const I18N = {
   offline:"غير متصل",online:"متصل",airplane:"وضع الطيران",queued:"في الانتظار",synced:"تمت المزامنة",
   users:"المستخدمون",roles:"الأدوار والصلاحيات",audit:"سجل التدقيق",events:"أحداث النظام",isolation:"عزل المستأجرين",
   save:"حفظ",cancel:"إلغاء",confirmOrder:"تأكيد الطلب",close:"إغلاق"},
- hi:{dashboard:"डैशबोर्ड",orders:"ऑर्डर",planning:"योजना",tracking:"कंट्रोल टावर",driver:"ड्राइवर ऐप",track:"ग्राहक ट्रैकिंग",admin:"एडमिन और ऑडिट",
+ hi:{dashboard:"डैशबोर्ड",orders:"ऑर्डर",planning:"योजना",tracking:"कंट्रोल टावर",driver:"ड्राइवर ऐप",track:"ग्राहक ट्रैकिंग",admin:"एडमिन और ऑडिट",finance:"वित्त और बिलिंग",unbilled:"बिना बिल",invoices:"ग्राहक चालान",aging:"प्राप्य एजिंग",freightAudit:"फ्रेट ऑडिट",profitability:"लाभप्रदता",rateCards:"रेट कार्ड और शुल्क",
   office:"कार्यालय",field:"फील्ड और ग्राहक",tenant:"टेनेंट",language:"भाषा",
   shipmentsActive:"सक्रिय शिपमेंट",inTransit:"रास्ते में",onTime:"समय पर डिलीवरी",podPending:"POD लंबित",exceptions:"खुले अपवाद",revenue:"राजस्व (माह)",margin:"सकल मार्जिन",unplanned:"अनियोजित ऑर्डर",
   byStatus:"स्थिति के अनुसार ऑर्डर",topLanes:"राजस्व के अनुसार शीर्ष लेन",atRisk:"जोखिम वाले शिपमेंट",liveMap:"लाइव मैप",
@@ -239,6 +240,8 @@ const round2 = n => Math.round(n*100)/100;
 function km(a,b){const R=6371,toR=Math.PI/180,dLat=(b.lat-a.lat)*toR,dLon=(b.lon-a.lon)*toR;const h=Math.sin(dLat/2)**2+Math.cos(a.lat*toR)*Math.cos(b.lat*toR)*Math.sin(dLon/2)**2;return Math.round(2*R*Math.asin(Math.sqrt(h))*1.25)}
 const money = (v,ccy) => new Intl.NumberFormat(LOCALE[lang],{style:"currency",currency:ccy,maximumFractionDigits:0}).format(v);
 const nfmt = v => new Intl.NumberFormat(LOCALE[lang]).format(v);
+const money2 = (v,ccy) => new Intl.NumberFormat(LOCALE[lang],{style:"currency",currency:ccy,minimumFractionDigits:2,maximumFractionDigits:2}).format(v);
+const n2 = v => new Intl.NumberFormat(LOCALE[lang],{minimumFractionDigits:2,maximumFractionDigits:2}).format(v);
 function dt(ts,tz,withTime=true){return new Intl.DateTimeFormat(LOCALE[lang],{timeZone:tz,day:"2-digit",month:"short",...(withTime?{hour:"2-digit",minute:"2-digit"}:{})}).format(new Date(ts))}
 function toast(msg){const el=$("#toast");el.textContent=msg;el.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>el.hidden=true,3200)}
 const HOUR=3600e3, DAY=24*HOUR;
@@ -255,7 +258,11 @@ const EQUIP = {
 const TENANT_DEF = {
  gulf:{
   name:"Gulf Haul Logistics LLC", short:"Gulf Haul", prefix:"GH", ccy:"AED", tz:"Asia/Dubai", brand:"#0f4c5c", region:"me-central (UAE)",
-  taxScheme:"TRN", rates:{base:350,perKm:3.2,min:450,cross:1200}, guard:0.12,
+  taxScheme:"TRN", taxId:"100398765400003", rates:{base:350,perKm:3.2,min:450,cross:1200}, guard:0.12, erp:"SAP S/4HANA (SFTP flat file)",
+  fsc:{unit:"AED/L",price:2.94,bands:[[0,2.5,0],[2.5,2.8,.04],[2.8,3.1,.075],[3.1,3.4,.10],[3.4,99,.13]]},
+  own:{lPerKm:.35,fixedKm:.9,drvTrip:120,drvPer100:40}, tol:{pct:.02,abs:50}, salikCities:["JEA","AQZ","SHJ"],
+  acc:[{code:"WAIT",label:"Waiting / detention (after 2 free hours)",unit:"hr",rate:75},{code:"DROP",label:"Additional drop",unit:"drop",rate:150},{code:"TAIL",label:"Tail-lift",unit:"trip",rate:120},
+   {code:"SALIK",label:"Salik toll",unit:"gate",rate:4},{code:"WKND",label:"Weekend / public holiday surcharge",unit:"%",rate:.15},{code:"ESC",label:"ODC escort & road permit",unit:"trip",rate:1800},{code:"BORD",label:"Border crossing & customs agent fee",unit:"crossing",rate:1200}],
   countryTax:{AE:{name:"UAE VAT",rate:0.05},SA:{name:"KSA VAT",rate:0.15}},
   cities:[
    {code:"JEA",name:"Jebel Ali FZ, Dubai",lat:24.99,lon:55.06,cc:"AE"},
@@ -275,7 +282,11 @@ const TENANT_DEF = {
  },
  indus:{
   name:"Indus Freight Pvt Ltd", short:"Indus Freight", prefix:"IF", ccy:"INR", tz:"Asia/Kolkata", brand:"#5a2d82", region:"ap-south (India)",
-  taxScheme:"GSTIN", rates:{base:3000,perKm:52,min:4500,cross:0}, guard:0.10,
+  taxScheme:"GSTIN", taxId:"27AAFCI4567K1Z2", rates:{base:3000,perKm:52,min:4500,cross:0}, guard:0.10, erp:"Tally Prime (XML)",
+  fsc:{unit:"INR/L",price:89.6,bands:[[0,85,0],[85,90,.05],[90,95,.08],[95,999,.11]]},
+  own:{lPerKm:.25,fixedKm:9,drvTrip:800,drvPer100:250}, tol:{pct:.02,abs:500},
+  acc:[{code:"WAIT",label:"Detention (after 4 free hours)",unit:"hr",rate:500},{code:"DROP",label:"Additional drop",unit:"drop",rate:1500},{code:"TAIL",label:"Tail-lift",unit:"trip",rate:1200},
+   {code:"TOLL",label:"FASTag toll",unit:"km",rate:2.4},{code:"WKND",label:"Sunday / holiday surcharge",unit:"%",rate:.1},{code:"ESC",label:"ODC escort & permit",unit:"trip",rate:15000},{code:"BORD",label:"Border fee",unit:"crossing",rate:0}],
   countryTax:{IN:{name:"GST (GTA)",rate:0.12}},
   cities:[
    {code:"BWD",name:"Bhiwandi, Maharashtra",lat:19.30,lon:73.06,cc:"IN"},
@@ -319,12 +330,12 @@ function defaultPerms(role){
 
 function buildTenant(key){
   const D = TENANT_DEF[key], r = rng(D.seed), id = crypto.randomUUID ? crypto.randomUUID() : String(Math.random());
-  const T = {key, id, ...D, orders:[], trips:[], vehicles:[], drivers:[], parties:[], events:[], audit:[], exceptions:[], seq:0, tripSeq:0};
+  const T = {key, id, ...D, orders:[], trips:[], vehicles:[], drivers:[], parties:[], events:[], audit:[], exceptions:[], seq:0, tripSeq:0, invoices:[], carrierInvoices:[], batches:[], invSeq:0, cnSeq:0, pbSeq:0, sbSeq:0, fsc:{...D.fsc,bands:D.fsc.bands}};
   T.cityByCode = Object.fromEntries(D.cities.map(c=>[c.code,c]));
   D.customers.forEach((n,i)=>{const home=D.cities[i % D.cities.length];
     const tax = D.taxScheme==="GSTIN" ? `27AAB${String.fromCharCode(65+i)}${2000+i}${String.fromCharCode(70+i)}1Z${i}` : (home.cc==="SA" ? `3${String(100000000000+Math.floor(r()*899999999999))}03` : `100${String(Math.floor(r()*1e11)).padStart(11,"0")}3`);
-    T.parties.push({id:"C"+(i+1),type:"customer",name:n,taxId:tax,home:home.code,credit:Math.round((50+r()*450))*1000*(D.ccy==="INR"?20:1)})});
-  D.carriers.forEach((n,i)=>T.parties.push({id:"K"+(i+1),type:"carrier",name:n,licExpiry:NOW0+(i===0?20:200+i*60)*DAY,score:Math.round(82+r()*15)}));
+    T.parties.push({id:"C"+(i+1),type:"customer",name:n,taxId:tax,home:home.code,credit:Math.round((50+r()*450))*1000*(D.ccy==="INR"?20:1),discount:[1,4,7].includes(i)?.05:0,cycle:["Per shipment","Weekly","Monthly"][i%3],terms:[30,45,60][(i+1)%3]})});
+  D.carriers.forEach((n,i)=>T.parties.push({id:"K"+(i+1),type:"carrier",name:n,licExpiry:NOW0+(i===0?20:200+i*60)*DAY,score:Math.round(82+r()*15),factor:[.76,.79,.81][i],validTo:NOW0+(120+i*90)*DAY,code:n.split(/\s+/).filter(w=>/^[A-Z]/.test(w)).map(w=>w[0]).join("").slice(0,3)}));
   const equipKeys=Object.keys(EQUIP), eqWeights=["Curtain-sider","Curtain-sider","Curtain-sider","Flatbed","Flatbed","Reefer","Reefer","Lowbed (ODC)","Tipper"];
   let di=0;
   const addVeh=(owner,i)=>{const eq=pick(r,eqWeights);const v={id:"V"+(T.vehicles.length+1),plate:D.plate(r,T.vehicles.length),equip:eq,kg:EQUIP[eq].kg,pal:EQUIP[eq].pal,owner};T.vehicles.push(v);
@@ -344,12 +355,18 @@ function buildTenant(key){
     const eq=pick(r,eqWeights), cap=EQUIP[eq];
     const wt=Math.round((cap.kg*(.25+r()*.6))/10)*10, pal=cap.pal?Math.max(1,Math.round(cap.pal*(.2+r()*.7))):0;
     const past = ["Invoiced","POD received","Delivered","Cancelled"].includes(s);
-    const pickupTs = past ? NOW0-(2+r()*28)*DAY : ["In transit","Dispatched"].includes(s) ? NOW0-(r()*10)*HOUR : NOW0+(r()*5+.5)*DAY;
+    const pickupTs = s==="Invoiced" ? NOW0-(14+r()*85)*DAY : past ? NOW0-(2+r()*12)*DAY : ["In transit","Dispatched"].includes(s) ? NOW0-(r()*10)*HOUR : NOW0+(r()*5+.5)*DAY;
     const q=quote(T,o.code,d.code,eq);
     const cust=pick(r,custs);
     const ord={id:nextOrderId(T,pickupTs),customerId:cust.id,ref:"PO-"+(40000+Math.floor(r()*59999)),origin:o.code,dest:d.code,equip:eq,weight:wt,pallets:pal,
-      pickupTs,deliverBy:pickupTs+(q.km/55+6)*HOUR,status:s,sell:q.sell,buy:round2(q.sell*(.7+r()*.17)),km:q.km,tripId:null,pod:null,createdTs:pickupTs-(1+r()*3)*DAY,
-      ms:past&&s!=="Cancelled"?6:0};
+      pickupTs,deliverBy:pickupTs+(q.km/55+6)*HOUR,status:s,km:q.km,tripId:null,pod:null,createdTs:pickupTs-(1+r()*3)*DAY,
+      ms:["Invoiced","POD received"].includes(s)?6:s==="Delivered"?5:0,carrierId:r()<.35?pick(r,T.parties.filter(p=>p.type==="carrier")).id:null,acc:[]};
+    autoAcc(T,ord); if(ord.acc.length&&ord.acc[0].code==="SALIK") ord.acc[0].qty=1+Math.floor(r()*6);
+    if(r()<.25) ord.acc.push({code:"WAIT",qty:1+Math.floor(r()*3)});
+    if(r()<.12) ord.acc.push({code:"DROP",qty:1+Math.floor(r()*2)});
+    if(r()<.1&&cap.pal) ord.acc.push({code:"TAIL",qty:1});
+    if(r()<.08) ord.acc.push({code:"WKND",qty:1});
+    recalc(T,ord);
     if(ord.ms===6){ord.pod={name:pick(r,["Store keeper","Warehouse supervisor","Receiving clerk"]),ts:ord.deliverBy-r()*3*HOUR,photos:2,onTime:r()<.9}}
     T.orders.push(ord);
   });
@@ -362,10 +379,41 @@ function buildTenant(key){
       ms:o.status==="In transit"?3:0,progress:o.status==="In transit"?.08+r()*.8:0,startTs:o.pickupTs};
     // make a few late: deadline already tight
     if(o.status==="In transit" && r()<.3) o.deliverBy=NOW0+(1-trip.progress)*o.km/80*HOUR-1.5*HOUR;
-    o.tripId=trip.id; T.trips.push(trip);
+    o.tripId=trip.id; o.carrierId=v.owner; recalc(T,o); T.trips.push(trip);
   });
   // exceptions
   T.trips.filter(tr=>tr.ms===3).slice(0,3).forEach((tr,i)=>T.exceptions.push({id:"EX-"+(101+i),tripId:tr.id,type:["Delay: traffic","Breakdown: tyre","Delay: border queue"][i],severity:["Medium","High","Medium"][i],owner:D.users[2]?.[0]||D.users[0][0],openedTs:NOW0-(i+1)*55*60e3,slaMin:[60,30,120][i]}));
+  // customer invoices: consolidate "Invoiced" orders per customer by billing cycle
+  const groups={};
+  T.orders.filter(o=>o.status==="Invoiced").forEach(o=>{const c=T.parties.find(p=>p.id===o.customerId);const d=new Date(o.pod.ts);
+    const k=c.cycle==="Per shipment"?o.id:c.cycle==="Weekly"?`${c.id}|w${Math.floor(o.pod.ts/(7*DAY))}`:`${c.id}|m${d.getUTCFullYear()}-${d.getUTCMonth()}`;
+    (groups[k]=groups[k]||[]).push(o)});
+  Object.values(groups).sort((a,b)=>Math.max(...a.map(o=>o.pod.ts))-Math.max(...b.map(o=>o.pod.ts))).forEach(os=>{
+    const issue=Math.min(Math.max(...os.map(o=>o.pod.ts))+DAY,NOW0-HOUR); const inv=makeInvoice(T,os[0].customerId,os,issue);
+    if(inv.dueTs<NOW0){const x=r(); if(x<.68){inv.paid=inv.total;inv.payments.push({ts:Math.min(inv.dueTs+(r()*10-5)*DAY,NOW0-HOUR),amount:inv.total,ref:"ERP-PMT-"+(70000+Math.floor(r()*9999))})}
+      else if(x<.82){const a=round2(inv.total*.5);inv.paid=a;inv.payments.push({ts:inv.dueTs,amount:a,ref:"ERP-PMT-"+(70000+Math.floor(r()*9999))})}}
+    else if(r()<.12){inv.paid=inv.total;inv.payments.push({ts:NOW0-DAY,amount:inv.total,ref:"ERP-PMT-"+(70000+Math.floor(r()*9999))})}
+  });
+  const dispInv=T.invoices.find(i=>invBalance(i)>0&&i.lines.some(l=>l.sell.some(s=>s.code==="WAIT")));
+  if(dispInv){const l=dispInv.lines.find(l=>l.sell.some(s=>s.code==="WAIT"));dispInv.disputes.push({id:"DSP-001",orderId:l.orderId,reason:"Customer says waiting time was caused by the driver arriving early",amount:l.sell.find(s=>s.code==="WAIT").amount,openedTs:NOW0-2*DAY})}
+  // carrier invoices against accruals
+  T.parties.filter(p=>p.type==="carrier").forEach(k=>{
+    const ords=T.orders.filter(o=>o.carrierId===k.id&&o.pod).sort((a,b)=>a.pod.ts-b.pod.ts);
+    const billable=ords.slice(0,Math.floor(ords.length*.75)); let n=0;
+    for(let i=0;i<billable.length;i+=5){const chunk=billable.slice(i,i+5);
+      const lines=chunk.map(o=>{const x=r();let amount=o.buy,note="";
+        if(x>.70&&x<=.84){amount=round2(o.buy*1.012);note="Carrier rounded rate"}
+        else if(x>.84){amount=round2(o.buy+accDef(T,"WAIT").rate*3*.7);note="Waiting 3 hr, not pre-approved"}
+        return {orderId:o.id,amount,note}});
+      T.carrierInvoices.push({id:"CI"+(T.carrierInvoices.length+1),no:`${k.code}/INV/${1040+(++n)}`,carrierId:k.id,receivedTs:Math.min(Math.max(...chunk.map(o=>o.pod.ts))+3*DAY,NOW0-2*HOUR),lines,channel:pick(r,["Carrier portal","Email + OCR","EDI 210"])});
+    }
+    const ks=T.carrierInvoices.filter(c=>c.carrierId===k.id); if(ks.length>1) ks[ks.length-1].lines.push({...ks[0].lines[0],note:"Same trip billed again"});
+  });
+  const nopod=T.orders.find(o=>o.carrierId&&o.status==="Delivered"&&!o.pod);
+  if(nopod){const ci=T.carrierInvoices.filter(c=>c.carrierId===nopod.carrierId).pop(); if(ci) ci.lines.push({orderId:nopod.id,amount:nopod.buy,note:""})}
+  const old=T.carrierInvoices.filter(ci=>ci.receivedTs<NOW0-20*DAY&&ciState(T,ci).approvable);
+  if(old.length){const b={id:"PB-"+pad4(++T.pbSeq),ts:NOW0-6*DAY,ids:old.map(c=>c.id),amount:round2(old.reduce((s,c)=>s+ciState(T,c).pay,0)),target:T.erp};old.forEach(c=>c.batchId=b.id);T.batches.push(b)}
+  T.carrierInvoices.sort((a,b)=>b.receivedTs-a.receivedTs);
   // roles
   T.roles=ROLE_NAMES.map((n,i)=>({id:"R"+(i+1),name:n,system:true,perms:defaultPerms(n)}));
   T.users=D.users.map(([n,role],i)=>({id:"U"+(i+1),name:n,email:n.toLowerCase().replace(/[^a-z]+/g,".")+"@"+(key==="gulf"?"gulfhaul.ae":"indusfreight.in"),role,scope:i===1?(key==="gulf"?"Branch: Jebel Ali":"Branch: Bhiwandi"):"Tenant",mfa:i<3||role==="Tenant admin",status:"Active"}));
@@ -384,6 +432,80 @@ function taxFor(T,o){const a=T.cityByCode[o.origin], b=T.cityByCode[o.dest];
   if(a.cc!==b.cc) return {name:"Zero-rated (international transport)",rate:0};
   return T.countryTax[a.cc]||{name:"Tax",rate:0}}
 
+
+/* ---------------- rating & charges engine ---------------- */
+const r5 = n => Math.round(n/5)*5;
+const accDef = (X,code) => X.acc.find(a=>a.code===code);
+function fscPct(X){const p=X.fsc.price;const b=X.fsc.bands.find(([lo,hi])=>p>=lo&&p<hi);return b?b[2]:0}
+function tariff(X,kmv,eq){const R=X.rates;return Math.max(R.min,R.base+R.perKm*kmv)*EQUIP[eq].rate}
+function autoAcc(X,o){o.acc=o.acc||[];const sc=X.salikCities||[];
+  if(sc.length&&(sc.includes(o.origin)||sc.includes(o.dest))&&!o.acc.some(a=>a.code==="SALIK")) o.acc.push({code:"SALIK",qty:(sc.includes(o.origin)&&sc.includes(o.dest))?4:2});
+  if(X.acc.some(a=>a.code==="TOLL")&&!o.acc.some(a=>a.code==="TOLL")) o.acc.push({code:"TOLL",qty:o.km});
+  if(o.equip==="Lowbed (ODC)"&&!o.acc.some(a=>a.code==="ESC")) o.acc.push({code:"ESC",qty:1});}
+function recalc(X,o){
+  const c=X.parties.find(p=>p.id===o.customerId), a=X.cityByCode[o.origin], b=X.cityByCode[o.dest];
+  const cross=a.cc!==b.cc, f=fscPct(X), sell=[], buy=[];
+  const disc=(c.discount||0)+(o.discountPct||0)/100, full=tariff(X,o.km,o.equip), base=r5(full*(1-disc));
+  sell.push({code:"FRT",label:`Freight · ${o.equip} · ${o.km} km${disc?` · contract −${Math.round(disc*100)}%`:""}`,amount:base});
+  if(f) sell.push({code:"FSC",label:`Fuel surcharge ${(f*100).toFixed(1)}% (diesel index ${X.fsc.price} ${X.fsc.unit})`,amount:round2(base*f)});
+  if(cross){const d=accDef(X,"BORD");sell.push({code:"BORD",label:d.label,amount:d.rate})}
+  (o.acc||[]).forEach(x=>{const d=accDef(X,x.code);if(!d)return;const amt=d.unit==="%"?round2(base*d.rate):round2(d.rate*x.qty);
+    sell.push({code:d.code,label:d.unit==="%"?`${d.label} ${Math.round(d.rate*100)}%`:`${d.label} · ${x.qty} ${d.unit} × ${d.rate} ${X.ccy}`,amount:amt,acc:true})});
+  if(o.carrierId){const k=X.parties.find(p=>p.id===o.carrierId);const cf=r5(full*k.factor);
+    buy.push({code:"CFRT",label:`${k.name} · contract ${Math.round(k.factor*100)}% of tariff`,amount:cf});
+    if(f) buy.push({code:"CFSC",label:`Carrier fuel surcharge ${(f*100).toFixed(1)}%`,amount:round2(cf*f)});
+  } else {
+    const O=X.own, run=Math.round(o.km*(o.km<=200?1.6:1.3));
+    buy.push({code:"DSL",label:`Diesel · ${run} km incl. return × ${O.lPerKm} L/km × ${X.fsc.price}`,amount:round2(run*O.lPerKm*X.fsc.price)});
+    buy.push({code:"DRV",label:"Driver trip allowance",amount:round2(O.drvTrip+O.drvPer100*o.km/100)});
+    buy.push({code:"VEH",label:`Vehicle cost (lease, insurance, tyres, service) · ${O.fixedKm}/km`,amount:round2(run*O.fixedKm)});
+  }
+  sell.filter(s=>["SALIK","TOLL","ESC","BORD"].includes(s.code)).forEach(s=>buy.push({code:s.code,label:accDef(X,s.code).label+(s.code==="BORD"?" (agent cost)":" (pass-through)"),amount:s.code==="BORD"?round2(s.amount*.75):s.amount}));
+  sell.filter(s=>s.code==="WAIT").forEach(s=>buy.push({code:"WAIT",label:o.carrierId?"Waiting paid to carrier":"Driver overtime (waiting)",amount:round2(s.amount*(o.carrierId?.7:.2))}));
+  o.lines={sell,buy}; o.sell=round2(sell.reduce((s,l)=>s+l.amount,0)); o.buy=round2(buy.reduce((s,l)=>s+l.amount,0));
+}
+
+/* ---------------- billing ---------------- */
+const pad4 = n => String(n).padStart(4,"0");
+function makeInvoice(X,custId,orders,issueTs){
+  const c=X.parties.find(p=>p.id===custId);
+  const lines=orders.map(o=>({orderId:o.id,lane:`${o.origin} → ${o.dest}`,ref:o.ref,sell:o.lines.sell.map(l=>({...l})),net:o.sell,tax:taxFor(X,o)}));
+  const g={}; lines.forEach(l=>{const k=l.tax.name+"|"+l.tax.rate;g[k]=g[k]||{name:l.tax.name,rate:l.tax.rate,base:0,tax:0};g[k].base=round2(g[k].base+l.net);g[k].tax=round2(g[k].tax+l.net*l.tax.rate)});
+  const net=round2(lines.reduce((s,l)=>s+l.net,0)), tax=round2(Object.values(g).reduce((s,x)=>s+x.tax,0)), d=new Date(issueTs);
+  const inv={id:`${X.prefix}-INV-${String(d.getUTCFullYear()).slice(2)}${String(d.getUTCMonth()+1).padStart(2,"0")}-${pad4(++X.invSeq)}`,customerId:custId,lines,taxGroups:Object.values(g),net,tax,total:round2(net+tax),
+    issueTs,dueTs:issueTs+c.terms*DAY,paid:0,payments:[],credits:[],disputes:[]};
+  orders.forEach(o=>{o.invoiceId=inv.id;o.status="Invoiced"});
+  X.invoices.unshift(inv); return inv;
+}
+const invBalance = inv => {const b=round2(inv.total-inv.paid-inv.credits.reduce((s,c)=>s+c.total,0));return Math.abs(b)<0.005?0:b};
+function invStatus(inv){const b=invBalance(inv);if(b<=0.005)return "Paid";if(inv.disputes.some(d=>!d.closed))return "Disputed";if(Date.now()>inv.dueTs)return "Overdue";if(inv.paid>0||inv.credits.length)return "Part paid";return "Issued"}
+
+/* ---------------- freight audit (carrier invoices) ---------------- */
+function ciLineMatch(X,ci,l){
+  if(l.rejected) return {res:"Rejected",cls:"",ok:true,pay:0,v:0};
+  const o=X.orders.find(x=>x.id===l.orderId);
+  const dupOf=X.carrierInvoices.find(c2=>c2!==ci&&c2.receivedTs<ci.receivedTs&&c2.lines.some(l2=>l2.orderId===l.orderId&&!l2.rejected));
+  if(dupOf) return {res:`Duplicate of ${dupOf.no}`,cls:"p-bad",ok:false,pay:0,dup:true,v:l.amount};
+  if(!o.pod) return {res:"No POD yet",cls:"p-warn",ok:false,pay:0,hold:true,v:round2(l.amount-o.buy)};
+  const v=round2(l.amount-o.buy), tol=Math.max(X.tol.pct*o.buy,X.tol.abs);
+  if(l.override) return {res:"Approved by Finance",cls:"p-ok",ok:true,pay:l.amount,v};
+  if(l.dispute) return {res:"Disputed · paying accrual",cls:"p-warn",ok:true,pay:o.buy,v};
+  if(Math.abs(v)<0.01) return {res:"Matched",cls:"p-ok",ok:true,pay:l.amount,v};
+  if(Math.abs(v)<=tol) return {res:"Within tolerance",cls:"p-ok",ok:true,pay:l.amount,v};
+  return {res:"Over tolerance",cls:"p-bad",ok:false,pay:0,v};
+}
+function ciState(X,ci){const ms=ci.lines.map(l=>ciLineMatch(X,ci,l));const pay=round2(ms.reduce((s,m)=>s+m.pay,0));
+  const inv=round2(ci.lines.reduce((s,l)=>s+l.amount,0)), acc=round2(ci.lines.reduce((s,l)=>s+(X.orders.find(o=>o.id===l.orderId)?.buy||0),0));
+  const base={ms,pay,inv,acc};
+  if(ci.batchId) return {...base,st:"Exported to ERP",cls:"p-ok"};
+  if(ms.every(m=>m.ok)) return {...base,st:ci.touched?"Approved":"Auto-approved",cls:"p-ok",approvable:true};
+  if(ms.some(m=>!m.ok&&!m.hold)) return {...base,st:"Needs review",cls:"p-bad"};
+  return {...base,st:"On hold: POD missing",cls:"p-warn"};}
+function selfBill(X,kid){const billed=new Set(X.carrierInvoices.flatMap(c=>c.lines.filter(l=>!l.rejected).map(l=>l.orderId)));
+  const k=X.parties.find(p=>p.id===kid); const ords=X.orders.filter(o=>o.carrierId===kid&&o.pod&&!billed.has(o.id)); if(!ords.length) return null;
+  const ci={id:"CI"+(X.carrierInvoices.length+1)+"-"+Date.now()%10000,no:`SB/${k.code}/${pad4(++X.sbSeq)}`,carrierId:kid,receivedTs:Date.now(),lines:ords.map(o=>({orderId:o.id,amount:o.buy,note:"Generated from completed trip"})),channel:"Self-billing",selfBilled:true};
+  X.carrierInvoices.unshift(ci); return ci;}
+
 const TENANTS = {gulf:buildTenant("gulf"), indus:buildTenant("indus")};
 let tenantKey="gulf";
 const T = () => TENANTS[tenantKey];
@@ -400,13 +522,14 @@ const ICONS = {
  tracking:'<circle cx="12" cy="10" r="3"/><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/>',
  driver:'<rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/>',
  track:'<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+ finance:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h4"/>',
  admin:'<path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/><path d="M9 12l2 2 4-4"/>'
 };
-const ROUTES=["dashboard","orders","planning","tracking","driver","track","admin"];
+const ROUTES=["dashboard","orders","planning","tracking","finance","driver","track","admin"];
 function route(){const h=location.hash.slice(1);return ROUTES.includes(h)?h:"dashboard"}
 function renderNav(){
   const cur=route(); const link=k=>`<a href="#${k}" ${cur===k?'aria-current="page"':""}><svg viewBox="0 0 24 24">${ICONS[k]}</svg><span>${t(k)}</span></a>`;
-  $("#nav").innerHTML=`<div class="nav-sep">${t("office")}</div>${["dashboard","orders","planning","tracking","admin"].map(link).join("")}<div class="nav-sep">${t("field")}</div>${["driver","track"].map(link).join("")}`;
+  $("#nav").innerHTML=`<div class="nav-sep">${t("office")}</div>${["dashboard","orders","planning","tracking","finance","admin"].map(link).join("")}<div class="nav-sep">${t("field")}</div>${["driver","track"].map(link).join("")}`;
   $("#tenantName").textContent=T().short;
   $("#sideFoot").innerHTML=`${esc(ME().name)} · ${esc(ME().role)}<br>Region: ${esc(T().region)}<br>Demo build · sample data`;
   $("#lblTenant").textContent=t("tenant"); $("#lblLang").textContent=t("language");
@@ -461,7 +584,8 @@ VIEWS.dashboard=function(){
   const delivered=os.filter(o=>o.pod); const onTime=delivered.length?Math.round(delivered.filter(o=>o.pod.onTime).length/delivered.length*100):0;
   const podPend=os.filter(o=>o.status==="Delivered").length;
   const billable=os.filter(o=>!["Cancelled","Draft"].includes(o.status));
-  const rev=billable.reduce((s,o)=>s+o.sell,0), cost=billable.reduce((s,o)=>s+o.buy,0);
+  const recent=billable.filter(o=>o.pickupTs>Date.now()-30*DAY), rev=recent.reduce((s,o)=>s+o.sell,0), cost=recent.reduce((s,o)=>s+o.buy,0);
+  const unb=os.filter(o=>o.status==="POD received").reduce((s,o)=>s+o.sell,0), odInv=X.invoices.filter(i=>invBalance(i)>0.005&&Date.now()>i.dueTs), odVal=odInv.reduce((s,i)=>s+invBalance(i),0);
   const unpl=os.filter(o=>o.status==="Confirmed").length;
   const exOpen=X.exceptions.filter(e=>!e.closed).length;
   const counts=STATUS_ORDER.map(s=>[s,os.filter(o=>o.status===s).length]); const maxC=Math.max(...counts.map(c=>c[1]));
@@ -475,7 +599,9 @@ VIEWS.dashboard=function(){
    ${kpi(t("unplanned"),nfmt(unpl),"Confirmed, no trip")}
    ${kpi(t("podPending"),nfmt(podPend),"Delivered, awaiting POD")}
    ${kpi(t("exceptions"),nfmt(exOpen),"Owner and SLA assigned")}
-   ${kpi(t("revenue"),money(rev,ccy),`${t("margin")} ${Math.round((rev-cost)/rev*100)}%`)}
+   ${kpi(t("revenue"),money(rev,ccy),`${t("margin")} ${rev?Math.round((rev-cost)/rev*100):0}% · last 30 days`)}
+   ${kpi(t("unbilled"),money(unb,ccy),`<a href="#finance">Bill now →</a>`)}
+   ${kpi("Overdue receivables",money(odVal,ccy),`${odInv.length} invoices past due`)}
   </div>
   <div class="grid g-2">
    <section class="panel"><div class="panel-h"><h2>${t("liveMap")}</h2><a class="btn sm" href="#tracking">${t("tracking")} →</a></div><div class="panel-b" id="dashMap">${mapSVG()}</div></section>
@@ -552,72 +678,98 @@ VIEWS.orders=function(){
 };
 
 function openNewOrder(){
-  const X=T(); const custs=X.parties.filter(p=>p.type==="customer");
+  const X=T(); const custs=X.parties.filter(p=>p.type==="customer"), carriers=X.parties.filter(p=>p.type==="carrier");
   const today=new Date(Date.now()+DAY).toISOString().slice(0,10);
+  const optAcc=X.acc.filter(a=>["TAIL","DROP","WKND"].includes(a.code));
   $("#overlay").innerHTML=`<div class="modal-bg" id="mbg"><form class="modal" id="nof" novalidate>
-   <div class="row"><h2 style="margin:0;font-size:18px;margin-inline-end:auto">${t("newOrder")}</h2><span class="muted" style="font-size:12px">Instant quote from ${esc(X.short)} rate card</span></div>
+   <div class="row"><h2 style="margin:0;font-size:18px;margin-inline-end:auto">${t("newOrder")}</h2><span class="muted" style="font-size:12px">Instant quote from the ${esc(X.short)} rate card</span></div>
    <div class="form">
-    <label class="full">${t("customer")}<select id="no-c">${custs.map(c=>`<option value="${c.id}">${esc(c.name)} · ${X.taxScheme} ${esc(c.taxId)}</option>`).join("")}</select></label>
+    <label class="full">${t("customer")}<select id="no-c">${custs.map(c=>`<option value="${c.id}">${esc(c.name)} · ${X.taxScheme} ${esc(c.taxId)}${c.discount?` · contract −${Math.round(c.discount*100)}%`:""}</option>`).join("")}</select></label>
     <label>${t("origin")}<select id="no-o">${X.cities.map(c=>`<option value="${c.code}">${esc(c.name)}</option>`).join("")}</select></label>
     <label>${t("destination")}<select id="no-d">${X.cities.map((c,i)=>`<option value="${c.code}" ${i===2?"selected":""}>${esc(c.name)}</option>`).join("")}</select></label>
     <label>Equipment<select id="no-e">${Object.keys(EQUIP).map(e=>`<option>${e}</option>`).join("")}</select></label>
     <label>${t("pickup")}<input type="date" id="no-p" value="${today}"></label>
     <label>${t("weight")} (kg)<input type="number" id="no-w" value="12000" min="1"></label>
     <label>Pallets<input type="number" id="no-pal" value="14" min="0"></label>
-    <label class="full">Customer reference<input type="text" id="no-ref" value="PO-${Math.floor(50000+Math.random()*40000)}"></label>
-    <label>Sell price override (${X.ccy})<input type="number" id="no-sell" placeholder="Use rate card"></label>
-    <label>Carrier cost estimate (${X.ccy})<input type="number" id="no-buy" placeholder="Auto: 80% of sell"></label>
+    <label>Customer reference<input type="text" id="no-ref" value="PO-${Math.floor(50000+Math.random()*40000)}"></label>
+    <label>Special discount %<input type="number" id="no-disc" value="0" min="0" max="50"></label>
+    <label class="full">Haulier for the cost estimate<select id="no-k"><option value="">Own fleet</option>${carriers.map(k=>`<option value="${k.id}">${esc(k.name)} (${Math.round(k.factor*100)}% of tariff)</option>`).join("")}</select></label>
+    <fieldset class="full" style="border:1px solid var(--line);border-radius:6px;padding:8px 12px;display:flex;gap:16px;flex-wrap:wrap;margin:0"><legend style="font-size:12px;color:var(--muted);padding:0 4px">Accessorials</legend>
+     ${optAcc.map(a=>`<label style="flex-direction:row;align-items:center;gap:6px;color:var(--fg);font-size:13px"><input type="checkbox" data-acc="${a.code}" id="acc-${a.code}"> ${esc(a.label)}</label>`).join("")}</fieldset>
    </div>
    <div class="quote" id="no-q"></div>
-   <div id="no-msg"></div>
+   <div class="tbl-wrap" id="no-lines"></div>
+   <div id="no-msg" class="stack" style="gap:6px"></div>
    <div class="row" style="justify-content:flex-end"><button type="button" class="btn" id="no-x">${t("cancel")}</button><button type="submit" class="btn primary" id="no-ok">${t("confirmOrder")}</button></div>
   </form></div>`;
-  const calc=()=>{const o=$("#no-o").value,d=$("#no-d").value,e=$("#no-e").value,w=+$("#no-w").value,pal=+$("#no-pal").value;
+  const calc=()=>{const o=$("#no-o").value,d=$("#no-d").value,e=$("#no-e").value,w=+$("#no-w").value,pal=+$("#no-pal").value,disc=Math.max(0,Math.min(50,+$("#no-disc").value||0));
     const msg=[];let ok=true;
     if(o===d){msg.push(["bad","Origin and destination must be different."]);ok=false}
     if(!(w>0)){msg.push(["bad","Enter a weight above 0 kg."]);ok=false}
     if(w>EQUIP[e].kg){msg.push(["bad",`${nfmt(w)} kg is over the ${e} limit of ${nfmt(EQUIP[e].kg)} kg. Choose a larger vehicle or split the order.`]);ok=false}
     if(EQUIP[e].pal && pal>EQUIP[e].pal){msg.push(["bad",`${pal} pallets is over the ${e} limit of ${EQUIP[e].pal}.`]);ok=false}
-    const q=o!==d?quote(X,o,d,e):{km:0,sell:0,cross:false};
-    const sell=+$("#no-sell").value||q.sell, buy=+$("#no-buy").value||round2(q.sell*.8);
-    const m=sell?(sell-buy)/sell:0; const tax=o!==d?taxFor(X,{origin:o,dest:d}):{name:"",rate:0};
-    if(q.cross) msg.push(["info",`Cross-border lane: border fee ${money(X.rates.cross,X.ccy)} included. Tax: ${tax.name}.`]);
-    if(sell && m<X.guard) msg.push(["warn",`Margin ${Math.round(m*100)}% is below the ${Math.round(X.guard*100)}% guardrail. A Finance approver must approve this order.`]);
-    $("#no-q").innerHTML=`<div><div class="l">Distance</div><div class="v">${nfmt(q.km)} km</div></div><div><div class="l">${t("sell")}</div><div class="v">${money(sell,X.ccy)}</div></div><div><div class="l">${t("cost")}</div><div class="v">${money(buy,X.ccy)}</div></div><div><div class="l">${t("marginCol")}</div><div class="v" style="color:${m<X.guard?"var(--bad)":"var(--ok)"}">${Math.round(m*100)}%</div></div>`;
+    const tmp={customerId:$("#no-c").value,origin:o,dest:d,equip:e,km:o!==d?quote(X,o,d,e).km:0,discountPct:disc,carrierId:$("#no-k").value||null,acc:[]};
+    document.querySelectorAll("[data-acc]:checked").forEach(c=>tmp.acc.push({code:c.dataset.acc,qty:1}));
+    if(o!==d){autoAcc(X,tmp);recalc(X,tmp)} else {tmp.sell=0;tmp.buy=0;tmp.lines={sell:[],buy:[]}}
+    const m=tmp.sell?(tmp.sell-tmp.buy)/tmp.sell:0, tax=o!==d?taxFor(X,tmp):{name:"",rate:0};
+    if(o!==d&&X.cityByCode[o].cc!==X.cityByCode[d].cc) msg.push(["info",`Cross-border lane: border and customs agent fee added. Tax: ${tax.name}.`]);
+    if(tmp.sell && m<X.guard) msg.push(["warn",`Margin ${Math.round(m*100)}% is below the ${Math.round(X.guard*100)}% guardrail. The order is saved On hold until Finance approves it.`]);
+    $("#no-q").innerHTML=`<div><div class="l">Distance</div><div class="v">${nfmt(tmp.km)} km</div></div><div><div class="l">${t("sell")} excl. tax</div><div class="v">${money(tmp.sell,X.ccy)}</div></div><div><div class="l">${t("cost")} (est.)</div><div class="v">${money(tmp.buy,X.ccy)}</div></div><div><div class="l">${t("marginCol")}</div><div class="v" style="color:${m<X.guard?"var(--bad)":"var(--ok)"}">${Math.round(m*100)}%</div></div>`;
+    $("#no-lines").innerHTML=tmp.lines.sell.length?`<table><tbody><tr><th colspan="2">Charges to customer</th></tr>${tmp.lines.sell.map(l=>`<tr><td style="white-space:normal">${esc(l.label)}</td><td class="r num">${money2(l.amount,X.ccy)}</td></tr>`).join("")}
+      <tr><td>${esc(tax.name)} ${Math.round(tax.rate*100)}%</td><td class="r num">${money2(tmp.sell*tax.rate,X.ccy)}</td></tr><tr><td><b>Quote total</b></td><td class="r num"><b>${money2(tmp.sell*(1+tax.rate),X.ccy)}</b></td></tr></tbody></table>`:"";
     $("#no-msg").innerHTML=msg.map(([c,s])=>`<div class="note ${c}">${esc(s)}</div>`).join("");
-    $("#no-ok").disabled=!ok; return {ok,o,d,e,w,pal,sell,buy,q,m};
+    $("#no-ok").disabled=!ok; return {ok,tmp,w,pal,m};
   };
-  ["no-o","no-d","no-e","no-w","no-pal","no-sell","no-buy"].forEach(id=>$("#"+id).addEventListener("input",calc)); calc();
+  document.querySelectorAll("#nof input,#nof select").forEach(el=>el.addEventListener("input",calc)); calc();
   $("#no-x").onclick=closeOverlay; $("#mbg").onclick=e=>{if(e.target.id==="mbg")closeOverlay()};
   $("#nof").onsubmit=e=>{e.preventDefault();const r=calc();if(!r.ok)return;
     const pickupTs=new Date($("#no-p").value+"T08:00:00").getTime()||Date.now()+DAY;
-    const o={id:nextOrderId(X,pickupTs),customerId:$("#no-c").value,ref:$("#no-ref").value,origin:r.o,dest:r.d,equip:r.e,weight:r.w,pallets:r.pal,pickupTs,deliverBy:pickupTs+(r.q.km/55+6)*HOUR,
-      status:"Confirmed",sell:r.sell,buy:r.buy,km:r.q.km,tripId:null,pod:null,createdTs:Date.now(),ms:0};
-    X.orders.unshift(o); audit(o.id,"(created)","",`Confirmed · ${money(o.sell,X.ccy)}`); emit("order.created",o.id,`${o.origin}→${o.dest}, ${nfmt(o.weight)} kg`); emit("order.confirmed",o.id,r.m<X.guard?"Margin approval required":"Within guardrail");
-    closeOverlay(); ui.q="";ui.status="";ui.sort="pickupTs";ui.dir=-1;ui.page=0; toast(`Order ${o.id} confirmed. Next: Planning.`); render();};
+    const low=r.m<X.guard;
+    const o={...r.tmp,id:nextOrderId(X,pickupTs),ref:$("#no-ref").value,weight:r.w,pallets:r.pal,pickupTs,deliverBy:pickupTs+(r.tmp.km/55+6)*HOUR,
+      status:low?"On hold":"Confirmed",holdReason:low?`Margin ${Math.round(r.m*100)}% is below the ${Math.round(X.guard*100)}% guardrail. Finance must approve before planning.`:null,tripId:null,pod:null,createdTs:Date.now(),ms:0};
+    recalc(X,o); X.orders.unshift(o);
+    audit(o.id,"(created)","",`${o.status} · ${money2(o.sell,X.ccy)} excl. tax`); emit("order.created",o.id,`${o.origin}→${o.dest}, ${nfmt(o.weight)} kg`);
+    emit(low?"order.margin_approval_requested":"order.confirmed",o.id,`Margin ${Math.round(r.m*100)}%`);
+    closeOverlay(); ui.q="";ui.status="";ui.sort="pickupTs";ui.dir=-1;ui.page=0;
+    toast(low?`Order ${o.id} saved On hold for margin approval.`:`Order ${o.id} confirmed. Next: Planning.`); render();};
 }
 
+function refreshBehind(){const r=route();if(r!=="driver")VIEWS[r]()}
 function openOrder(id){
   const X=T(), o=X.orders.find(x=>x.id===id); if(!o) return; const c=cust(o.customerId), tr=tripOf(o), tax=taxFor(X,o);
-  const taxAmt=round2(o.sell*tax.rate);
+  const taxAmt=round2(o.sell*tax.rate), m=o.sell?(o.sell-o.buy)/o.sell:0;
   const hist=X.audit.filter(a=>a.entity===o.id);
-  const ms=MILESTONES.map((m,i)=>`<li class="${i<o.ms?"done":i===o.ms&&tr?"now":""}"><span></span><div>${esc(m)}${i<o.ms&&o.msTs?.[i]?` <span class="muted num">· ${dt(o.msTs[i],X.tz)}</span>`:""}</div></li>`).join("");
+  const lk=o.carrierId?X.parties.find(p=>p.id===o.carrierId).name:"Own fleet";
+  const locked=["Invoiced","Cancelled"].includes(o.status);
+  const ms=MILESTONES.map((mm,i)=>`<li class="${i<o.ms?"done":i===o.ms&&tr?"now":""}"><div>${esc(mm)}${i<o.ms&&o.msTs?.[i]?` <span class="muted num">· ${dt(o.msTs[i],X.tz)}</span>`:""}</div></li>`).join("");
+  const row=(l,neg)=>`<tr><td style="white-space:normal">${esc(l.label)}</td><td class="r num">${money2(l.amount,X.ccy)}</td></tr>`;
   $("#overlay").innerHTML=`<div class="drawer-bg" id="dbg"><aside class="drawer">
    <div class="row"><h2 class="mono" style="margin-inline-end:auto">${o.id}</h2>${pill(o.status)}<button class="btn sm" id="dx">${t("close")}</button></div>
-   <dl class="kv"><dt>${t("customer")}</dt><dd>${esc(c.name)}<div class="muted">${X.taxScheme} ${esc(c.taxId)}</div></dd>
+   ${o.status==="On hold"&&o.holdReason?`<div class="note warn">${esc(o.holdReason)}</div>`:""}
+   <dl class="kv"><dt>${t("customer")}</dt><dd>${esc(c.name)}<div class="muted">${X.taxScheme} ${esc(c.taxId)} · ${esc(c.cycle)} billing · ${c.terms} days</div></dd>
     <dt>Customer ref</dt><dd class="mono">${esc(o.ref)}</dd>
     <dt>${t("origin")}</dt><dd>${esc(city(o.origin).name)}</dd><dt>${t("destination")}</dt><dd>${esc(city(o.dest).name)} <span class="muted">(${nfmt(o.km)} km)</span></dd>
     <dt>${t("pickup")}</dt><dd class="num">${dt(o.pickupTs,X.tz)} <span class="muted">${X.tz}</span></dd><dt>Deliver by</dt><dd class="num">${dt(o.deliverBy,X.tz)}</dd>
     <dt>Cargo</dt><dd>${nfmt(o.weight)} kg · ${o.pallets} pallets · ${esc(o.equip)}</dd>
-    ${tr?`<dt>Trip</dt><dd class="mono">${tr.id} · ${esc(veh(tr.vehicleId).plate)} · ${esc(drvr(tr.driverId).name)}${veh(tr.vehicleId).owner?` <span class="pill">${esc(X.parties.find(p=>p.id===veh(tr.vehicleId).owner).name)}</span>`:""}</dd>`:""}
+    <dt>Haulier</dt><dd>${esc(lk)}</dd>
+    ${tr?`<dt>Trip</dt><dd class="mono">${tr.id} · ${esc(veh(tr.vehicleId).plate)} · ${esc(drvr(tr.driverId).name)}</dd>`:""}
    </dl>
-   <section class="panel"><div class="panel-h"><h2>Charges</h2><span class="muted" style="font-size:12px">Money stored as decimal + ${X.ccy}</span></div><div class="tbl-wrap"><table><tbody>
-    <tr><td>Freight (sell)</td><td class="r num">${money(o.sell,X.ccy)}</td></tr>
-    <tr><td>${esc(tax.name)} ${Math.round(tax.rate*100)}%</td><td class="r num">${money(taxAmt,X.ccy)}</td></tr>
-    <tr><td><b>Invoice total</b></td><td class="r num"><b>${money(o.sell+taxAmt,X.ccy)}</b></td></tr>
-    <tr><td>Carrier / trip cost (buy)</td><td class="r num">${money(o.buy,X.ccy)}</td></tr>
-    <tr><td>Gross margin</td><td class="r num">${money(o.sell-o.buy,X.ccy)} · ${Math.round((o.sell-o.buy)/o.sell*100)}%</td></tr>
-   </tbody></table></div></section>
+   <section class="panel"><div class="panel-h"><h2>Costs & charges</h2><span class="muted" style="font-size:12px">${X.ccy} · decimal, never float</span></div><div class="tbl-wrap"><table><tbody>
+    <tr><th colspan="2">Revenue: charges to customer</th></tr>
+    ${o.lines.sell.map(l=>row(l)).join("")}
+    <tr><td>Subtotal excl. tax</td><td class="r num">${money2(o.sell,X.ccy)}</td></tr>
+    <tr><td>${esc(tax.name)} ${Math.round(tax.rate*100)}%</td><td class="r num">${money2(taxAmt,X.ccy)}</td></tr>
+    <tr><td><b>Customer total</b></td><td class="r num"><b>${money2(o.sell+taxAmt,X.ccy)}</b></td></tr>
+    <tr><th colspan="2">Cost: ${o.carrierId?"carrier charges":"own-fleet trip cost"} · ${o.tripId||o.pod?"accrued at dispatch":"estimate"}</th></tr>
+    ${o.lines.buy.map(l=>row(l)).join("")}
+    <tr><td>Total cost</td><td class="r num">${money2(o.buy,X.ccy)}</td></tr>
+    <tr><td><b>Gross margin</b></td><td class="r num" style="color:${m<X.guard?"var(--bad)":"var(--ok)"}"><b>${money2(o.sell-o.buy,X.ccy)} · ${Math.round(m*100)}%</b></td></tr>
+   </tbody></table></div>
+   <div class="panel-b stack" style="gap:8px">
+    ${locked?(o.invoiceId?`<div class="note info">Billed on invoice <b class="mono">${o.invoiceId}</b>. Invoiced charges are locked. Corrections go through a credit note.</div>`:""):
+     `<form class="row" id="accForm"><select id="accCode" aria-label="Accessorial charge" style="flex:1;min-width:0">${X.acc.filter(a=>a.code!=="BORD").map(a=>`<option value="${a.code}">${esc(a.label)} · ${a.unit==="%"?Math.round(a.rate*100)+"% of freight":a.rate+" "+X.ccy+" / "+a.unit}</option>`).join("")}</select><input type="number" id="accQty" value="1" min="1" style="width:70px" aria-label="Quantity"><button class="btn sm">Add charge</button></form>`}
+    ${m<X.guard?`<div class="note warn">Margin is below the ${Math.round(X.guard*100)}% guardrail.</div>`:""}
+   </div></section>
    ${o.status!=="Cancelled"&&o.status!=="Draft"?`<section><h3 style="font-size:14px;margin:0 0 8px">Milestones</h3><ul class="timeline">${ms}</ul></section>`:""}
    ${o.pod?`<section class="panel"><div class="panel-h"><h2>Proof of delivery</h2>${pill(o.pod.onTime?"On time":"Late",o.pod.onTime?"p-ok":"p-warn")}</div><div class="panel-b stack">
      <dl class="kv"><dt>Received by</dt><dd>${esc(o.pod.name)}</dd><dt>Captured</dt><dd class="num">${dt(o.pod.ts,X.tz)}</dd><dt>Photos</dt><dd>${o.pod.photos}</dd>${o.pod.qty!=null?`<dt>Qty delivered</dt><dd>${o.pod.qty} / ${o.pallets}</dd>`:""}${o.pod.gps?`<dt>GPS</dt><dd class="mono">${o.pod.gps}</dd>`:""}</dl>
@@ -625,20 +777,92 @@ function openOrder(id){
    <div class="row">
     ${o.status==="Draft"?`<button class="btn primary" data-act="confirm">Confirm</button>`:""}
     ${o.status==="Confirmed"?`<a class="btn primary" href="#planning">Plan this order</a>`:""}
-    ${o.status==="On hold"?`<button class="btn" data-act="release">Release hold</button>`:""}
+    ${o.status==="On hold"?`<button class="btn" data-act="release">${o.holdReason?"Approve margin & release":"Release hold"}</button>`:""}
     ${o.status==="POD received"?`<button class="btn primary" data-act="invoice">Create invoice</button>`:""}
+    ${o.invoiceId?`<button class="btn" data-act="viewinv">View invoice ${o.invoiceId}</button>`:""}
     ${tr&&tr.ms<6?`<a class="btn" href="#track" data-trackset="${o.id}">Open customer tracking link</a>`:""}
    </div>
    <section><h3 style="font-size:14px;margin:0 0 8px">History (audit)</h3>${hist.length?`<div class="tbl-wrap"><table><thead><tr><th>When</th><th>Field</th><th>Old</th><th>New</th><th>By</th></tr></thead><tbody>${hist.map(a=>`<tr><td class="num">${dt(a.ts,X.tz)}</td><td>${esc(a.field)}</td><td>${esc(a.old)}</td><td>${esc(a.new)}</td><td>${esc(a.by)}</td></tr>`).join("")}</tbody></table></div>`:`<p class="muted" style="margin:0">No changes in this session. Seeded history is not shown.</p>`}</section>
   </aside></div>`;
   $("#dx").onclick=closeOverlay; $("#dbg").onclick=e=>{if(e.target.id==="dbg")closeOverlay()};
   document.querySelectorAll("[data-trackset]").forEach(a=>a.addEventListener("click",()=>{trk.id=a.dataset.trackset}));
+  $("#accForm")&&($("#accForm").onsubmit=e=>{e.preventDefault();const code=$("#accCode").value,qty=Math.max(1,Math.round(+$("#accQty").value||1)),d=accDef(X,code);
+    if(d.unit==="%"&&o.acc.some(a=>a.code===code)){toast(`${d.label} is already on this order.`);return}
+    const before=o.sell,beforeBuy=o.buy;o.acc.push({code,qty});recalc(X,o);
+    audit(o.id,"sell (excl. tax)",money2(before,X.ccy),money2(o.sell,X.ccy));if(o.buy!==beforeBuy)audit(o.id,"cost accrual",money2(beforeBuy,X.ccy),money2(o.buy,X.ccy));
+    emit("charge.added",o.id,`${d.label} × ${qty}`);openOrder(o.id);refreshBehind()});
   document.querySelectorAll("[data-act]").forEach(b=>b.onclick=()=>{const a=b.dataset.act;
-    const set=(s,ev)=>{audit(o.id,"status",o.status,s);o.status=s;emit(ev,o.id,"")};
+    const set=(s,ev,info="")=>{audit(o.id,"status",o.status,s);o.status=s;emit(ev,o.id,info)};
     if(a==="confirm") set("Confirmed","order.confirmed");
-    if(a==="release") set("Confirmed","order.released");
-    if(a==="invoice"){set("Invoiced","invoice.created");toast(`Invoice raised for ${o.id}: ${money(o.sell+taxAmt,X.ccy)} incl. ${tax.name}.`)}
-    openOrder(o.id); if(route()!=="driver") VIEWS[route()]();});
+    if(a==="release"){if(o.holdReason){audit(o.id,"margin approval","pending",`approved by ${ME().name}`);o.holdReason=null;set("Confirmed","order.margin_approved",`${Math.round(m*100)}%`)}else set("Confirmed","order.released")}
+    if(a==="invoice"){const inv=makeInvoice(X,o.customerId,[o],Date.now());audit(o.id,"status","POD received","Invoiced");audit(inv.id,"(created)","",money2(inv.total,X.ccy));emit("invoice.issued",inv.id,`${c.name} · ${money2(inv.total,X.ccy)}`);refreshBehind();openInvoice(inv.id);return}
+    if(a==="viewinv"){openInvoice(o.invoiceId);return}
+    openOrder(o.id); refreshBehind();});
+}
+
+const INV_CLASS={"Issued":"p-info","Part paid":"p-acc","Paid":"p-ok","Overdue":"p-bad","Disputed":"p-warn"};
+function openInvoice(id,form){
+  const X=T(), inv=X.invoices.find(i=>i.id===id); if(!inv) return; const c=cust(inv.customerId), st=invStatus(inv), bal=invBalance(inv), gulf=X.key==="gulf";
+  const openD=inv.disputes.filter(d=>!d.closed);
+  let formHTML="";
+  if(form==="cn") formHTML=`<form class="panel panel-b stack" id="fCN"><b>Issue credit note</b>
+    <div class="form"><label>Shipment<select id="cnO">${inv.lines.map(l=>`<option value="${l.orderId}">${l.orderId} · ${money2(l.net,X.ccy)}</option>`).join("")}</select></label>
+    <label>Reason<select id="cnR"><option>Rate correction</option><option>Service failure (late delivery)</option><option>Damage claim settlement</option><option>Waiting time waived</option></select></label>
+    <label>Amount excl. tax (${X.ccy})<input type="number" id="cnA" step="0.01" min="0.01" value="${Math.min(round2(inv.lines[0].net*.1),bal).toFixed(2)}"></label></div>
+    <div id="cnErr"></div><div class="row"><button class="btn primary">Issue credit note</button><button type="button" class="btn" data-cancel>${t("cancel")}</button></div></form>`;
+  if(form==="pay") formHTML=`<form class="panel panel-b stack" id="fPay"><b>Record payment received</b><span class="muted" style="font-size:12.5px">In production this arrives from the ERP's cash application. HP TMS does not execute payments.</span>
+    <div class="form"><label>Amount (${X.ccy})<input type="number" id="payA" step="0.01" min="0.01" value="${bal.toFixed(2)}"></label><label>ERP payment reference<input type="text" id="payR" value="ERP-PMT-${80000+Math.floor(Math.random()*9999)}"></label></div>
+    <div id="payErr"></div><div class="row"><button class="btn primary">Record payment</button><button type="button" class="btn" data-cancel>${t("cancel")}</button></div></form>`;
+  if(form==="disp") formHTML=`<form class="panel panel-b stack" id="fDisp"><b>Log a customer dispute on a line</b>
+    <div class="form"><label>Shipment<select id="dO">${inv.lines.map(l=>`<option value="${l.orderId}">${l.orderId}</option>`).join("")}</select></label><label>Disputed amount (${X.ccy})<input type="number" id="dA" step="0.01" value="${round2(inv.lines[0].net*.05).toFixed(2)}"></label>
+    <label class="full">Customer's reason<input type="text" id="dR" value="Rate does not match the agreed contract"></label></div>
+    <div class="row"><button class="btn primary">Log dispute</button><button type="button" class="btn" data-cancel>${t("cancel")}</button></div></form>`;
+  $("#overlay").innerHTML=`<div class="modal-bg" id="ibg"><div class="modal" style="width:min(860px,100%)">
+   <div class="row"><h2 style="margin:0;font-size:18px;margin-inline-end:auto">${gulf?`Tax invoice · <span lang="ar" dir="rtl">فاتورة ضريبية</span>`:"Tax invoice (GST)"}</h2>${pill(st,INV_CLASS[st])}<button class="btn sm" id="ix">${t("close")}</button></div>
+   <div class="grid g-2e" style="gap:12px">
+    <dl class="kv"><dt>Seller</dt><dd><b>${esc(X.name)}</b><div class="muted">${X.taxScheme} <span class="mono">${X.taxId}</span></div></dd><dt>Bill to</dt><dd><b>${esc(c.name)}</b><div class="muted">${X.taxScheme} <span class="mono">${esc(c.taxId)}</span></div></dd></dl>
+    <dl class="kv"><dt>Invoice no.</dt><dd class="mono">${inv.id}</dd><dt>Issue date</dt><dd>${dt(inv.issueTs,X.tz,false)}</dd><dt>Due date</dt><dd>${dt(inv.dueTs,X.tz,false)} <span class="muted">(${c.terms} days)</span></dd><dt>Billing cycle</dt><dd>${esc(c.cycle)} · ${inv.lines.length} shipment(s)</dd></dl>
+   </div>
+   <div class="tbl-wrap"><table><thead><tr><th>Shipment / charge</th><th class="r">Tax rate</th><th class="r">Net ${X.ccy}</th></tr></thead><tbody>
+    ${inv.lines.map(l=>{const dsp=inv.disputes.find(d=>d.orderId===l.orderId&&!d.closed);return `<tr style="background:var(--sunk)"><td style="white-space:normal"><b class="mono">${l.orderId}</b> · <span class="mono">${esc(l.lane)}</span> · PO <span class="mono">${esc(l.ref)}</span> ${dsp?pill("Disputed","p-warn"):""}</td><td class="r num">${Math.round(l.tax.rate*100)}%</td><td class="r num"><b>${n2(l.net)}</b></td></tr>
+     ${l.sell.map(s=>`<tr><td class="muted" style="padding-inline-start:28px;white-space:normal">${esc(s.label)}</td><td></td><td class="r num muted">${n2(s.amount)}</td></tr>`).join("")}`}).join("")}
+   </tbody><tbody>
+    <tr><td colspan="2"><b>Net total</b></td><td class="r num"><b>${n2(inv.net)}</b></td></tr>
+    ${inv.taxGroups.map(g=>`<tr><td colspan="2">${esc(g.name)} ${Math.round(g.rate*100)}% on ${n2(g.base)}</td><td class="r num">${n2(g.tax)}</td></tr>`).join("")}
+    <tr><td colspan="2"><b>Total due</b></td><td class="r num"><b>${money2(inv.total,X.ccy)}</b></td></tr>
+    ${inv.credits.map(cn=>`<tr><td colspan="2">Credit note <span class="mono">${cn.id}</span> · ${esc(cn.orderId)} · ${esc(cn.reason)} <span class="muted">(net ${n2(cn.net)} + tax ${n2(cn.tax)})</span></td><td class="r num">−${n2(cn.total)}</td></tr>`).join("")}
+    ${inv.payments.map(p=>`<tr><td colspan="2">Payment received ${dt(p.ts,X.tz,false)} · <span class="mono">${esc(p.ref)}</span></td><td class="r num">−${n2(p.amount)}</td></tr>`).join("")}
+    <tr><td colspan="2"><b>Balance</b></td><td class="r num"><b>${money2(bal,X.ccy)}</b></td></tr>
+   </tbody></table></div>
+   ${openD.map(d=>`<div class="note warn stack" style="gap:6px"><div><b>Dispute ${d.id}</b> on ${d.orderId}: ${esc(d.reason)} · ${money2(d.amount,X.ccy)}</div><div class="row"><button class="btn sm" data-dres="${d.id}|accept">Accept & issue credit note</button><button class="btn sm" data-dres="${d.id}|reject">Reject dispute</button></div></div>`).join("")}
+   <div class="row">
+    <button class="btn" data-form="cn" ${bal<=0?"disabled":""}>Issue credit note</button>
+    <button class="btn" data-form="pay" ${bal<=0?"disabled":""}>Record payment</button>
+    <button class="btn" data-form="disp" ${bal<=0?"disabled":""}>Log customer dispute</button>
+   </div>
+   ${formHTML}
+   <p class="muted" style="font-size:12px;margin:0">${gulf?"Bilingual layout with seller and buyer TRN. KSA tax lines get ZATCA Phase 2 clearance (XML + QR) in Phase 2 of the build.":"GST tax invoice. The IRN and signed QR from the India IRP come in Phase 2 of the build."}</p>
+  </div></div>`;
+  const reopen=f=>{openInvoice(id,f);refreshBehind()};
+  $("#ix").onclick=closeOverlay; $("#ibg").onclick=e=>{if(e.target.id==="ibg")closeOverlay()};
+  document.querySelectorAll("[data-form]").forEach(b=>b.onclick=()=>openInvoice(id,b.dataset.form));
+  document.querySelectorAll("[data-cancel]").forEach(b=>b.onclick=()=>openInvoice(id));
+  const issueCN=(orderId,reason,net)=>{const l=inv.lines.find(x=>x.orderId===orderId);const tax=round2(net*l.tax.rate);
+    const cn={id:`${X.prefix}-CN-${pad4(++X.cnSeq)}`,orderId,reason,net:round2(net),tax,total:round2(net+tax),ts:Date.now()};inv.credits.push(cn);
+    audit(inv.id,"credit note","",`${cn.id} −${money2(cn.total,X.ccy)}`);emit("credit_note.issued",cn.id,`${inv.id} · ${reason} · ${money2(cn.total,X.ccy)}`);return cn};
+  $("#fCN")&&($("#fCN").onsubmit=e=>{e.preventDefault();const net=+$("#cnA").value,l=inv.lines.find(x=>x.orderId===$("#cnO").value);
+    if(!(net>0)){$("#cnErr").innerHTML=`<div class="note bad">Enter an amount above 0.</div>`;return}
+    if(net*(1+l.tax.rate)>bal+0.005){$("#cnErr").innerHTML=`<div class="note bad">The credit note incl. tax (${money2(net*(1+l.tax.rate),X.ccy)}) is more than the open balance of ${money2(bal,X.ccy)}.</div>`;return}
+    const cn=issueCN(l.orderId,$("#cnR").value,net);toast(`Credit note ${cn.id} issued for ${money2(cn.total,X.ccy)}.`);reopen()});
+  $("#fPay")&&($("#fPay").onsubmit=e=>{e.preventDefault();const a=round2(+$("#payA").value);
+    if(!(a>0)||a>bal+0.005){$("#payErr").innerHTML=`<div class="note bad">Enter an amount between 0 and the balance of ${money2(bal,X.ccy)}.</div>`;return}
+    inv.paid=round2(inv.paid+a);inv.payments.push({ts:Date.now(),amount:a,ref:$("#payR").value});audit(inv.id,"paid",n2(inv.paid-a),n2(inv.paid));emit("payment.received",inv.id,`${money2(a,X.ccy)} · ${$("#payR").value}`);reopen()});
+  $("#fDisp")&&($("#fDisp").onsubmit=e=>{e.preventDefault();const d={id:"DSP-"+pad4(X.invoices.reduce((s,i)=>s+i.disputes.length,0)+1),orderId:$("#dO").value,reason:$("#dR").value||"No reason given",amount:round2(+$("#dA").value||0),openedTs:Date.now()};
+    inv.disputes.push(d);audit(inv.id,"dispute","",`${d.id} ${money2(d.amount,X.ccy)}`);emit("invoice.disputed",inv.id,d.reason);reopen()});
+  document.querySelectorAll("[data-dres]").forEach(b=>b.onclick=()=>{const [did,how]=b.dataset.dres.split("|");const d=inv.disputes.find(x=>x.id===did);d.closed=Date.now();
+    if(how==="accept"){const l=inv.lines.find(x=>x.orderId===d.orderId);const net=Math.min(d.amount,round2(invBalance(inv)/(1+l.tax.rate)));const cn=issueCN(d.orderId,`Dispute ${d.id} accepted`,net);d.outcome=`Credited ${cn.id}`;toast(`Dispute accepted. Credit note ${cn.id} issued.`)}
+    else{d.outcome="Rejected";audit(inv.id,"dispute",d.id,"rejected");emit("invoice.dispute_rejected",inv.id,d.id)}
+    reopen()});
 }
 
 /* ---------------- PLANNING ---------------- */
@@ -677,7 +901,8 @@ VIEWS.planning=function(){
   $("#pv")&&($("#pv").onchange=e=>{plan.vehicleId=e.target.value;VIEWS.planning()});
   $("#mkTrip").onclick=()=>{
     const first=sel[0]; const trip={id:`${X.prefix}-TRP-${String(++X.tripSeq).padStart(4,"0")}`,vehicleId:v.id,driverId:v.driverId,orderIds:sel.map(o=>o.id),from:first.origin,to:first.dest,ms:0,progress:0,startTs:Date.now()};
-    X.trips.push(trip); sel.forEach(o=>{audit(o.id,"status",o.status,"Dispatched");o.status="Dispatched";o.tripId=trip.id;o.ms=0;ui.sel.delete(o.id)});
+    X.trips.push(trip); sel.forEach(o=>{audit(o.id,"status",o.status,"Dispatched");o.status="Dispatched";o.tripId=trip.id;o.ms=0;o.carrierId=v.owner||null;recalc(X,o);ui.sel.delete(o.id)});
+    emit("cost.accrued",trip.id,`${v.owner?X.parties.find(p=>p.id===v.owner).name:"Own fleet"} · ${money2(sel.reduce((s,o)=>s+o.buy,0),X.ccy)}`);
     emit("trip.created",trip.id,`${sel.length} order(s), ${v.plate}`); emit("trip.dispatched",trip.id,`Pushed to driver app: ${drvr(v.driverId).name}`);
     drv.tripId=trip.id; toast(`${trip.id} dispatched to ${drvr(v.driverId).name}. Open the Driver app to run it.`); VIEWS.planning();};
 };
@@ -844,7 +1069,7 @@ VIEWS.track=function(){
     <section class="panel"><div class="panel-b" id="trkMap">${tr&&tr.ms<6?mapSVG({trips:[tr],highlight:tr.id}):`<p class="muted" style="margin:0">Trip complete. The live map is hidden after delivery for driver privacy.</p>`}</div></section>
     <section class="panel"><div class="panel-h"><h2>${esc(tst(o.status))}</h2></div><div class="panel-b stack">
       <div class="muted">${esc(city(o.origin).name)} → ${esc(city(o.dest).name)}</div>
-      <ul class="timeline">${MILESTONES.map((m,i)=>`<li class="${i<o.ms?"done":i===o.ms?"now":""}"><span></span><div>${esc(m)}${o.msTs?.[i]?` <span class="muted num">· ${dt(o.msTs[i],X.tz)}</span>`:""}</div></li>`).join("")}</ul>
+      <ul class="timeline">${MILESTONES.map((m,i)=>`<li class="${i<o.ms?"done":i===o.ms?"now":""}"><div>${esc(m)}${o.msTs?.[i]?` <span class="muted num">· ${dt(o.msTs[i],X.tz)}</span>`:""}</div></li>`).join("")}</ul>
       ${o.pod?`<div class="note ok">Received by ${esc(o.pod.name)}. POD document available to download.</div>${o.pod.sig?`<img src="${o.pod.sig}" alt="Signature" style="background:#fff;border:1px solid var(--line);border-radius:6px;max-height:100px">`:""}`:""}
     </div></section>
    </div>`:`<p class="muted">No trackable shipments.</p>`}`;
@@ -910,6 +1135,165 @@ CREATE POLICY tenant_isolation ON orders.order
   $("#probe")&&($("#probe").onclick=()=>{const other=TENANTS[tenantKey==="gulf"?"indus":"gulf"];const found=X.orders.find(o=>o.id===other.orders[0].id);
     audit("security","cross-tenant read",other.orders[0].id,"denied (404)");
     $("#probeOut").innerHTML=`<div class="note ${found?"bad":"ok"}"><b>GET /api/v1/orders/${esc(other.orders[0].id)}</b> → ${found?"200 (isolation broken!)":"404 Not Found. The row is invisible under this tenant's RLS context. The attempt was written to the audit log."}</div>`});
+};
+
+/* ---------------- FINANCE & BILLING ---------------- */
+const fin={tab:"unbilled",sel:new Set(),ci:null,batch:new Set(),q:"",st:""};
+const FIN={};
+VIEWS.finance=function(){
+  const X=T();
+  const ub=X.orders.filter(o=>o.status==="POD received"), ubVal=ub.reduce((s,o)=>s+o.sell,0);
+  const open=X.invoices.filter(i=>invBalance(i)>0.005), openVal=open.reduce((s,i)=>s+invBalance(i),0);
+  const od=open.filter(i=>Date.now()>i.dueTs), odVal=od.reduce((s,i)=>s+invBalance(i),0);
+  const review=X.carrierInvoices.filter(ci=>ciState(X,ci).st==="Needs review").length;
+  const billed=new Set(X.carrierInvoices.flatMap(c=>c.lines.filter(l=>!l.rejected).map(l=>l.orderId)));
+  const accr=X.orders.filter(o=>o.carrierId&&["Dispatched","In transit","Delivered","POD received","Invoiced"].includes(o.status)&&!billed.has(o.id)).reduce((s,o)=>s+o.buy,0);
+  const tabs=[["unbilled",t("unbilled")],["invoices",t("invoices")],["aging",t("aging")],["audit",t("freightAudit")],["profit",t("profitability")],["rates",t("rateCards")]];
+  $("#view").innerHTML=`<div class="grid g-kpi">
+    ${kpi(t("unbilled"),money(ubVal,X.ccy),`${ub.length} shipments with POD`)}
+    ${kpi("Open receivables",money(openVal,X.ccy),`${open.length} invoices`)}
+    ${kpi("Overdue",money(odVal,X.ccy),`${od.length} invoices past due`)}
+    ${kpi("Carrier invoices to review",nfmt(review),`Outside ±${X.tol.pct*100}% / ${X.tol.abs} ${X.ccy} tolerance`)}
+    ${kpi("Accrued carrier cost",money(accr,X.ccy),"Not yet billed by carriers")}
+   </div>
+   <section class="panel"><div class="tabs" role="tablist" style="padding:0 10px">${tabs.map(([k,l])=>`<button role="tab" aria-selected="${fin.tab===k}" data-ftab="${k}">${esc(l)}</button>`).join("")}</div><div class="panel-b" id="finBody"></div></section>`;
+  document.querySelectorAll("[data-ftab]").forEach(b=>b.onclick=()=>{fin.tab=b.dataset.ftab;VIEWS.finance()});
+  FIN[fin.tab](X);
+  document.querySelectorAll("#finBody [data-open]").forEach(b=>b.onclick=e=>{e.stopPropagation();openOrder(b.dataset.open)});
+  document.querySelectorAll("#finBody [data-inv]").forEach(b=>b.onclick=()=>openInvoice(b.dataset.inv));
+};
+const lnk=(id,attr)=>`<button class="lnk mono" ${attr}="${id}">${id}</button>`;
+
+FIN.unbilled=X=>{
+  const ub=X.orders.filter(o=>o.status==="POD received").sort((a,b)=>a.customerId.localeCompare(b.customerId,undefined,{numeric:true})||a.pod.ts-b.pod.ts);
+  [...fin.sel].forEach(id=>{if(!ub.find(o=>o.id===id))fin.sel.delete(id)});
+  const waiting=X.orders.filter(o=>o.status==="Delivered").length, sel=ub.filter(o=>fin.sel.has(o.id)), nc=new Set(sel.map(o=>o.customerId)).size;
+  $("#finBody").innerHTML=`<div class="stack">
+   <div class="row"><span class="muted" style="margin-inline-end:auto;font-size:12.5px">A shipment becomes billable once its POD is received. ${waiting} delivered shipment(s) are still waiting for POD. Selected shipments are consolidated into one invoice per customer.</span>
+    <button class="btn sm" id="ubAll">${sel.length===ub.length&&ub.length?"Clear":"Select all"}</button>
+    <button class="btn primary" id="ubGo" ${sel.length?"":"disabled"}>Create ${nc||""} invoice${nc===1?"":"s"}${sel.length?` (${sel.length} shipments)`:""}</button></div>
+   <div class="tbl-wrap"><table><thead><tr><th></th><th>${t("order")}</th><th>${t("customer")}</th><th>Billing cycle</th><th>Lane</th><th>POD date</th><th class="r">Net</th><th>Tax</th><th class="r">Total</th></tr></thead><tbody>
+   ${ub.map(o=>{const tx=taxFor(X,o),c=cust(o.customerId);return `<tr><td><input type="checkbox" data-ub="${o.id}" ${fin.sel.has(o.id)?"checked":""} aria-label="Select ${o.id}"></td><td>${lnk(o.id,"data-open")}</td><td>${esc(c.name)}</td><td>${esc(c.cycle)}</td><td class="mono">${o.origin} → ${o.dest}</td><td class="num">${dt(o.pod.ts,X.tz,false)}</td><td class="r num">${money2(o.sell,X.ccy)}</td><td>${esc(tx.name)} ${Math.round(tx.rate*100)}%</td><td class="r num">${money2(o.sell*(1+tx.rate),X.ccy)}</td></tr>`}).join("")||`<tr><td colspan="9" class="muted">Nothing to bill. Complete a delivery with POD in the Driver app and it appears here.</td></tr>`}
+   </tbody></table></div></div>`;
+  document.querySelectorAll("[data-ub]").forEach(c=>c.onchange=()=>{c.checked?fin.sel.add(c.dataset.ub):fin.sel.delete(c.dataset.ub);VIEWS.finance()});
+  $("#ubAll").onclick=()=>{if(sel.length===ub.length)fin.sel.clear();else ub.forEach(o=>fin.sel.add(o.id));VIEWS.finance()};
+  $("#ubGo").onclick=()=>{const by={};sel.forEach(o=>(by[o.customerId]=by[o.customerId]||[]).push(o));let tot=0;const ids=[];
+    Object.entries(by).forEach(([cid,os])=>{os.forEach(o=>audit(o.id,"status","POD received","Invoiced"));const inv=makeInvoice(X,cid,os,Date.now());tot+=inv.total;ids.push(inv.id);
+      audit(inv.id,"(created)","",money2(inv.total,X.ccy));emit("invoice.issued",inv.id,`${cust(cid).name} · ${os.length} shipment(s) · ${money2(inv.total,X.ccy)}`)});
+    fin.sel.clear();toast(`${ids.length} invoice(s) issued, ${money2(tot,X.ccy)} incl. tax. They are now under Customer invoices.`);VIEWS.finance()};
+};
+
+FIN.invoices=X=>{
+  const STS=["Issued","Part paid","Overdue","Disputed","Paid"];
+  const all=X.invoices.filter(i=>{if(fin.st&&invStatus(i)!==fin.st)return false;if(!fin.q)return true;const q=fin.q.toLowerCase();return i.id.toLowerCase().includes(q)||cust(i.customerId).name.toLowerCase().includes(q)||i.lines.some(l=>l.orderId.toLowerCase().includes(q))}).sort((a,b)=>b.issueTs-a.issueTs);
+  const rows=all.slice(0,100);
+  $("#finBody").innerHTML=`<div class="stack"><div class="toolbar"><input type="search" id="fq" placeholder="Search invoice, customer or order" value="${esc(fin.q)}" aria-label="Search invoices">
+    <select id="fst" aria-label="Invoice status"><option value="">All statuses</option>${STS.map(s=>`<option ${fin.st===s?"selected":""}>${s}</option>`).join("")}</select><span class="muted" style="font-size:12.5px">${all.length} invoices${all.length>100?", showing the latest 100":""}</span></div>
+   <div class="tbl-wrap"><table><thead><tr><th>Invoice</th><th>${t("customer")}</th><th>Issued</th><th>Due</th><th class="r">Shipments</th><th class="r">Net</th><th class="r">Tax</th><th class="r">Total</th><th class="r">Balance</th><th>Status</th></tr></thead><tbody>
+   ${rows.map(i=>{const s=invStatus(i);return `<tr class="click" data-inv="${i.id}"><td class="mono">${i.id}</td><td>${esc(cust(i.customerId).name)}</td><td class="num">${dt(i.issueTs,X.tz,false)}</td><td class="num">${dt(i.dueTs,X.tz,false)}</td><td class="r num">${i.lines.length}</td><td class="r num">${money2(i.net,X.ccy)}</td><td class="r num">${money2(i.tax,X.ccy)}</td><td class="r num">${money2(i.total,X.ccy)}</td><td class="r num">${money2(invBalance(i),X.ccy)}</td><td>${pill(s,INV_CLASS[s])}</td></tr>`}).join("")||`<tr><td colspan="10" class="muted">No invoices match.</td></tr>`}
+   </tbody></table></div></div>`;
+  $("#fq").oninput=e=>{fin.q=e.target.value;VIEWS.finance();const n=$("#fq");n.focus();n.setSelectionRange(n.value.length,n.value.length)};
+  $("#fst").onchange=e=>{fin.st=e.target.value;VIEWS.finance()};
+};
+
+FIN.aging=X=>{
+  const B=[["Current","var(--ok)"],["1–30 days","var(--info)"],["31–60 days","var(--warn)"],["61–90 days","var(--accent)"],["90+ days","var(--bad)"]];
+  const bucket=i=>{const d=Math.floor((Date.now()-i.dueTs)/DAY);return d<=0?0:d<=30?1:d<=60?2:d<=90?3:4};
+  const rows={}; X.invoices.forEach(i=>{const b=invBalance(i);if(b<=0.005)return;const r=rows[i.customerId]=rows[i.customerId]||[0,0,0,0,0];r[bucket(i)]+=b});
+  const tot=[0,0,0,0,0]; Object.values(rows).forEach(r=>r.forEach((v,k)=>tot[k]+=v)); const grand=tot.reduce((a,b)=>a+b,0)||1;
+  const custs=X.parties.filter(p=>p.type==="customer");
+  $("#finBody").innerHTML=`<div class="stack">
+   <div class="bar" style="height:18px;display:flex">${tot.map((v,k)=>`<i style="width:${v/grand*100}%;background:${B[k][1]}" title="${B[k][0]}"></i>`).join("")}</div>
+   <div class="row" style="font-size:12px;gap:14px">${B.map(([l,c],k)=>`<span class="row" style="gap:6px"><i style="width:10px;height:10px;border-radius:2px;background:${c};display:inline-block"></i>${l}: <b class="num">${money(tot[k],X.ccy)}</b></span>`).join("")}</div>
+   <div class="tbl-wrap"><table><thead><tr><th>${t("customer")}</th><th>Terms</th>${B.map(b=>`<th class="r">${b[0]}</th>`).join("")}<th class="r">Open balance</th><th class="r">+ Unbilled</th><th class="r">Credit limit</th><th>Credit check</th></tr></thead><tbody>
+   ${custs.map(c=>{const r=rows[c.id]||[0,0,0,0,0],bal=r.reduce((a,b)=>a+b,0),unb=X.orders.filter(o=>o.customerId===c.id&&["Dispatched","In transit","Delivered","POD received"].includes(o.status)).reduce((s,o)=>s+o.sell,0),use=(bal+unb)/c.credit;
+     return `<tr><td>${esc(c.name)}</td><td>${c.terms} days</td>${r.map((v,k)=>`<td class="r num" style="${v&&k>=2?"color:var(--bad)":""}">${v?money(v,X.ccy):"–"}</td>`).join("")}<td class="r num"><b>${money(bal,X.ccy)}</b></td><td class="r num">${money(unb,X.ccy)}</td><td class="r num">${money(c.credit,X.ccy)}</td><td>${use>1?pill("Over limit: new orders blocked","p-bad"):use>.8?pill(`${Math.round(use*100)}% used`,"p-warn"):pill(`${Math.round(use*100)}% used`,"p-ok")}</td></tr>`}).join("")}
+   <tr><td><b>Total</b></td><td></td>${tot.map(v=>`<td class="r num"><b>${money(v,X.ccy)}</b></td>`).join("")}<td class="r num"><b>${money(grand===1?0:grand,X.ccy)}</b></td><td></td><td></td><td></td></tr>
+   </tbody></table></div></div>`;
+};
+
+FIN.audit=X=>{
+  const cis=X.carrierInvoices, carriers=X.parties.filter(p=>p.type==="carrier");
+  const states=new Map(cis.map(ci=>[ci.id,ciState(X,ci)]));
+  [...fin.batch].forEach(id=>{if(!states.get(id)?.approvable)fin.batch.delete(id)});
+  const ci=cis.find(c=>c.id===fin.ci);
+  const bsel=[...fin.batch].map(id=>cis.find(c=>c.id===id)), bamt=bsel.reduce((s,c)=>s+states.get(c.id).pay,0);
+  let detail="";
+  if(ci){const S=states.get(ci.id),k=X.parties.find(p=>p.id===ci.carrierId);
+    detail=`<section class="panel"><div class="panel-h"><h2><span class="mono">${esc(ci.no)}</span> · ${esc(k.name)}</h2>${pill(S.st,S.cls)}<button class="btn sm" id="ciClose">${t("close")}</button></div>
+     <div class="panel-b"><span class="muted" style="font-size:12.5px">Received ${dt(ci.receivedTs,X.tz)} via ${esc(ci.channel)}. Three-way match: the order exists, the POD is captured, and the amount matches the cost accrued at dispatch.</span></div>
+     <div class="tbl-wrap"><table><thead><tr><th>${t("order")}</th><th>Lane</th><th>Order</th><th>POD</th><th class="r">Accrued</th><th class="r">Invoiced</th><th class="r">Variance</th><th>Result</th><th>Carrier note</th><th></th></tr></thead><tbody>
+     ${ci.lines.map((l,i)=>{const o=X.orders.find(x=>x.id===l.orderId),m=S.ms[i];return `<tr><td>${lnk(l.orderId,"data-open")}</td><td class="mono">${o.origin} → ${o.dest}</td><td>${pill("✓","p-ok")}</td><td>${o.pod?pill("✓","p-ok"):pill("Missing","p-warn")}</td><td class="r num">${money2(o.buy,X.ccy)}</td><td class="r num">${money2(l.amount,X.ccy)}</td><td class="r num" style="color:${Math.abs(m.v)>0.005?(m.ok?"var(--warn)":"var(--bad)"):"inherit"}">${m.v>0?"+":""}${money2(m.v,X.ccy)}</td><td>${pill(m.res,m.cls)}</td><td class="muted" style="white-space:normal">${esc(l.note)}</td>
+       <td>${ci.batchId?"":m.res==="Over tolerance"?`<button class="btn sm" data-cil="${i}|accept">Accept</button> <button class="btn sm" data-cil="${i}|dispute">Dispute</button>`:m.dup?`<button class="btn sm" data-cil="${i}|reject">Reject line</button>`:""}</td></tr>`}).join("")}
+     <tr><td colspan="4"><b>Totals</b></td><td class="r num"><b>${money2(S.acc,X.ccy)}</b></td><td class="r num"><b>${money2(S.inv,X.ccy)}</b></td><td class="r num"><b>${money2(S.inv-S.acc,X.ccy)}</b></td><td colspan="3">Payable now: <b class="num">${money2(S.pay,X.ccy)}</b></td></tr>
+     </tbody></table></div></section>`}
+  $("#finBody").innerHTML=`<div class="stack">
+   <div class="row"><span class="muted" style="font-size:12.5px;margin-inline-end:auto">Lines within ±${X.tol.pct*100}% or ${X.tol.abs} ${X.ccy} of the accrual are approved automatically. Everything else goes to review.</span>
+    <select id="sbK" aria-label="Carrier to self-bill">${carriers.map(k=>`<option value="${k.id}">${esc(k.name)}</option>`).join("")}</select><button class="btn" id="sbGo">Self-bill completed trips</button>
+    <button class="btn primary" id="pbGo" ${bsel.length?"":"disabled"}>Create payment batch${bsel.length?` · ${bsel.length} · ${money(bamt,X.ccy)}`:""}</button></div>
+   ${detail}
+   <div class="tbl-wrap"><table><thead><tr><th></th><th>Carrier invoice</th><th>Carrier</th><th>Received</th><th>Channel</th><th class="r">Lines</th><th class="r">Accrued</th><th class="r">Invoiced</th><th class="r">Variance</th><th>Match</th><th class="r">Payable</th></tr></thead><tbody>
+   ${cis.map(c=>{const S=states.get(c.id),k=X.parties.find(p=>p.id===c.carrierId);return `<tr class="click" data-ci="${c.id}" style="${fin.ci===c.id?"background:var(--accent-soft)":""}"><td>${S.approvable?`<input type="checkbox" data-pb="${c.id}" ${fin.batch.has(c.id)?"checked":""} aria-label="Add ${esc(c.no)} to payment batch">`:""}</td><td class="mono">${esc(c.no)}${c.batchId?` <span class="muted">· ${c.batchId}</span>`:""}</td><td>${esc(k.name)}</td><td class="num">${dt(c.receivedTs,X.tz,false)}</td><td>${esc(c.channel)}</td><td class="r num">${c.lines.length}</td><td class="r num">${money2(S.acc,X.ccy)}</td><td class="r num">${money2(S.inv,X.ccy)}</td><td class="r num">${money2(S.inv-S.acc,X.ccy)}</td><td>${pill(S.st,S.cls)}</td><td class="r num">${money2(S.pay,X.ccy)}</td></tr>`}).join("")}
+   </tbody></table></div>
+   <h3 style="font-size:14px;margin:8px 0 0">Payment batches sent to ${esc(X.erp)}</h3>
+   <div class="tbl-wrap"><table><thead><tr><th>Batch</th><th>Created</th><th class="r">Invoices</th><th class="r">Amount</th><th>Status</th></tr></thead><tbody>
+   ${X.batches.map(b=>`<tr><td class="mono">${b.id}</td><td class="num">${dt(b.ts,X.tz)}</td><td class="r num">${b.ids.length}</td><td class="r num">${money2(b.amount,X.ccy)}</td><td>${pill("Exported to ERP","p-ok")}</td></tr>`).join("")||`<tr><td colspan="5" class="muted">No batches yet.</td></tr>`}
+   </tbody></table></div>
+   <p class="muted" style="font-size:12px;margin:0">HP TMS approves and exports payables. The ERP makes the actual payment.</p></div>`;
+  document.querySelectorAll("[data-ci]").forEach(r=>r.onclick=()=>{fin.ci=fin.ci===r.dataset.ci?null:r.dataset.ci;VIEWS.finance()});
+  document.querySelectorAll("[data-pb]").forEach(c=>{c.onclick=e=>e.stopPropagation();c.onchange=()=>{c.checked?fin.batch.add(c.dataset.pb):fin.batch.delete(c.dataset.pb);VIEWS.finance()}});
+  $("#ciClose")&&($("#ciClose").onclick=()=>{fin.ci=null;VIEWS.finance()});
+  document.querySelectorAll("[data-cil]").forEach(b=>b.onclick=()=>{const [i,how]=b.dataset.cil.split("|"),l=ci.lines[+i];ci.touched=true;
+    if(how==="accept"){l.override=true;audit(ci.no,`line ${l.orderId}`,"over tolerance",`accepted by ${ME().name}`);emit("carrier_invoice.line_approved",ci.no,l.orderId)}
+    if(how==="dispute"){l.dispute=true;const o=X.orders.find(x=>x.id===l.orderId);audit(ci.no,`line ${l.orderId}`,"over tolerance","disputed");emit("carrier_invoice.disputed",ci.no,`${l.orderId}: disputing ${money2(l.amount-o.buy,X.ccy)}, paying accrual`)}
+    if(how==="reject"){l.rejected=true;audit(ci.no,`line ${l.orderId}`,"duplicate","rejected");emit("carrier_invoice.line_rejected",ci.no,`${l.orderId} duplicate`)}
+    VIEWS.finance()});
+  $("#sbGo").onclick=()=>{const kid=$("#sbK").value,c=selfBill(X,kid);if(!c){toast("This carrier has no completed trips with POD left to bill.");return}
+    audit(c.no,"(created)","","self-billing");emit("carrier_invoice.self_billed",c.no,`${c.lines.length} trips · ${money2(ciState(X,c).inv,X.ccy)}`);fin.ci=c.id;toast(`Self-billing invoice ${c.no} created from ${c.lines.length} completed trips at the contract rate.`);VIEWS.finance()};
+  $("#pbGo").onclick=()=>{const b={id:"PB-"+pad4(++X.pbSeq),ts:Date.now(),ids:bsel.map(c=>c.id),amount:round2(bamt),target:X.erp};bsel.forEach(c=>c.batchId=b.id);X.batches.unshift(b);fin.batch.clear();
+    audit(b.id,"(created)","",money2(b.amount,X.ccy));emit("payment_batch.exported",b.id,`${b.ids.length} invoices · ${money2(b.amount,X.ccy)} → ${X.erp}`);toast(`${b.id} exported to ${X.erp}.`);VIEWS.finance()};
+};
+
+FIN.profit=X=>{
+  const os=X.orders.filter(o=>!["Cancelled","Draft"].includes(o.status));
+  const grp=(keyf,labelf)=>{const g={};os.forEach(o=>{const k=keyf(o);const r=g[k]=g[k]||{k,label:labelf(o),n:0,rev:0,cost:0};r.n++;r.rev+=o.sell;r.cost+=o.buy});return Object.values(g)};
+  const table=(rows,title,first)=>{const mx=Math.max(...rows.map(r=>(r.rev-r.cost)/r.rev),.01);return `<section class="panel"><div class="panel-h"><h2>${title}</h2></div><div class="tbl-wrap"><table><thead><tr><th>${first}</th><th class="r">Shipments</th><th class="r">Revenue</th><th class="r">Cost</th><th class="r">Margin</th><th style="min-width:120px">Margin %</th></tr></thead><tbody>
+    ${rows.map(r=>{const m=(r.rev-r.cost)/r.rev;return `<tr><td>${esc(r.label)}</td><td class="r num">${r.n}</td><td class="r num">${money(r.rev,X.ccy)}</td><td class="r num">${money(r.cost,X.ccy)}</td><td class="r num">${money(r.rev-r.cost,X.ccy)}</td><td><div class="row" style="gap:8px;flex-wrap:nowrap"><div class="bar" style="flex:1"><i style="width:${Math.max(0,m)/mx*100}%;background:${m<X.guard?"var(--bad)":"var(--ok)"}"></i></div><span class="num" style="width:36px;text-align:end">${Math.round(m*100)}%</span></div></td></tr>`}).join("")}
+    </tbody></table></div></section>`};
+  const byCust=grp(o=>o.customerId,o=>cust(o.customerId).name).sort((a,b)=>(b.rev-b.cost)-(a.rev-a.cost));
+  const byLane=grp(o=>o.origin+o.dest,o=>`${o.origin} → ${o.dest}`).sort((a,b)=>b.rev-a.rev).slice(0,10);
+  const byMode=grp(o=>o.carrierId?"sub":"own",o=>o.carrierId?"Subcontracted":"Own fleet");
+  const byMonth=grp(o=>new Date(o.pickupTs).toISOString().slice(0,7),o=>new Intl.DateTimeFormat(LOCALE[lang],{month:"long",year:"numeric",timeZone:X.tz}).format(new Date(o.pickupTs))).sort((a,b)=>b.k.localeCompare(a.k)).slice(0,4);
+  $("#finBody").innerHTML=`<div class="stack"><span class="muted" style="font-size:12.5px">Revenue minus carrier and trip cost per shipment, excl. tax. Red bars are below the ${Math.round(X.guard*100)}% margin guardrail.</span>
+   ${table(byCust,"By customer",t("customer"))}<div class="grid g-2e">${table(byLane,"Top 10 lanes by revenue","Lane")}<div class="stack">${table(byMode,"Own fleet vs subcontracted","Haulier")}${table(byMonth,"By month (pickup date)","Month")}</div></div></div>`;
+};
+
+FIN.rates=X=>{
+  const bands=[25,75,150,300,600,1000], eqs=Object.keys(EQUIP), cur=fscPct(X);
+  $("#finBody").innerHTML=`<div class="stack">
+   <div class="grid g-2e">
+    <section class="panel"><div class="panel-h"><h2>Fuel surcharge (index-linked)</h2></div><div class="panel-b stack">
+     <form class="row" id="fscF"><label class="ctl">Diesel index (${X.fsc.unit}) <input type="number" step="0.01" id="fscP" value="${X.fsc.price}" style="width:100px"></label><button class="btn sm">Update index</button></form>
+     <div class="tbl-wrap"><table><thead><tr><th>Diesel price band (${X.fsc.unit})</th><th class="r">Surcharge on freight</th></tr></thead><tbody>
+     ${X.fsc.bands.map(([lo,hi,p])=>`<tr style="${p===cur?"background:var(--accent-soft);font-weight:600":""}"><td class="num">${lo} – ${hi>=99?"and above":hi}</td><td class="r num">${(p*100).toFixed(1)}%${p===cur?" · current":""}</td></tr>`).join("")}</tbody></table></div>
+     <span class="muted" style="font-size:12px">Updating the index re-rates open orders that haven't been delivered yet. Delivered and invoiced orders keep their rate.</span></div></section>
+    <section class="panel"><div class="panel-h"><h2>Accessorial charges</h2></div><div class="tbl-wrap"><table><thead><tr><th>Code</th><th>Charge</th><th class="r">Rate</th><th>Per</th><th>Cost side</th></tr></thead><tbody>
+     ${X.acc.map(a=>`<tr><td class="mono">${a.code}</td><td>${esc(a.label)}</td><td class="r num">${a.unit==="%"?Math.round(a.rate*100)+"% of freight":money2(a.rate,X.ccy)}</td><td>${a.unit==="%"?"order":a.unit}</td><td class="muted">${["SALIK","TOLL","ESC"].includes(a.code)?"Pass-through at cost":a.code==="BORD"?"Agent fee 75%":a.code==="WAIT"?"Carrier 70% / driver 20%":"Margin item"}</td></tr>`).join("")}</tbody></table></div></section>
+   </div>
+   <section class="panel"><div class="panel-h"><h2>Standard sell tariff (${X.ccy}, excl. fuel and tax)</h2><span class="muted" style="font-size:12px">max(min ${X.rates.min}, ${X.rates.base} + ${X.rates.perKm}/km) × equipment factor</span></div><div class="tbl-wrap"><table><thead><tr><th>Distance</th>${eqs.map(e=>`<th class="r">${esc(e)} <span class="muted">×${EQUIP[e].rate}</span></th>`).join("")}</tr></thead><tbody>
+    ${bands.map(b=>`<tr><td class="num">${b} km</td>${eqs.map(e=>`<td class="r num">${money(r5(tariff(X,b,e)),X.ccy)}</td>`).join("")}</tr>`).join("")}</tbody></table></div></section>
+   <div class="grid g-2e">
+    <section class="panel"><div class="panel-h"><h2>Customer contracts (sell)</h2></div><div class="tbl-wrap"><table><thead><tr><th>${t("customer")}</th><th class="r">Discount</th><th>Billing</th><th class="r">Terms</th><th class="r">Credit limit</th></tr></thead><tbody>
+     ${X.parties.filter(p=>p.type==="customer").map(c=>`<tr><td>${esc(c.name)}</td><td class="r num">${c.discount?"−"+Math.round(c.discount*100)+"%":"Tariff"}</td><td>${esc(c.cycle)}</td><td class="r num">${c.terms} days</td><td class="r num">${money(c.credit,X.ccy)}</td></tr>`).join("")}</tbody></table></div></section>
+    <section class="panel"><div class="panel-h"><h2>Carrier contracts (buy)</h2></div><div class="tbl-wrap"><table><thead><tr><th>Carrier</th><th class="r">Rate</th><th>Valid to</th><th class="r">Score</th></tr></thead><tbody>
+     ${X.parties.filter(p=>p.type==="carrier").map(k=>`<tr><td>${esc(k.name)}</td><td class="r num">${Math.round(k.factor*100)}% of tariff</td><td class="num">${dt(k.validTo,X.tz,false)}</td><td class="r num">${k.score}</td></tr>`).join("")}</tbody></table></div>
+     <div class="panel-b"><dl class="kv"><dt>Own-fleet cost model</dt><dd>${X.own.lPerKm} L/km diesel · ${X.own.fixedKm} ${X.ccy}/km vehicle · driver ${X.own.drvTrip} ${X.ccy}/trip + ${X.own.drvPer100}/100 km · empty return 60% (≤200 km) or 30%</dd>
+      <dt>Margin guardrail</dt><dd>${Math.round(X.guard*100)}%: orders below it go On hold for Finance approval</dd><dt>Audit tolerance</dt><dd>±${X.tol.pct*100}% or ${X.tol.abs} ${X.ccy}, whichever is larger</dd></dl></div></section>
+   </div></div>`;
+  $("#fscF").onsubmit=e=>{e.preventDefault();const v=round2(+$("#fscP").value);if(!(v>0)){toast("Enter a diesel price above 0.");return}
+    const old=X.fsc.price;X.fsc.price=v;let n=0;X.orders.forEach(o=>{if(["Draft","Confirmed","On hold","Dispatched","In transit"].includes(o.status)){recalc(X,o);n++}});
+    audit("rate:fuel-index","diesel price",old,v);emit("rating.fuel_index_updated",X.short,`${old} → ${v} ${X.fsc.unit}; surcharge ${(fscPct(X)*100).toFixed(1)}%; ${n} open orders re-rated`);
+    toast(`Diesel index set to ${v}. Surcharge is now ${(fscPct(X)*100).toFixed(1)}%. ${n} open orders re-rated.`);VIEWS.finance()};
 };
 
 /* ---------------- live tick ---------------- */
