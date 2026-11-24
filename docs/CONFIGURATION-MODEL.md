@@ -3,11 +3,35 @@
 Status: **draft, aligned with the reference solution configuration document (SCD)** supplied by the product owner for an existing LSP TMS deployment.
 The reference document is confidential and is **not** stored in this repository. This file records only the configuration *concepts* HP TMS adopts and how they map onto our modules. Nothing here copies vendor screens, code or text.
 
-The clickable demo (`demo/hp-tms-demo.html` → **Configuration**) implements every area below. Areas marked **Live** change behaviour in the demo; **Table** areas are maintained there and used in a later phase.
+The clickable demo (`demo/hp-tms-demo.html` → **Configuration**) implements every area below, for three sample tenants: UAE/KSA (AED), India (INR) and the EU (EUR, operating in Germany, the Netherlands and Poland). Areas marked **Live** change behaviour in the demo; **Table** areas are maintained there and used in a later phase.
 
 ## 1. Why this matters
 
 A configuration-driven LSP TMS lets each tenant run its own processes without code changes (brief, design principle 1). The reference SCD shows what a mature LSP needs to configure, so HP TMS treats these as first-class, tenant-scoped master tables with audit, rather than hard-coded logic.
+
+## 1a. Global masters: countries and currencies (Phase 0)
+
+HP TMS is global. The UAE, India and the EU tenants in the demo are only the first **country packs**; nothing in the code is specific to a region.
+
+- **Country master** (platform reference data, ISO 3166): ISO 2/3/numeric codes, region, currency, dial code, **weekend days**, public holidays, tax name, **standard rate and road-freight rate** (they differ in some countries: India GST on transport 12%, China 9%), e-invoicing regime, postcode format, driving side, distance unit, trade bloc. 41 countries ship in the demo across the Middle East, South Asia, South-East and East Asia, Oceania, Europe, Africa and the Americas.
+  - A tenant **activates** the countries it operates in.
+  - Service-level deadlines use the **destination country's** weekend and holidays (a Friday is a working day in the UAE, not in KSA).
+  - Tax on freight follows the country pack:
+    - **Domestic:** the road-freight rate.
+    - **GCC and other international lanes:** zero-rated.
+    - **EU B2B:** place of supply is the customer's country. Domestic customers pay home-country VAT; customers in another EU state get the **reverse charge**; customers outside the EU are outside the scope.
+    - **India:** CGST + SGST within a state, IGST between states.
+  - Tax and e-invoicing entries are indicative and must be confirmed with a tax adviser per country before go-live.
+- **Currency master** (ISO 4217): code, numeric code, name, symbol and **minor units**. KWD, BHD, OMR and JOD have 3 decimals; JPY, KRW and VND have none. Amounts are formatted and rounded to the currency's own decimals.
+  - Exchange rates are held per USD and cross-converted to each tenant's base currency. A daily agent imports them (UAE central bank, RBI, ECB, … per tenant).
+  - **Divisions** can have their own base currency (for example EuroLink's Polish entity in PLN).
+  - **Customers** can have a billing currency; invoices show the converted total and the rate date.
+- **Tenant profile:** every tenant-specific value lives in data, not code:
+  - home country, domain, label printers, tax-ID validation pattern;
+  - registration names, insurers, number formats, toll product, e-invoice format, fiscal year start;
+  - hubs, zones and carrier-selection rules.
+
+  Adding a country or a tenant is configuration only.
 
 ## 2. Organisation hierarchy (Phase 0)
 
