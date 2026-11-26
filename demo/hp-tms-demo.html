@@ -152,7 +152,7 @@ td.r,th.r{text-align:end}
 .seg button{border:0;background:var(--panel);padding:6px 12px;cursor:pointer;font-weight:500;color:var(--muted)}
 .seg button[aria-checked="true"]{background:var(--accent);color:var(--accent-fg)}
 .labels{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
-.label{background:#fff;color:#000;border:1px solid #000;border-radius:4px;padding:10px;display:flex;flex-direction:column;gap:6px;font-family:var(--f-sans);aspect-ratio:2/3;max-width:100%;overflow:hidden}
+.label{background:#fff;color:#000;border:1px solid #000;border-radius:4px;padding:10px;display:flex;flex-direction:column;gap:6px;font-family:var(--f-sans);min-height:400px;max-width:100%}
 .label small{font-size:9.5px;letter-spacing:.08em;color:#333;display:block}
 .lb-top{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #000;padding-bottom:6px}
 .lb-top b{font-size:16px}
@@ -184,6 +184,7 @@ td.r,th.r{text-align:end}
 .fixcell{display:flex;flex-direction:column;gap:2px;font-size:11.5px;color:var(--muted);min-width:0}
 .fixcell input,.fixcell select{font-size:12.5px;padding:4px 6px;min-width:0}
 .fixcell.bad{color:var(--bad);font-weight:600}.fixcell.bad input,.fixcell.bad select{border-color:var(--bad);box-shadow:0 0 0 1px var(--bad)}
+.modal>*,.drawer>*{flex-shrink:0}
 .q-item{font-size:12px;font-family:var(--f-mono);padding:4px 0;border-bottom:1px dashed var(--line)}
 /* public tracking */
 .trk-head{border-radius:var(--r);padding:18px;color:#fff;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
@@ -890,10 +891,12 @@ function journalSales(X,inv){const rows={};const add=(gl,dr,cr,txt)=>{const k=gl
   inv.lines.forEach(l=>l.sell.forEach(s=>{const a=actOf(X,s.code);add(a.salesGL||"400300",0,s.amount,a.name)}));
   inv.taxGroups.forEach(g=>{if(g.tax)add("220100",0,g.tax,`${g.name}`)});
   return Object.values(rows).map(r=>({...r,dr:round2(r.dr),cr:round2(r.cr)}))}
-function journalPurchase(X,ci){const S=ciState(X,ci),rows=[];const acc=S.acc,pay=S.pay,inputRate=freightRate(X.p.home);const vat=round2(pay*inputRate);
+function journalPurchase(X,ci){const S=ciState(X,ci),rows=[];const acc=S.acc,pay=S.pay;
+  const tax={};ci.lines.forEach((l,i)=>{const o=l.orderId&&X.orders.find(x=>x.id===l.orderId);if(!o||!S.ms[i].pay)return;const t=taxFor(X,o);(t.parts||[t]).forEach(pt=>{if(!pt.rate)return;const k=pt.name+"|"+pt.rate;tax[k]=tax[k]||{name:pt.name,rate:pt.rate,amt:0};tax[k].amt+=S.ms[i].pay*pt.rate})});
   rows.push({gl:"215000",txt:"Release accrued carrier cost",dr:round2(Math.min(acc,pay)),cr:0});
   if(Math.abs(pay-acc)>.005&&pay>0) rows.push({gl:"500100",txt:"Price variance vs accrual",dr:round2(Math.max(0,pay-acc)),cr:round2(Math.max(0,acc-pay))});
-  rows.push({gl:"220200",txt:`Input ${COUNTRY[X.p.home].taxName} ${Math.round(inputRate*1000)/10}%`,dr:vat,cr:0});
+  let vat=0;Object.values(tax).forEach(g=>{const a=round2(g.amt);vat+=a;rows.push({gl:"220200",txt:`Input ${g.name} ${Math.round(g.rate*1000)/10}%`,dr:a,cr:0})});
+  if(!vat&&ci.lines.some(l=>l.orderId)) rows.push({gl:"220200",txt:"No input tax: zero-rated or reverse-charge lane",dr:0,cr:0});
   rows.push({gl:"210000",txt:`Trade creditors · ${X.parties.find(p=>p.id===ci.carrierId).name}`,dr:0,cr:round2(pay+vat)});return rows}
 function journalTable(X,rows,journal){const td=rows.reduce((s,r)=>s+r.dr,0),tc=rows.reduce((s,r)=>s+r.cr,0);
   return `<div class="tbl-wrap"><table><thead><tr><th>Journal</th><th>GL account</th><th>Description</th><th class="r">Debit</th><th class="r">Credit</th></tr></thead><tbody>
