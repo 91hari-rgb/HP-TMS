@@ -1,0 +1,250 @@
+<title>HP TMS Process Flows</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: one reading column of text; each swimlane diagram scrolls sideways in its own frame. */
+:root{
+  --bg:#F6F7F8; --surface:#FFFFFF; --fg:#18232D; --muted:#5B6874; --line:#C8D0D7;
+  --lane-a:#FFFFFF; --lane-b:#F1F4F6; --lane-head:#E6EBEF;
+  --task-fill:#FFFFFF; --task-stroke:#5B6874;
+  --auto-fill:#FFF4E0; --auto-stroke:#C27A00;
+  --dec-fill:#E8F0F7; --dec-stroke:#3C6E99;
+  --end-fill:#18232D; --end-fg:#FFFFFF;
+  --accent:#A86400; --edge:#4A5662;
+  --sans:"IBM Plex Sans",Arial,Helvetica,sans-serif; --mono:"IBM Plex Mono",Consolas,"Courier New",monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12181E; --surface:#182029; --fg:#E3E8EC; --muted:#97A3AE; --line:#33404C;
+  --lane-a:#182029; --lane-b:#1C2530; --lane-head:#222D39;
+  --task-fill:#1E2833; --task-stroke:#8E9BA7;
+  --auto-fill:#3A2C14; --auto-stroke:#E0A13A;
+  --dec-fill:#1D3042; --dec-stroke:#79A9D3;
+  --end-fill:#E3E8EC; --end-fg:#12181E;
+  --accent:#F0B450; --edge:#A7B2BC; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12181E; --surface:#182029; --fg:#E3E8EC; --muted:#97A3AE; --line:#33404C;
+  --lane-a:#182029; --lane-b:#1C2530; --lane-head:#222D39;
+  --task-fill:#1E2833; --task-stroke:#8E9BA7;
+  --auto-fill:#3A2C14; --auto-stroke:#E0A13A;
+  --dec-fill:#1D3042; --dec-stroke:#79A9D3;
+  --end-fill:#E3E8EC; --end-fg:#12181E;
+  --accent:#F0B450; --edge:#A7B2BC; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:15px;line-height:1.55}
+.wrap{max-width:1180px;margin:0 auto;padding-block:40px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:40px}
+header{display:grid;gap:10px;max-width:70ch}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+h1{font-size:clamp(26px,4vw,36px);line-height:1.15;margin:0;text-wrap:balance}
+h2{font-size:21px;margin:0;text-wrap:balance}
+p{margin:0;color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:10px 22px;font-size:13px;color:var(--muted);align-items:center}
+.legend span{display:inline-flex;align-items:center;gap:8px}
+.sw{width:26px;height:16px;border-radius:4px;border:1.5px solid var(--task-stroke);background:var(--task-fill)}
+.sw.auto{background:var(--auto-fill);border-color:var(--auto-stroke);border-style:dashed}
+.sw.dec{width:16px;height:16px;transform:rotate(45deg) scale(.8);border-radius:2px;background:var(--dec-fill);border-color:var(--dec-stroke)}
+.sw.end{border-radius:10px;background:var(--end-fill);border-color:var(--end-fill)}
+.code{font-family:var(--mono);font-size:12px;color:var(--accent)}
+section{display:grid;gap:12px}
+.sec-head{display:grid;gap:4px;max-width:75ch}
+.frame{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+.frame svg{display:block}
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:8px 28px;font-size:14px;color:var(--muted)}
+.notes b{color:var(--fg);font-weight:600}
+/* svg */
+.lane-a{fill:var(--lane-a)} .lane-b{fill:var(--lane-b)} .lane-h{fill:var(--lane-head)}
+.lane-line{stroke:var(--line);stroke-width:1}
+.lane-t{font:600 12.5px var(--sans);fill:var(--fg)} .lane-s{font:400 10.5px var(--sans);fill:var(--muted)}
+.n-task{fill:var(--task-fill);stroke:var(--task-stroke);stroke-width:1.4}
+.n-auto{fill:var(--auto-fill);stroke:var(--auto-stroke);stroke-width:1.4;stroke-dasharray:5 3}
+.n-dec{fill:var(--dec-fill);stroke:var(--dec-stroke);stroke-width:1.4}
+.n-end{fill:var(--end-fill);stroke:none}
+.t{font:500 11px var(--sans);fill:var(--fg)} .t-end{font:600 11px var(--sans);fill:var(--end-fg)}
+.t-code{font:500 9.5px var(--mono);fill:var(--accent)}
+.e{fill:none;stroke:var(--edge);stroke-width:1.4} .e.dash{stroke-dasharray:4 3}
+.ah{fill:var(--edge)}
+.e-l{font:600 10px var(--sans);fill:var(--fg);paint-order:stroke;stroke:var(--surface);stroke-width:4px}
+.status{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.chip{font-family:var(--mono);font-size:12.5px;padding:5px 10px;border-radius:999px;border:1px solid var(--line);background:var(--surface);white-space:nowrap}
+.chip b{color:var(--accent);font-weight:500;margin-right:6px}
+.chip.side{border-style:dashed;color:var(--muted)}
+.arrow{color:var(--muted);font-size:13px}
+@media print{.frame{overflow:visible}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">HP TMS · Process flows</div>
+    <h1>Who does what, from order to cash and from carrier invoice to payment</h1>
+    <p>Three swimlane diagrams cover the end-to-end process described in chapter 6 of the functional specification. Each lane is a role; each box shows the step, and the orange line shows the file status and track &amp; trace codes it produces.</p>
+    <div class="legend" aria-label="Legend">
+      <span><i class="sw"></i>Task done by a person</span>
+      <span><i class="sw auto"></i>Done automatically by HP TMS</span>
+      <span><i class="sw dec"></i>Decision</span>
+      <span><i class="sw end"></i>Start / end</span>
+      <span><span class="code">200 · ORD-CNF</span> status and T&amp;T codes</span>
+    </div>
+  </header>
+
+  <section id="a">
+    <div class="sec-head">
+      <h2>A. Order to dispatch</h2>
+      <p>An order arrives, is priced and checked, optionally consolidated with similar orders, then planned onto a trip and dispatched.</p>
+    </div>
+    <div class="frame"><svg id="dA" role="img" aria-label="Swimlane diagram: order to dispatch"></svg></div>
+    <div class="notes">
+      <div><b>Instant quote</b> rates freight, service-level and fuel surcharges, border fees and tolls, applies the tax code for the lane and works out the promised delivery from the destination country's calendar.</div>
+      <div><b>Margin guardrail</b> holds any order below 12% margin (hold reason H02) until Finance approves it.</div>
+      <div><b>Consolidation</b> groups confirmed orders with the same zones, equipment and day into a master order; each child keeps its own charges and invoice.</div>
+    </div>
+  </section>
+
+  <section id="b">
+    <div class="sec-head">
+      <h2>B. Execution to cash</h2>
+      <p>The driver runs the trip in the app, the customer follows it live, the dispatcher debriefs it, and Finance invoices and collects.</p>
+    </div>
+    <div class="frame"><svg id="dB" role="img" aria-label="Swimlane diagram: execution to cash"></svg></div>
+    <div class="notes">
+      <div><b>Driver app</b> works offline; each tap logs a T&amp;T code with device time and GPS, synced when the signal returns.</div>
+      <div><b>Return orders</b> are created automatically for partial or refused deliveries, on the reversed lane, and go back to planning.</div>
+      <div><b>After invoicing</b> Finance handles credit notes and disputes; overdue invoices raise alerts and feed receivables aging.</div>
+    </div>
+  </section>
+
+  <section id="c">
+    <div class="sec-head">
+      <h2>C. Carrier invoice to payment</h2>
+      <p>Subcontracted trips are accrued at dispatch, the carrier's invoice is matched line by line, and approved invoices are paid through the ERP.</p>
+    </div>
+    <div class="frame"><svg id="dC" role="img" aria-label="Swimlane diagram: carrier invoice to payment"></svg></div>
+    <div class="notes">
+      <div><b>Matching</b> uses our order number when the carrier quotes it; otherwise lane, date, weight and amount, auto-matched at 80% confidence or higher.</div>
+      <div><b>Tolerance</b> is ±2% or AED 50, whichever is larger. Over-tolerance lines can be accepted, or disputed and paid at the accrual.</div>
+      <div><b>HP TMS does not pay</b>: it exports payment batches, and the ERP's remittance marks invoices paid.</div>
+    </div>
+  </section>
+
+  <section id="status">
+    <div class="sec-head">
+      <h2>Order file status codes</h2>
+      <p>The main path an order's status follows through the flows above. Dashed codes are side states.</p>
+    </div>
+    <div class="status">
+      <span class="chip"><b>100</b>Draft</span><span class="arrow">→</span>
+      <span class="chip side"><b>150</b>On hold</span><span class="arrow">→</span>
+      <span class="chip"><b>200</b>Confirmed</span><span class="arrow">→</span>
+      <span class="chip side"><b>250</b>Master</span><span class="arrow">→</span>
+      <span class="chip"><b>400</b>Dispatched</span><span class="arrow">→</span>
+      <span class="chip"><b>500</b>In transit</span><span class="arrow">→</span>
+      <span class="chip"><b>600</b>Delivered</span><span class="arrow">→</span>
+      <span class="chip"><b>700</b>POD received</span><span class="arrow">→</span>
+      <span class="chip"><b>800</b>Invoiced</span><span class="arrow">→</span>
+      <span class="chip"><b>999</b>Closed</span>
+      <span class="chip side"><b>998</b>Reopened</span>
+      <span class="chip side"><b>900</b>Cancelled</span>
+    </div>
+  </section>
+</div>
+
+<script>
+const COL=150, NW=128, NH=64, LH=104, HEAD=132, PADR=24, DW=118, DH=76;
+const NS="http://www.w3.org/2000/svg";
+function el(tag,attrs,parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);parent&&parent.appendChild(e);return e}
+function draw(svg,{lanes,nodes,edges}){
+  const cols=Math.max(...nodes.map(n=>n.c))+1;
+  const W=HEAD+cols*COL+PADR, H=lanes.length*LH;
+  svg.setAttribute("viewBox",`0 0 ${W} ${H}`);svg.setAttribute("width",W);svg.setAttribute("height",H);
+  const defs=el("defs",{},svg);const m=el("marker",{id:svg.id+"ah",viewBox:"0 0 10 10",refX:9,refY:5,markerWidth:7,markerHeight:7,orient:"auto-start-reverse"},defs);
+  el("path",{d:"M0,0 L10,5 L0,10 z",class:"ah"},m);
+  lanes.forEach((l,i)=>{
+    el("rect",{x:0,y:i*LH,width:W,height:LH,class:i%2?"lane-b":"lane-a"},svg);
+    el("rect",{x:0,y:i*LH,width:HEAD-12,height:LH,class:"lane-h"},svg);
+    if(i)el("line",{x1:0,x2:W,y1:i*LH,y2:i*LH,class:"lane-line"},svg);
+    const t=el("text",{x:14,y:i*LH+LH/2-(l[1]?4:-4),class:"lane-t"},svg);t.textContent=l[0];
+    if(l[1]){const s=el("text",{x:14,y:i*LH+LH/2+12,class:"lane-s"},svg);s.textContent=l[1]}
+  });
+  const pos={};
+  nodes.forEach(n=>{const cx=HEAD+n.c*COL+COL/2, cy=n.l*LH+LH/2;
+    const dec=n.k==="dec", w=dec?DW:NW, h=dec?DH:(n.k==="end"?44:NH);pos[n.id]={cx,cy,w,h,n}});
+  const side=(p,s)=>s==="r"?[p.cx+p.w/2,p.cy]:s==="l"?[p.cx-p.w/2,p.cy]:s==="t"?[p.cx,p.cy-p.h/2]:[p.cx,p.cy+p.h/2];
+  const eg=el("g",{},svg);
+  edges.forEach(([a,b,label,opt={}])=>{const A=pos[a],B=pos[b];let pts;
+    if(opt.under){const yb=A.n.l*LH+LH-10;pts=[side(A,"b"),[A.cx,yb],[B.cx,yb],side(B,"b")]}
+    else if(A.n.l===B.n.l){pts=[side(A,"r"),side(B,"l")]}
+    else if(A.n.c===B.n.c){const down=B.n.l>A.n.l;pts=[side(A,down?"b":"t"),side(B,down?"t":"b")]}
+    else if(opt.vh){const down=B.n.l>A.n.l;const s=side(A,down?"b":"t");const t=side(B,"l");pts=[s,[s[0],t[1]],t]}
+    else{const down=B.n.l>A.n.l;const s=side(A,"r");const t=side(B,down?"t":"b");pts=[s,[t[0],s[1]],t]}
+    el("path",{d:"M"+pts.map(p=>p.join(",")).join(" L"),class:"e"+(opt.dash?" dash":""),"marker-end":`url(#${svg.id}ah)`},eg);
+    if(label){const [x0,y0]=pts[0],[x1,y1]=pts[1];let x,y,anchor="start";
+      if(opt.under){x=x0+8;y=y1-4}else if(x0===x1){x=x0+6;y=y0+(y1>y0?16:-8)}else{x=x0+6;y=y0-6}
+      const t=el("text",{x,y,class:"e-l","text-anchor":anchor},eg);t.textContent=label}
+  });
+  nodes.forEach(n=>{const p=pos[n.id];const g=el("g",{},svg);
+    if(n.k==="dec")el("polygon",{points:`${p.cx},${p.cy-p.h/2} ${p.cx+p.w/2},${p.cy} ${p.cx},${p.cy+p.h/2} ${p.cx-p.w/2},${p.cy}`,class:"n-dec"},g);
+    else el("rect",{x:p.cx-p.w/2,y:p.cy-p.h/2,width:p.w,height:p.h,rx:n.k==="end"?22:6,class:n.k==="auto"?"n-auto":n.k==="end"?"n-end":"n-task"},g);
+    const lines=n.t.split("|"), code=n.code?[n.code]:[];const all=lines.length+code.length;const lh=13;
+    let y=p.cy-(all-1)*lh/2+4;
+    lines.forEach(s=>{const t=el("text",{x:p.cx,y,"text-anchor":"middle",class:n.k==="end"?"t-end":"t"},g);t.textContent=s;y+=lh});
+    code.forEach(s=>{const t=el("text",{x:p.cx,y:y+1,"text-anchor":"middle",class:"t-code"},g);t.textContent=s;y+=lh});
+  });
+}
+draw(document.getElementById("dA"),{
+  lanes:[["Customer","portal · API · EDI"],["Order desk",""],["HP TMS","automatic"],["Planner","and warehouse"],["Finance",""]],
+  nodes:[
+    {id:"start",c:0,l:0,k:"end",t:"Shipment needed"},
+    {id:"book",c:1,l:0,t:"Books order|portal · API · EDI 204|email · Excel",code:"100 · ORD-CRT"},
+    {id:"check",c:2,l:1,t:"Checks and|completes the order"},
+    {id:"quote",c:2,l:2,k:"auto",t:"Instant quote: rate,|tax, promise date,|carrier rule"},
+    {id:"margin",c:3,l:2,k:"dec",t:"Margin|≥ 12%?"},
+    {id:"hold",c:3,l:4,t:"Approves or|rejects the hold",code:"150 · ORD-HLD"},
+    {id:"conf",c:4,l:2,k:"auto",t:"Order confirmed",code:"200 · ORD-CNF"},
+    {id:"cons",c:5,l:3,k:"dec",t:"Consolidate|with similar?"},
+    {id:"master",c:6,l:3,t:"Groups them into|a master order",code:"250 · ORD-CON"},
+    {id:"plan",c:7,l:3,t:"Builds load,|picks vehicle,|dispatches",code:"400 · TRP-DSP"},
+    {id:"acc",c:8,l:2,k:"auto",t:"Con notes, cost|accrual (AC), job|to driver app"},
+    {id:"lbl",c:8,l:3,t:"Prints SSCC labels|and documents",code:"LBL-PRT"},
+    {id:"toB",c:9,l:3,k:"end",t:"To diagram B"}
+  ],
+  edges:[["start","book"],["book","check"],["check","quote"],["quote","margin"],["margin","conf","Yes"],["margin","hold","No"],["hold","conf","Approved"],
+    ["conf","cons"],["cons","master","Yes"],["cons","plan","No",{under:true}],["master","plan"],["plan","acc",null,{vh:true}],["plan","lbl"],["lbl","toB"],["acc","toB"]]
+});
+draw(document.getElementById("dB"),{
+  lanes:[["Customer","consignee"],["HP TMS","automatic"],["Planner","dispatcher"],["Driver","driver app"],["Finance","receivables (AR)"]],
+  nodes:[
+    {id:"fromA",c:0,l:2,k:"end",t:"Trip dispatched"},
+    {id:"run",c:1,l:3,t:"Accepts trip,|picks up, departs",code:"500 · PU-DEP"},
+    {id:"track",c:2,l:1,k:"auto",t:"ETA, risk alerts,|notifications,|EDI 214",code:"INT-POS · NTF-ETA"},
+    {id:"link",c:2,l:0,t:"Follows the|tracking link"},
+    {id:"pod",c:3,l:3,t:"Delivers and|captures POD",code:"700 · DL-POD"},
+    {id:"deb",c:4,l:2,t:"Debriefs each|delivery",code:"TRP-DBR"},
+    {id:"full",c:5,l:2,k:"dec",t:"Delivered|in full?"},
+    {id:"ret",c:5,l:1,k:"auto",t:"Return order|created, back|to planning"},
+    {id:"inv",c:6,l:4,t:"Issues tax invoice|SI journal",code:"800 · INV-ISS"},
+    {id:"pay",c:7,l:0,t:"Pays the invoice"},
+    {id:"rec",c:8,l:4,t:"Records payment|from ERP, aging"},
+    {id:"close",c:9,l:1,k:"auto",t:"Closes and|archives the file",code:"999 Closed"},
+    {id:"end",c:10,l:1,k:"end",t:"Done"}
+  ],
+  edges:[["fromA","run",null,{vh:true}],["run","track",null,{vh:true}],["track","link"],["run","pod"],["pod","deb"],["deb","full"],["full","ret","Partial / refused"],["full","inv","Yes"],
+    ["inv","pay"],["pay","rec"],["rec","close"],["close","end"]]
+});
+draw(document.getElementById("dC"),{
+  lanes:[["Planner",""],["Carrier","portal · EDI"],["HP TMS","automatic"],["Finance","payables (AP)"],["ERP","e.g. SAP S/4HANA"]],
+  nodes:[
+    {id:"assign",c:0,l:0,t:"Assigns trip to|a subcontractor"},
+    {id:"tender",c:1,l:2,k:"auto",t:"Sends tender,|accrues expected|cost",code:"EDI 204 · AC journal"},
+    {id:"run",c:2,l:1,t:"Accepts, runs the|trip, captures POD",code:"EDI 990 · DL-POD"},
+    {id:"ci",c:3,l:1,t:"Sends invoice|portal · email OCR|EDI 210"},
+    {id:"self",c:3,l:2,k:"auto",t:"Or: self-billing|from completed|trips"},
+    {id:"match",c:4,l:2,k:"auto",t:"Matches each line|to an order",code:"≥ 80% confidence"},
+    {id:"tol",c:5,l:2,k:"dec",t:"In tolerance|and POD?"},
+    {id:"review",c:5,l:3,t:"Reviews: accept,|dispute, hold or|match by hand"},
+    {id:"appr",c:6,l:2,k:"auto",t:"Approves; posts|PI journal",code:"accrual released"},
+    {id:"batch",c:7,l:3,t:"Creates payment|batch, exports|to ERP"},
+    {id:"payc",c:8,l:4,t:"Pays carrier,|sends remittance"},
+    {id:"paid",c:9,l:2,k:"auto",t:"Invoice marked|Paid; AP aging"}
+  ],
+  edges:[["assign","tender",null,{vh:true}],["tender","run",null,{vh:true}],["run","ci"],["run","self","Alternative",{vh:true,dash:true}],["ci","match"],["self","match"],["match","tol"],
+    ["tol","appr","Yes"],["tol","review","No"],["review","appr","Accepted"],["appr","batch"],["batch","payc"],["payc","paid"]]
+});
+</script>
